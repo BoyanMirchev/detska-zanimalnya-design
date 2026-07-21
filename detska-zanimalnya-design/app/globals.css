@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #17324d;
+  --cream: #fff9ef;
+  --mint: #9ed9ca;
+  --mint-dark: #3e8f82;
+  --apricot: #ffb37b;
+  --coral: #f2776b;
+  --lilac: #c9b8ea;
+  --paper: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+.brand-font {
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif;
+}
+
+::selection {
+  background: var(--apricot);
+  color: var(--ink);
+}
+
+.noise {
+  background-image: radial-gradient(rgba(23, 50, 77, 0.08) 0.7px, transparent 0.7px);
+  background-size: 12px 12px;
+}
+
+.soft-shadow {
+  box-shadow: 0 24px 70px rgba(23, 50, 77, 0.11);
+}
+
+.card-shadow {
+  box-shadow: 0 16px 40px rgba(23, 50, 77, 0.08);
+}
+
+.marquee-track {
+  animation: marquee 24s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .marquee-track {
+    animation: none;
+  }
+}
