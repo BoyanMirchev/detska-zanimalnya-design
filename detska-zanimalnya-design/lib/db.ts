@@ -11,4 +11,5 @@ export type ContactRequest = {
   message: string
   status: string
   created_at: string
+  image_paths: string[]
 }

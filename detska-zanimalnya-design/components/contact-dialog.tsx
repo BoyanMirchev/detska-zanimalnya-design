@@ -1,14 +1,86 @@
 "use client"
 
-import { useActionState, useEffect, useState } from "react"
-import { ArrowRight, Check, Loader2, X } from "lucide-react"
+import { useActionState, useEffect, useRef, useState } from "react"
+import { ArrowRight, Check, ImagePlus, Loader2, X } from "lucide-react"
 import { submitContactRequest, type ContactFormState } from "@/app/actions/contact"
 
 const initialState: ContactFormState = {}
 
+type UploadedImage = {
+  id: string
+  name: string
+  pathname: string
+  previewUrl: string
+}
+
+const MAX_IMAGES = 6
+
 export function ContactDialog() {
   const [open, setOpen] = useState(false)
   const [state, formAction, pending] = useActionState(submitContactRequest, initialState)
+
+  const [images, setImages] = useState<UploadedImage[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return
+    setUploadError(null)
+
+    const remaining = MAX_IMAGES - images.length
+    if (remaining <= 0) {
+      setUploadError(`Може да качите най-много ${MAX_IMAGES} снимки.`)
+      return
+    }
+
+    const toUpload = Array.from(files).slice(0, remaining)
+    setUploading(true)
+    try {
+      for (const file of toUpload) {
+        const body = new FormData()
+        body.append("file", file)
+        const res = await fetch("/api/upload", { method: "POST", body })
+        const data = await res.json()
+        if (!res.ok) {
+          setUploadError(data.error || "Качването се провали.")
+          continue
+        }
+        setImages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            name: file.name,
+            pathname: data.pathname,
+            previewUrl: URL.createObjectURL(file),
+          },
+        ])
+      }
+    } catch {
+      setUploadError("Възникна грешка при качването.")
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+  }
+
+  function removeImage(id: string) {
+    setImages((prev) => {
+      const target = prev.find((i) => i.id === id)
+      if (target) URL.revokeObjectURL(target.previewUrl)
+      return prev.filter((i) => i.id !== id)
+    })
+  }
+
+  // Clear uploaded images once the request is submitted successfully.
+  useEffect(() => {
+    if (state.success) {
+      setImages((prev) => {
+        prev.forEach((i) => URL.revokeObjectURL(i.previewUrl))
+        return []
+      })
+    }
+  }, [state.success])
 
   useEffect(() => {
     if (open) {
@@ -159,6 +231,69 @@ export function ContactDialog() {
                     />
                   </div>
 
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-extrabold text-[#17324D]">Снимки на детето</label>
+                    <p className="-mt-1 text-xs font-bold text-[#17324D]/50">
+                      По желание. До {MAX_IMAGES} изображения, макс. 8 MB всяко.
+                    </p>
+
+                    <input
+                      ref={fileInputRef}
+                      id="images"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="sr-only"
+                      onChange={(e) => handleFiles(e.target.files)}
+                    />
+
+                    {images.length > 0 && (
+                      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+                        {images.map((img) => (
+                          <div key={img.id} className="group relative aspect-square overflow-hidden rounded-2xl border-2 border-[#17324D]/10 bg-[#F7FAFC]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={img.previewUrl || "/placeholder.svg"} alt={img.name} className="h-full w-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(img.id)}
+                              aria-label={`Премахни ${img.name}`}
+                              className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#17324D] text-white transition hover:bg-[#F27B6B]"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {images.length < MAX_IMAGES && (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#17324D]/20 bg-[#F7FAFC] px-4 py-4 font-extrabold text-[#17324D] transition hover:border-[#9ED9CA] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {uploading ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Качване...
+                          </>
+                        ) : (
+                          <>
+                            <ImagePlus className="h-5 w-5" />
+                            Добави снимки
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    {uploadError && (
+                      <p className="text-sm font-extrabold text-[#C7503F]">{uploadError}</p>
+                    )}
+                  </div>
+
+                  <input type="hidden" name="imagePaths" value={JSON.stringify(images.map((i) => i.pathname))} />
+
                   {state.error && (
                     <p className="rounded-2xl bg-[#F27B6B]/15 px-4 py-3 text-sm font-extrabold text-[#C7503F]">
                       {state.error}
@@ -167,7 +302,7 @@ export function ContactDialog() {
 
                   <button
                     type="submit"
-                    disabled={pending}
+                    disabled={pending || uploading}
                     className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#17324D] px-7 py-4 font-extrabold text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                   >
                     {pending ? (
