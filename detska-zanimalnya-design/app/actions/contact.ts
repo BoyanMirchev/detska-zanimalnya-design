@@ -17,6 +17,18 @@ export async function submitContactRequest(
   const childAge = String(formData.get("childAge") || "").trim()
   const message = String(formData.get("message") || "").trim()
 
+  // Uploaded image pathnames are passed as a JSON string from the client.
+  let imagePaths: string[] = []
+  try {
+    const raw = String(formData.get("imagePaths") || "[]")
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed)) {
+      imagePaths = parsed.filter((p): p is string => typeof p === "string").slice(0, 6)
+    }
+  } catch {
+    imagePaths = []
+  }
+
   if (!name || !email || !message) {
     return { error: "Моля, попълнете име, имейл и съобщение." }
   }
@@ -28,8 +40,8 @@ export async function submitContactRequest(
 
   try {
     await sql`
-      INSERT INTO contact_requests (name, email, phone, child_age, message)
-      VALUES (${name}, ${email}, ${phone || null}, ${childAge || null}, ${message})
+      INSERT INTO contact_requests (name, email, phone, child_age, message, image_paths)
+      VALUES (${name}, ${email}, ${phone || null}, ${childAge || null}, ${message}, ${JSON.stringify(imagePaths)}::jsonb)
     `
     return { success: true }
   } catch (err) {
