@@ -20,6 +20,7 @@ import {
   UsersRound,
   X,
 } from "lucide-react"
+import { ContactDialog } from "@/components/contact-dialog"
 
 const navItems = [
   { label: "Начало", href: "#nachalo" },
@@ -551,10 +552,7 @@ export default function Home() {
                 <Phone className="h-5 w-5" />
                 0888 123 456
               </a>
-              <a href="mailto:hello@example.bg" className="inline-flex min-w-[240px] items-center justify-center gap-2 rounded-full bg-white px-7 py-4 font-extrabold text-[#17324D] transition hover:-translate-y-1">
-                Пиши ни съобщение
-                <ArrowRight className="h-5 w-5" />
-              </a>
+              <ContactDialog />
             </div>
           </div>
         </div>
