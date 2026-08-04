@@ -1,14 +1,39 @@
 @import "tailwindcss";
 
+@theme inline {
+  --font-sans: var(--font-nunito), "Trebuchet MS", Arial, sans-serif;
+  --font-display: var(--font-baloo), "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+
+  --color-background: #fff6ec;
+  --color-foreground: #3a2416;
+
+  --color-primary: #d15a1f;
+  --color-primary-dark: #b0491a;
+  --color-primary-foreground: #fff6ec;
+
+  --color-cream: #fff6ec;
+  --color-cream-deep: #fbe7d1;
+  --color-bark: #3a2416;
+  --color-bark-soft: #6b4a33;
+  --color-leaf: #6b9e3f;
+  --color-leaf-dark: #517a2e;
+  --color-sky: #4a94c4;
+  --color-sunny: #f5a623;
+  --color-berry: #e0556b;
+  --color-card: #ffffff;
+
+  --radius: 1.5rem;
+}
+
 :root {
-  --ink: #17324d;
-  --cream: #fff9ef;
-  --mint: #9ed9ca;
-  --mint-dark: #3e8f82;
-  --apricot: #ffb37b;
-  --coral: #f2776b;
-  --lilac: #c9b8ea;
-  --paper: #ffffff;
+  --orange: #d15a1f;
+  --orange-dark: #b0491a;
+  --cream: #fff6ec;
+  --cream-deep: #fbe7d1;
+  --bark: #3a2416;
+  --bark-soft: #6b4a33;
+  --leaf: #6b9e3f;
+  --sunny: #f5a623;
 }
 
 * {
@@ -22,38 +47,38 @@ html {
 body {
   margin: 0;
   background: var(--cream);
-  color: var(--ink);
-  font-family: "Trebuchet MS", Arial, sans-serif;
+  color: var(--bark);
+  font-family: var(--font-nunito), "Trebuchet MS", Arial, sans-serif;
 }
 
 h1,
 h2,
 h3,
 h4,
-.brand-font {
-  font-family: "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif;
+.font-display {
+  font-family: var(--font-baloo), "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
 }
 
 ::selection {
-  background: var(--apricot);
-  color: var(--ink);
+  background: var(--sunny);
+  color: var(--bark);
 }
 
 .noise {
-  background-image: radial-gradient(rgba(23, 50, 77, 0.08) 0.7px, transparent 0.7px);
-  background-size: 12px 12px;
+  background-image: radial-gradient(rgba(58, 36, 22, 0.06) 0.7px, transparent 0.7px);
+  background-size: 14px 14px;
 }
 
 .soft-shadow {
-  box-shadow: 0 24px 70px rgba(23, 50, 77, 0.11);
+  box-shadow: 0 24px 70px rgba(58, 36, 22, 0.16);
 }
 
 .card-shadow {
-  box-shadow: 0 16px 40px rgba(23, 50, 77, 0.08);
+  box-shadow: 0 16px 40px rgba(58, 36, 22, 0.1);
 }
 
 .marquee-track {
-  animation: marquee 24s linear infinite;
+  animation: marquee 26s linear infinite;
 }
 
 @keyframes marquee {
