@@ -99,16 +99,16 @@ export function SiteHeader() {
 
         {/* Right: logo */}
         <Link href="/" className="group flex items-center gap-3" aria-label="Хралупата – начало">
-          <span className="leading-none text-right">
-            <span className="brand-font block text-[1.35rem] font-extrabold tracking-tight text-brand-dark">
+          <span className="text-right">
+            <span className="brand-font block text-[1.35rem] font-extrabold leading-none tracking-tight text-brand-dark">
               Хралупата
             </span>
-            <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/55">
+            <span className="mt-2 block text-[10px] font-black uppercase leading-none tracking-[0.16em] text-ink/55">
               ученическа занималня
             </span>
           </span>
-          <span className="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-[18px] bg-brand-soft transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
-            <Image src="/images/logo-owl.png" alt="Логото на Хралупата – бухалче в дървесна къщичка" width={56} height={56} className="h-12 w-12 object-contain" />
+          <span className="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full ring-2 ring-brand/20 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
+            <Image src="/images/logo-round.png" alt="Логото на Хралупата – бухалче в дървесна къщичка" width={56} height={56} className="h-full w-full object-cover" />
           </span>
         </Link>
       </div>

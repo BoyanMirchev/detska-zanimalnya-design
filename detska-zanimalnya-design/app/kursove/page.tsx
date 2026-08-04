@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { PenLine, Calculator, BookOpen, FlaskConical, Crown, Languages } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 
@@ -49,8 +50,8 @@ export default function KursovePage() {
         title="Знания, поднесени"
         highlight="с усмивка"
         text="Освен целодневната занималня, предлагаме и допълнителни курсове, които развиват любопитството и уменията на децата - от езици и математика до шах и природни науки."
-        heroImage="/images/room-green-exponent.png"
-        heroImageAlt="Класна стая с постер за математика"
+        image="/images/room-green-exponent.png"
+        imageAlt="Класна стая с постер за математика"
       />
 
       <section className="px-5 py-20 sm:px-8 lg:py-24">
@@ -76,6 +77,29 @@ export default function KursovePage() {
           <p className="mt-8 max-w-2xl font-semibold leading-7 text-ink/55">
             Групите са малки, за да получи всяко дете внимание. За график, свободни места и записване се свържете с нас.
           </p>
+        </div>
+      </section>
+
+      {/* Schedule & prices poster */}
+      <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
+        <div className="mx-auto max-w-5xl">
+          <SectionHeading
+            align="center"
+            eyebrow="График и цени"
+            title="Разписание и такси на курсовете"
+          />
+          <p className="mx-auto mt-4 max-w-2xl text-center font-semibold leading-7 text-ink/60">
+            Пълна информация за дните, часовете и месечните такси по програмиране, БЕЛ, математика, шах, предприемачество и английски език.
+          </p>
+          <figure className="mt-10 overflow-hidden rounded-[32px] border-[6px] border-white bg-cream soft-shadow">
+            <Image
+              src="/images/kursove-poster.png"
+              alt="Разписание и цени на курсовете в Хралупата - програмиране, БЕЛ и математика по класове, подготовка за НВО, шах, предприемачество и английски език"
+              width={1024}
+              height={1560}
+              className="h-auto w-full"
+            />
+          </figure>
         </div>
       </section>
 

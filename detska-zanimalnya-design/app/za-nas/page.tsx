@@ -33,8 +33,8 @@ export default function ZaNasPage() {
         title="Мястото, наречено"
         highlight="Хралупата"
         text="Хралупата е ученическа занималня, създадена като топло и уютно гнездо - място, където децата се чувстват спокойни, учат с желание и растат заобиколени от грижа."
-        heroImage="/images/banner-hallway.png"
-        heroImageAlt="Вход към занималня Хралупата с банер"
+        image="/images/banner-hallway.png"
+        imageAlt="Вход към занималня Хралупата с банер"
       />
 
       {/* Story */}

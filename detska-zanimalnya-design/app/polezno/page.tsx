@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { Clock, Backpack, Utensils, HeartHandshake } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 
@@ -51,8 +52,8 @@ export default function PoleznoPage() {
         title="Всичко важно"
         highlight="на едно място"
         text="Събрахме отговорите на най-честите въпроси на родителите - работно време, дневен режим, какво да носи детето и как протича денят в Хралупата."
-        heroImage="/images/room-alphabet.png"
-        heroImageAlt="Класна стая с азбука на стената"
+        image="/images/room-alphabet.png"
+        imageAlt="Класна стая с азбука на стената"
       />
 
       {/* Quick info */}
@@ -113,6 +114,29 @@ export default function PoleznoPage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Full price list poster */}
+      <section className="px-5 pb-4 sm:px-8">
+        <div className="mx-auto max-w-5xl">
+          <SectionHeading
+            align="center"
+            eyebrow="Цени"
+            title="Пълен ценоразпис"
+          />
+          <p className="mx-auto mt-4 max-w-2xl text-center font-semibold leading-7 text-ink/60">
+            Всички такси за учебна и лятна занималня, ясла и детска градина и предучилищна група - месечни, седмични, дневни и почасови.
+          </p>
+          <figure className="mt-10 overflow-hidden rounded-[32px] border-[6px] border-white bg-cream soft-shadow">
+            <Image
+              src="/images/pricing-poster.png"
+              alt="Ценоразпис на Хралупата - такси за учебна занималня 1-7 клас, лятна занималня, ясла и детска градина и предучилищна група"
+              width={1024}
+              height={1536}
+              className="h-auto w-full"
+            />
+          </figure>
         </div>
       </section>
 

@@ -9,12 +9,12 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.3fr_1fr_1fr] md:gap-8">
         <div>
           <Link href="/" className="flex items-center gap-3" aria-label="Хралупата – начало">
-            <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-[18px] bg-brand-soft">
-              <Image src="/images/logo-owl.png" alt="Логото на Хралупата" width={56} height={56} className="h-12 w-12 object-contain" />
+            <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full ring-2 ring-brand/20">
+              <Image src="/images/logo-round.png" alt="Логото на Хралупата" width={56} height={56} className="h-full w-full object-cover" />
             </span>
-            <span className="leading-none">
-              <span className="brand-font block text-xl font-extrabold text-brand-dark">Хралупата</span>
-              <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/55">
+            <span>
+              <span className="brand-font block text-xl font-extrabold leading-none text-brand-dark">Хралупата</span>
+              <span className="mt-2 block text-[10px] font-black uppercase leading-none tracking-[0.16em] text-ink/55">
                 ученическа занималня
               </span>
             </span>
