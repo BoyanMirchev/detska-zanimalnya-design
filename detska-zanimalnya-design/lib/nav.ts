@@ -34,7 +34,7 @@ export const zanimalnyaChildren: NavChild[] = [
     label: "Лятна занималня",
     short: "Лятна занималня",
     age: "5–12 години",
-    href: "/zanimalnya/lyatna",
+    href: "/zanimalnya/liatna",
   },
 ]
 
