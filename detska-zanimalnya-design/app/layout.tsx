@@ -16,7 +16,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="bg" className="bg-cream">
+    <html lang="bg" className="bg-cream" data-scroll-behavior="smooth">
       <body>
         <SiteHeader />
         {children}
