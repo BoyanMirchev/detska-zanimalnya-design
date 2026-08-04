@@ -42,6 +42,7 @@ export const navItems: NavItem[] = [
   { label: "Начало", href: "/" },
   { label: "Занималня", href: "/zanimalnya/uchebna", children: zanimalnyaChildren },
   { label: "Курсове", href: "/kursove" },
+  { label: "Програмиране", href: "/programirane" },
   { label: "Полезно", href: "/polezno" },
   { label: "За нас", href: "/za-nas" },
 ]

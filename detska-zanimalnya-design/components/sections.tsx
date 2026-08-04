@@ -33,7 +33,7 @@ export function PageHero({
             {highlight && (
               <span className="relative inline-block text-brand">
                 {highlight}
-                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 330 22" fill="none" aria-hidden="true">
+                <svg className="absolute -bottom-6 left-0 w-full" viewBox="0 0 330 22" fill="none" aria-hidden="true">
                   <path d="M4 14C78 2 221 2 326 13" stroke="#F4B63F" strokeWidth="9" strokeLinecap="round" />
                 </svg>
               </span>

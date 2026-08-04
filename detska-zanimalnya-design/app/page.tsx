@@ -126,7 +126,7 @@ function Hero() {
             Всеки ден е ново
             <span className="relative ml-3 inline-block text-brand">
               приключение.
-              <svg className="absolute -bottom-3 left-0 w-full" viewBox="0 0 330 22" fill="none" aria-hidden="true">
+              <svg className="absolute -bottom-9 left-0 w-full" viewBox="0 0 330 22" fill="none" aria-hidden="true">
                 <path d="M4 14C78 2 221 2 326 13" stroke="#F4B63F" strokeWidth="9" strokeLinecap="round" />
               </svg>
             </span>
