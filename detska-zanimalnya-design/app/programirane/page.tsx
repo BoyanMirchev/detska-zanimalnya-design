@@ -39,8 +39,8 @@ export default function ProgramiranePage() {
         title="Първи стъпки в света на"
         highlight="програмирането."
         text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Текстът тук е примерен и ще бъде заменен."
-        image="/images/room-green-exponent.png"
-        imageAlt="Класна стая, подготвена за занимания по програмиране"
+        image="/images/class-green-lego.png"
+        imageAlt="Класна стая с конструктори за занимания по програмиране и роботика"
       />
 
       <section className="px-5 py-20 sm:px-8 lg:py-24">
