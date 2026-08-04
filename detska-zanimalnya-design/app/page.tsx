@@ -4,15 +4,20 @@ import {
   ArrowRight,
   BookOpen,
   Baby,
+  Brain,
   Check,
   Clock3,
   GraduationCap,
   HeartHandshake,
+  Lightbulb,
+  MessagesSquare,
   Phone,
+  Puzzle,
   ShieldCheck,
   Sparkles,
   Star,
   Sun,
+  Target,
   UsersRound,
 } from "lucide-react"
 import { ContactDialog } from "@/components/contact-dialog"
@@ -54,6 +59,49 @@ const benefits = [
   { icon: UsersRound, title: "Малки групи", text: "Повече лично внимание за всяко дете." },
   { icon: ShieldCheck, title: "Сигурна среда", text: "Уютни, подредени и безопасни пространства." },
   { icon: HeartHandshake, title: "Грижа и доверие", text: "Спокойна и честна комуникация с родителите." },
+]
+
+const reasons = [
+  {
+    icon: Target,
+    title: "Индивидуално внимание",
+    text: "Всяко дете учи с различно темпо. Наблюдаваме напредъка му и адаптираме работата спрямо конкретните му нужди.",
+  },
+  {
+    icon: BookOpen,
+    title: "Подкрепа с учебния материал",
+    text: "Помагаме при домашните, преговаряме трудните теми и работим за преодоляване на натрупаните пропуски.",
+  },
+  {
+    icon: UsersRound,
+    title: "Малки групи",
+    text: "Ограниченият брой деца носи по-добра концентрация, повече спокойствие и реално внимание от преподавателя.",
+  },
+  {
+    icon: Lightbulb,
+    title: "Учене чрез преживяване",
+    text: "Практически задачи, образователни игри, експерименти и проекти правят знанията по-разбираеми.",
+  },
+  {
+    icon: MessagesSquare,
+    title: "Обратна връзка към родителите",
+    text: "Поддържаме комуникация и информираме за напредъка, трудностите и поведението на детето.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Безопасна и приветлива среда",
+    text: "Пространство, в което децата се чувстват спокойни, приети и свободни да задават въпроси.",
+  },
+]
+
+const skills = [
+  "Логическо мислене",
+  "Самостоятелност",
+  "Концентрация",
+  "Креативност",
+  "Работа в екип",
+  "Увереност при представяне на идеи",
+  "Решаване на проблеми",
 ]
 
 const gallery = [
@@ -226,10 +274,15 @@ export default function Home() {
           </div>
 
           <div>
-            <SectionHeading eyebrow="Повече от занималня" title="Място, в което детето се чувства видяно." />
+            <SectionHeading eyebrow="Добре дошли в Хралупата" title="Повече от обикновена занималня." />
             <p className="mt-7 text-lg font-semibold leading-8 text-ink/65">
-              Не гоним шумна, претрупана визия и не обещаваме чудеса. Създаваме ясна ежедневна структура, топло отношение
-              и достатъчно пространство детето да бъде себе си – да учи, да твори и да си играе.
+              „Хралупата“ е образователен център за деца, в който съчетаваме подготовката за училище с практически
+              занимания, творчество, движение и игри. Целта ни не е децата просто да приключат домашните си – искаме те
+              да разбират наученото, да задават въпроси и да откриват решения.
+            </p>
+            <p className="mt-5 text-lg font-semibold leading-8 text-ink/65">
+              Работим в малки групи, за да отделяме внимание на всяко дете, и съобразяваме задачите с неговата възраст,
+              училищна програма, темпо на работа и индивидуални потребности.
             </p>
             <div className="mt-9 grid gap-4">
               {benefits.map((benefit) => {
@@ -254,6 +307,68 @@ export default function Home() {
               Запознай се с нас
               <ArrowRight className="h-5 w-5" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Why parents choose us */}
+      <section className="px-5 py-24 sm:px-8 lg:py-32">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading align="center" eyebrow="Защо родителите избират нас" title="Спокойствие за детето. Доверие за родителя." />
+          <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {reasons.map((reason) => {
+              const Icon = reason.icon
+              return (
+                <article key={reason.title} className="rounded-[30px] border border-brand/12 bg-paper p-7 transition duration-300 hover:-translate-y-1 hover:border-brand/30">
+                  <span className="grid h-14 w-14 place-items-center rounded-[20px] bg-brand-soft text-brand-dark">
+                    <Icon className="h-7 w-7" />
+                  </span>
+                  <h3 className="mt-6 text-2xl font-extrabold text-ink">{reason.title}</h3>
+                  <p className="mt-3 font-semibold leading-7 text-ink/65">{reason.text}</p>
+                </article>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Learn, create, discover */}
+      <section className="bg-paper px-5 py-24 sm:px-8 lg:py-32">
+        <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-2 lg:items-center">
+          <div>
+            <SectionHeading eyebrow="Учим, създаваме и откриваме" title="Любопитството е в основата на доброто образование." />
+            <p className="mt-7 text-lg font-semibold leading-8 text-ink/65">
+              Насърчаваме децата да изследват, да експериментират и да търсят различни решения. Чрез занимания по наука,
+              технологии, изкуство, математика и конструиране те развиват уменията, които ще им бъдат полезни цял живот.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {skills.map((skill) => (
+                <span key={skill} className="inline-flex items-center gap-2 rounded-full border border-brand/15 bg-cream px-4 py-2 text-sm font-bold text-brand-dark">
+                  <span className="grid h-5 w-5 place-items-center rounded-full bg-leaf text-white">
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                  </span>
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { icon: Brain, label: "Логика" },
+              { icon: Puzzle, label: "Конструиране" },
+              { icon: Lightbulb, label: "Идеи" },
+              { icon: Sparkles, label: "Творчество" },
+            ].map((item) => {
+              const Icon = item.icon
+              return (
+                <div key={item.label} className="flex flex-col items-center justify-center gap-3 rounded-[28px] border border-brand/12 bg-cream p-8 text-center">
+                  <span className="grid h-16 w-16 place-items-center rounded-[22px] bg-white text-brand-dark shadow-sm">
+                    <Icon className="h-8 w-8" />
+                  </span>
+                  <span className="text-lg font-extrabold text-ink">{item.label}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>

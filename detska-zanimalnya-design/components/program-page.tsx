@@ -7,6 +7,7 @@ import { zanimalnyaChildren } from "@/lib/nav"
 
 export type Feature = { icon: LucideIcon; title: string; text: string }
 export type PriceRow = { label: string; note?: string; price: string }
+export type ApproachItem = { title: string; text: string }
 
 export type ProgramPageProps = {
   slug: string
@@ -22,6 +23,9 @@ export type ProgramPageProps = {
   gallery: { src: string; alt: string }[]
   priceTitle: string
   prices: PriceRow[]
+  philosophy?: { eyebrow: string; title: string; paragraphs: string[] }
+  approach?: { eyebrow: string; title: string; items: ApproachItem[] }
+  forWhom?: { eyebrow: string; title: string; intro?: string; items: string[] }
 }
 
 export function ProgramPage(props: ProgramPageProps) {
@@ -112,8 +116,67 @@ export function ProgramPage(props: ProgramPageProps) {
         </div>
       </section>
 
+      {/* Philosophy */}
+      {props.philosophy && (
+        <section className="px-5 py-20 sm:px-8 lg:py-24">
+          <div className="mx-auto max-w-4xl rounded-[36px] bg-ink p-8 text-white sm:p-12 lg:p-16">
+            <p className="mb-3 text-sm font-black uppercase tracking-[0.22em] text-sun">{props.philosophy.eyebrow}</p>
+            <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl">{props.philosophy.title}</h2>
+            <div className="mt-6 grid gap-5">
+              {props.philosophy.paragraphs.map((p, i) => (
+                <p key={i} className="text-lg font-semibold leading-8 text-white/75">
+                  {p}
+                </p>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Approach */}
+      {props.approach && (
+        <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow={props.approach.eyebrow} title={props.approach.title} />
+            <div className="mt-12 grid gap-5 md:grid-cols-2">
+              {props.approach.items.map((item, i) => (
+                <article key={item.title} className="rounded-[28px] border border-brand/12 bg-cream p-7">
+                  <span className="text-5xl font-black text-brand/15">0{i + 1}</span>
+                  <h3 className="mt-3 text-2xl font-extrabold text-ink">{item.title}</h3>
+                  <p className="mt-3 font-semibold leading-7 text-ink/65">{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* For whom */}
+      {props.forWhom && (
+        <section className="px-5 py-20 sm:px-8 lg:py-24">
+          <div className="mx-auto max-w-4xl">
+            <SectionHeading align="center" eyebrow={props.forWhom.eyebrow} title={props.forWhom.title} />
+            {props.forWhom.intro && (
+              <p className="mx-auto mt-4 max-w-2xl text-center font-semibold leading-7 text-ink/60">
+                {props.forWhom.intro}
+              </p>
+            )}
+            <ul className="mt-10 grid gap-3 sm:grid-cols-2">
+              {props.forWhom.items.map((item) => (
+                <li key={item} className="flex items-start gap-3 rounded-2xl border border-brand/10 bg-paper p-4">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-white">
+                    <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                  </span>
+                  <span className="font-bold text-ink/80">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
       {/* Pricing */}
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
+      <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-4xl">
           <SectionHeading align="center" eyebrow="Цени" title={props.priceTitle} />
           <div className="mt-10 overflow-hidden rounded-[30px] border border-brand/15 bg-paper">

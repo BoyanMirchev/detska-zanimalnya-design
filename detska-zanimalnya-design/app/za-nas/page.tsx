@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import { Heart, Sprout, Users, Shield } from "lucide-react"
+import { Heart, Sprout, Shield, Lightbulb, HeartHandshake, Check } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 
 export const metadata: Metadata = {
@@ -10,10 +10,20 @@ export const metadata: Metadata = {
 }
 
 const values = [
-  { icon: Heart, title: "С грижа", text: "Отнасяме се към всяко дете с внимание, търпение и обич." },
-  { icon: Sprout, title: "С развитие", text: "Подкрепяме любопитството и помагаме на децата да растат." },
-  { icon: Users, title: "В общност", text: "Изграждаме приятелства и усещане за принадлежност." },
-  { icon: Shield, title: "В безопасност", text: "Сигурна, чиста и приветлива среда през целия ден." },
+  { icon: Heart, title: "Уважение", text: "Отнасяме се към всяко дете като към отделна личност със собствен характер, интереси и темпо." },
+  { icon: Shield, title: "Отговорност", text: "Поддържаме ясни правила и учим децата да носят отговорност за действията и задачите си." },
+  { icon: Lightbulb, title: "Любопитство", text: "Насърчаваме задаването на въпроси и търсенето на различни решения." },
+  { icon: Sprout, title: "Постоянство", text: "Показваме, че добрите резултати идват чрез упражнение, търпение и последователност." },
+  { icon: HeartHandshake, title: "Партньорство с родителите", text: "Най-добрите резултати се постигат, когато родители и преподаватели работят в една посока." },
+]
+
+const facilities = [
+  "Учебна зала",
+  "Пространство за творчески занимания",
+  "Зона за четене",
+  "Място за почивка и свободни игри",
+  "Подходящи учебни материали",
+  "Образователни и настолни игри",
 ]
 
 const gallery = [
@@ -69,11 +79,22 @@ export default function ZaNasPage() {
         </div>
       </section>
 
-      {/* Values */}
+      {/* Mission */}
+      <section className="px-5 pb-4 sm:px-8">
+        <div className="mx-auto max-w-4xl rounded-[36px] bg-brand p-8 text-center text-white sm:p-12 lg:p-16">
+          <p className="mb-3 text-sm font-black uppercase tracking-[0.22em] text-white/70">Нашата мисия</p>
+          <p className="text-2xl font-extrabold leading-snug text-balance sm:text-3xl">
+            Да помагаме на децата да учат с разбиране, да развиват своите способности и да изграждат увереност в
+            сигурна и подкрепяща среда.
+          </p>
+        </div>
+      </section>
+
+      {/* Principles */}
       <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
-          <SectionHeading align="center" eyebrow="Нашите ценности" title="В какво вярваме" />
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <SectionHeading align="center" eyebrow="Нашите принципи" title="В какво вярваме" />
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {values.map((v) => {
               const Icon = v.icon
               return (
@@ -90,8 +111,40 @@ export default function ZaNasPage() {
         </div>
       </section>
 
-      {/* Gallery */}
+      {/* Facilities */}
       <section className="px-5 py-20 sm:px-8 lg:py-24">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
+          <div>
+            <SectionHeading eyebrow="Нашата база" title="Пространства, създадени за спокойно учене." />
+            <p className="mt-6 text-lg font-semibold leading-8 text-ink/65">
+              Занималнята е обзаведена така, че всяко кътче да има своята роля — за учене, за творчество, за четене и
+              за почивка.
+            </p>
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+              {facilities.map((item) => (
+                <li key={item} className="flex items-start gap-3 rounded-2xl bg-cream p-4">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-leaf text-white">
+                    <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                  </span>
+                  <span className="font-bold text-ink/80">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[36px] border-8 border-white soft-shadow">
+            <Image
+              src="/images/hall-sofa.png"
+              alt="Уютна зона за четене и почивка в занималня Хралупата"
+              fill
+              sizes="(max-width: 1024px) 90vw, 45vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery */}
+      <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Нашите пространства" title="Разгледайте Хралупата отвътре." />
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
