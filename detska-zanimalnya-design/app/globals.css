@@ -1,14 +1,26 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-brand: #dd5b26;
+  --color-brand-dark: #b8441a;
+  --color-brand-soft: #f7d9c4;
+  --color-ink: #3b2416;
+  --color-ink-soft: #6b5343;
+  --color-cream: #fff6ea;
+  --color-paper: #ffffff;
+  --color-leaf: #7ba23f;
+  --color-sun: #f4b63f;
+  --color-sky: #4fa3d1;
+
+  --font-sans: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+  --font-display: "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif;
+}
+
 :root {
-  --ink: #17324d;
-  --cream: #fff9ef;
-  --mint: #9ed9ca;
-  --mint-dark: #3e8f82;
-  --apricot: #ffb37b;
-  --coral: #f2776b;
-  --lilac: #c9b8ea;
-  --paper: #ffffff;
+  --brand: #dd5b26;
+  --brand-dark: #b8441a;
+  --ink: #3b2416;
+  --cream: #fff6ea;
 }
 
 * {
@@ -23,7 +35,7 @@ body {
   margin: 0;
   background: var(--cream);
   color: var(--ink);
-  font-family: "Trebuchet MS", Arial, sans-serif;
+  font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
 }
 
 h1,
@@ -35,21 +47,21 @@ h4,
 }
 
 ::selection {
-  background: var(--apricot);
-  color: var(--ink);
+  background: var(--brand);
+  color: #fff;
 }
 
 .noise {
-  background-image: radial-gradient(rgba(23, 50, 77, 0.08) 0.7px, transparent 0.7px);
+  background-image: radial-gradient(rgba(59, 36, 22, 0.06) 0.7px, transparent 0.7px);
   background-size: 12px 12px;
 }
 
 .soft-shadow {
-  box-shadow: 0 24px 70px rgba(23, 50, 77, 0.11);
+  box-shadow: 0 24px 70px rgba(59, 36, 22, 0.14);
 }
 
 .card-shadow {
-  box-shadow: 0 16px 40px rgba(23, 50, 77, 0.08);
+  box-shadow: 0 16px 40px rgba(59, 36, 22, 0.1);
 }
 
 .marquee-track {
