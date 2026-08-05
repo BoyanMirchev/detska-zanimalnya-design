@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Code2, Cpu, Gamepad2, Bot } from "lucide-react"
+import { Code2, Cpu, Gamepad2, Bot, Users, Clock3, Laptop, Package } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 
 export const metadata: Metadata = {
@@ -12,22 +12,38 @@ const features = [
   {
     icon: Code2,
     title: "Основи на кода",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Децата се запознават с първите блокове и команди.",
+    text: "Децата се запознават с първите блокове, команди и логиката зад всяка програма.",
   },
   {
     icon: Gamepad2,
     title: "Създаване на игри",
-    text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua – учим чрез собствени малки игри.",
+    text: "Учим чрез създаване на собствени малки игри и интерактивни проекти.",
   },
   {
     icon: Bot,
     title: "Роботика",
-    text: "Ut enim ad minim veniam, quis nostrud exercitation – конструиране и оживяване на прости роботи.",
+    text: "Конструиране и оживяване на прости роботи с реални материали и комплекти.",
   },
   {
     icon: Cpu,
     title: "Логическо мислене",
-    text: "Duis aute irure dolor in reprehenderit – алгоритми, последователност и решаване на проблеми.",
+    text: "Алгоритми, последователност и решаване на проблеми стъпка по стъпка.",
+  },
+]
+
+const details = [
+  { icon: Users, title: "Групи до 8 деца", text: "Малки групи за повече внимание към всяко дете." },
+  { icon: Clock3, title: "Час и половина", text: "Всеки понеделник от 18:00 до 19:30 ч." },
+  { icon: Laptop, title: "Лаптоп в цената", text: "Всяко дете работи на осигурен от нас лаптоп." },
+  { icon: Package, title: "Комплект материали", text: "Индивидуален комплект с всички необходими материали." },
+]
+
+const prices = [
+  { label: "Такса за един месец", price: "85 € / 166,29 лв" },
+  {
+    label: "Пакетна цена за едно ниво",
+    note: "4 модула / 4 месеца",
+    price: "310 € / 606,48 лв",
   },
 ]
 
@@ -38,7 +54,7 @@ export default function ProgramiranePage() {
         badge="Дигитални умения за деца"
         title="Първи стъпки в света на"
         highlight="програмирането."
-        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Текстът тук е примерен и ще бъде заменен."
+        text="Курсът се провежда в малки групи до 8 деца на територията на академията с продължителност час и половина. В цената е включен индивидуален комплект за всяко дете с всички необходими материали и лаптоп."
         image="/images/class-green-lego.png"
         imageAlt="Класна стая с конструктори за занимания по програмиране и роботика"
       />
@@ -47,8 +63,8 @@ export default function ProgramiranePage() {
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Какво учим" title="Учене чрез игра и създаване." />
           <p className="mt-6 max-w-2xl text-lg font-semibold leading-8 text-ink/65">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.
+            Заниманията развиват логическото мислене, творчеството и уменията за решаване на проблеми. Стъпка по стъпка
+            децата преминават през четири модула, изграждайки едно завършено ниво.
           </p>
 
           <div className="mt-14 grid gap-5 md:grid-cols-2">
@@ -72,12 +88,43 @@ export default function ProgramiranePage() {
       </section>
 
       <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
-        <div className="mx-auto max-w-4xl">
-          <SectionHeading align="center" eyebrow="За кого е" title="Подходящо за любопитни малки умове." />
-          <p className="mx-auto mt-6 max-w-2xl text-center text-lg font-semibold leading-8 text-ink/65">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-            ea commodo consequat.
+        <div className="mx-auto max-w-5xl">
+          <SectionHeading eyebrow="Разписание и цени" title="Как протича курсът." />
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {details.map((d) => {
+              const Icon = d.icon
+              return (
+                <div key={d.title} className="rounded-[26px] border border-brand/10 bg-cream p-6">
+                  <span className="grid h-12 w-12 place-items-center rounded-[16px] bg-brand-soft text-brand-dark">
+                    <Icon className="h-6 w-6" />
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold text-ink">{d.title}</h3>
+                  <p className="mt-2 font-semibold leading-7 text-ink/60">{d.text}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mx-auto mt-12 max-w-3xl overflow-hidden rounded-[30px] border border-brand/15 bg-paper">
+            {prices.map((row, i) => (
+              <div
+                key={row.label}
+                className={`flex items-center justify-between gap-4 px-6 py-5 sm:px-8 ${
+                  i % 2 === 1 ? "bg-cream" : "bg-paper"
+                }`}
+              >
+                <div>
+                  <p className="font-extrabold text-ink">{row.label}</p>
+                  {row.note && <p className="mt-1 text-sm font-semibold text-ink/55">{row.note}</p>}
+                </div>
+                <span className="shrink-0 whitespace-nowrap rounded-full bg-brand/12 px-4 py-2 text-lg font-black text-brand-dark">
+                  {row.price}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mx-auto mt-4 max-w-3xl text-center text-sm font-semibold text-ink/50">
+            За братя и сестри – 10% намаление от втората такса.
           </p>
         </div>
       </section>

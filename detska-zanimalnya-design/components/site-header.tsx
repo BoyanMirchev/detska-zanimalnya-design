@@ -16,8 +16,8 @@ function isActive(href: string, pathname: string) {
 export function SiteHeader() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [desktopSub, setDesktopSub] = useState(false)
-  const [mobileSub, setMobileSub] = useState(true)
+  const [desktopSub, setDesktopSub] = useState<string | null>(null)
+  const [mobileSub, setMobileSub] = useState<string | null>("Занималня")
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6">
@@ -31,20 +31,20 @@ export function SiteHeader() {
                 <div
                   key={item.label}
                   className="relative"
-                  onMouseEnter={() => setDesktopSub(true)}
-                  onMouseLeave={() => setDesktopSub(false)}
+                  onMouseEnter={() => setDesktopSub(item.label)}
+                  onMouseLeave={() => setDesktopSub(null)}
                 >
                   <Link
                     href={item.href}
                     className={`flex items-center gap-1 rounded-full px-4 py-2.5 text-sm font-extrabold transition ${
                       active ? "bg-brand/12 text-brand-dark" : "text-ink/75 hover:text-brand-dark"
                     }`}
-                    aria-expanded={desktopSub}
+                    aria-expanded={desktopSub === item.label}
                   >
                     {item.label}
-                    <ChevronDown className={`h-4 w-4 transition ${desktopSub ? "rotate-180" : ""}`} />
+                    <ChevronDown className={`h-4 w-4 transition ${desktopSub === item.label ? "rotate-180" : ""}`} />
                   </Link>
-                  {desktopSub && (
+                  {desktopSub === item.label && (
                     <div className="absolute left-0 top-full w-80 pt-3">
                       <div className="overflow-hidden rounded-[22px] border border-brand/12 bg-paper p-2 shadow-[0_20px_50px_rgba(59,36,22,0.16)]">
                         {item.children.map((child) => (
@@ -123,14 +123,14 @@ export function SiteHeader() {
                   <div key={item.label}>
                     <button
                       type="button"
-                      onClick={() => setMobileSub((v) => !v)}
+                      onClick={() => setMobileSub((v) => (v === item.label ? null : item.label))}
                       className="flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left font-extrabold text-ink hover:bg-cream"
-                      aria-expanded={mobileSub}
+                      aria-expanded={mobileSub === item.label}
                     >
                       {item.label}
-                      <ChevronDown className={`h-4 w-4 transition ${mobileSub ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`h-4 w-4 transition ${mobileSub === item.label ? "rotate-180" : ""}`} />
                     </button>
-                    {mobileSub && (
+                    {mobileSub === item.label && (
                       <div className="mb-1 ml-2 grid gap-1 border-l-2 border-brand/15 pl-2">
                         {item.children.map((child) => (
                           <Link

@@ -3,7 +3,6 @@ import Link from "next/link"
 import {
   ArrowRight,
   BookOpen,
-  Baby,
   Brain,
   Check,
   Clock3,
@@ -40,17 +39,10 @@ const programs = [
     text: "Целенасочена подготовка за първи клас с игри, четене, писане и много увереност.",
   },
   {
-    icon: Baby,
-    title: "Занималня Junior",
-    age: "2–5 години",
-    href: "/zanimalnya/junior",
-    text: "Топла и сигурна среда за най-малките – игра, развитие и първи стъпки към училище.",
-  },
-  {
     icon: Sun,
     title: "Лятна занималня",
     age: "5–12 години",
-    href: "/zanimalnya/lyatna",
+    href: "/zanimalnya/liatna",
     text: "Тематични седмици, игри навън, спорт и много нови приятелства през ваканцията.",
   },
 ]

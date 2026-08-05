@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState, useTransition } from "react"
-import { Baby, Check, Clock3, ImageIcon, Mail, Phone, Trash2 } from "lucide-react"
+import { Baby, Check, Clock3, Mail, Phone, Trash2 } from "lucide-react"
 import type { ContactRequest } from "@/lib/db"
 import { deleteRequest, updateStatus } from "@/app/actions/admin"
 
@@ -111,36 +111,6 @@ export function AdminDashboard({ requests }: { requests: ContactRequest[] }) {
                   <p className="mt-4 whitespace-pre-wrap rounded-2xl bg-[#F7FAFC] px-4 py-3 font-semibold leading-7 text-[#17324D]/85">
                     {req.message}
                   </p>
-
-                  {Array.isArray(req.image_paths) && req.image_paths.length > 0 && (
-                    <div className="mt-4">
-                      <p className="mb-2 flex items-center gap-1.5 text-sm font-extrabold text-[#17324D]/70">
-                        <ImageIcon className="h-4 w-4" />
-                        Прикачени снимки ({req.image_paths.length})
-                      </p>
-                      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-                        {req.image_paths.map((path) => {
-                          const src = `/api/file?pathname=${encodeURIComponent(path)}`
-                          return (
-                            <a
-                              key={path}
-                              href={src}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="group aspect-square overflow-hidden rounded-2xl border-2 border-[#17324D]/10 bg-[#F7FAFC]"
-                            >
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={src || "/placeholder.svg"}
-                                alt="Снимка от клиент"
-                                className="h-full w-full object-cover transition group-hover:scale-105"
-                              />
-                            </a>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
