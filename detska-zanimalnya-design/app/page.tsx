@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { ContactDialog } from "@/components/contact-dialog"
 import { BottomCTA, SectionHeading } from "@/components/sections"
+import { Reveal } from "@/components/reveal"
 import { contact } from "@/lib/nav"
 
 const programs = [
@@ -220,10 +221,10 @@ export default function Home() {
             {programs.map((program, index) => {
               const Icon = program.icon
               return (
+                <Reveal as="div" key={program.title} delay={index * 90}>
                 <Link
-                  key={program.title}
                   href={program.href}
-                  className="group relative overflow-hidden rounded-[34px] border border-brand/12 bg-paper p-7 transition duration-300 hover:-translate-y-1 hover:border-brand/30 sm:p-9"
+                  className="group relative block overflow-hidden rounded-[34px] border border-brand/12 bg-paper p-7 transition duration-300 hover:-translate-y-1 hover:border-brand/30 sm:p-9"
                 >
                   <span className="absolute right-7 top-7 text-6xl font-black text-brand/8">0{index + 1}</span>
                   <div className="grid h-14 w-14 place-items-center rounded-[20px] bg-brand-soft text-brand-dark transition duration-300 group-hover:-rotate-6 group-hover:scale-105">
@@ -240,6 +241,7 @@ export default function Home() {
                   </div>
                   <p className="mt-5 max-w-xl font-semibold leading-7 text-ink/65">{program.text}</p>
                 </Link>
+                </Reveal>
               )
             })}
           </div>
@@ -308,16 +310,16 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <SectionHeading align="center" eyebrow="Защо родителите избират нас" title="Спокойствие за детето. Доверие за родителя." />
           <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {reasons.map((reason) => {
+            {reasons.map((reason, index) => {
               const Icon = reason.icon
               return (
-                <article key={reason.title} className="rounded-[30px] border border-brand/12 bg-paper p-7 transition duration-300 hover:-translate-y-1 hover:border-brand/30">
-                  <span className="grid h-14 w-14 place-items-center rounded-[20px] bg-brand-soft text-brand-dark">
+                <Reveal as="article" key={reason.title} delay={index * 80} className="group rounded-[30px] border border-brand/12 bg-paper p-7 transition duration-300 hover:-translate-y-1 hover:border-brand/30">
+                  <span className="grid h-14 w-14 place-items-center rounded-[20px] bg-brand-soft text-brand-dark transition duration-300 group-hover:-rotate-6 group-hover:scale-110">
                     <Icon className="h-7 w-7" />
                   </span>
                   <h3 className="mt-6 text-2xl font-extrabold text-ink">{reason.title}</h3>
                   <p className="mt-3 font-semibold leading-7 text-ink/65">{reason.text}</p>
-                </article>
+                </Reveal>
               )
             })}
           </div>
@@ -353,7 +355,7 @@ export default function Home() {
             ].map((item) => {
               const Icon = item.icon
               return (
-                <div key={item.label} className="flex flex-col items-center justify-center gap-3 rounded-[28px] border border-brand/12 bg-cream p-8 text-center">
+                <div key={item.label} className="hover-wiggle flex flex-col items-center justify-center gap-3 rounded-[28px] border border-brand/12 bg-cream p-8 text-center transition hover:-translate-y-1 hover:border-brand/30">
                   <span className="grid h-16 w-16 place-items-center rounded-[22px] bg-white text-brand-dark shadow-sm">
                     <Icon className="h-8 w-8" />
                   </span>
