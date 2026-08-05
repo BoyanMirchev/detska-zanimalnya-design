@@ -20,11 +20,11 @@ export function PageHero({
 }) {
   return (
     <section className="noise relative px-5 pb-16 pt-32 sm:px-8 lg:pt-40">
-      <div className="absolute -left-28 top-40 h-72 w-72 rounded-full bg-sun/20 blur-3xl" />
-      <div className="absolute -right-24 top-16 h-80 w-80 rounded-full bg-brand/15 blur-3xl" />
+      <div className="animate-float absolute -left-28 top-40 h-72 w-72 rounded-full bg-sun/20 blur-3xl" />
+      <div className="animate-float-slow absolute -right-24 top-16 h-80 w-80 rounded-full bg-brand/15 blur-3xl" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand/15 bg-paper/80 px-4 py-2 text-sm font-extrabold text-brand-dark shadow-sm">
+          <div className="animate-pop mb-6 inline-flex items-center gap-2 rounded-full border border-brand/15 bg-paper/80 px-4 py-2 text-sm font-extrabold text-brand-dark shadow-sm">
             <Sparkles className="h-4 w-4 text-sun" />
             {badge}
           </div>
@@ -51,8 +51,14 @@ export function PageHero({
             <ContactDialog />
           </div>
         </div>
-        <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] overflow-hidden rounded-[40px] border-[10px] border-white bg-brand-soft soft-shadow">
-          <Image src={image || "/placeholder.svg"} alt={imageAlt} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-cover" priority />
+        <div className="relative mx-auto w-full max-w-[520px]">
+          <div className="animate-bob absolute -right-4 -top-4 z-10 grid h-16 w-16 place-items-center rounded-full bg-sun text-ink shadow-lg">
+            <Sparkles className="h-7 w-7" />
+          </div>
+          <div className="animate-float absolute -bottom-5 -left-5 z-10 h-14 w-14 rounded-2xl bg-leaf/90 shadow-lg" />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[40px] border-[10px] border-white bg-brand-soft soft-shadow">
+            <Image src={image || "/placeholder.svg"} alt={imageAlt} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-cover" priority />
+          </div>
         </div>
       </div>
     </section>
@@ -63,8 +69,8 @@ export function BottomCTA() {
   return (
     <section className="px-5 pb-24 pt-8 sm:px-8 lg:pb-32">
       <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[44px] bg-brand px-6 py-14 sm:px-12 lg:px-16 lg:py-20">
-        <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full border-[70px] border-white/15" />
-        <div className="absolute -bottom-24 left-[35%] h-56 w-56 rotate-12 rounded-[60px] bg-sun/30" />
+        <div className="animate-spin-slow absolute -right-24 -top-24 h-80 w-80 rounded-full border-[70px] border-white/15" />
+        <div className="animate-float absolute -bottom-24 left-[35%] h-56 w-56 rotate-12 rounded-[60px] bg-sun/30" />
         <div className="relative grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-white/85 px-4 py-2 text-sm font-black text-brand-dark">
