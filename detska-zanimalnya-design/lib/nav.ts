@@ -61,6 +61,7 @@ export const navItems: NavItem[] = [
   { label: "Плащане", href: "/plashtane" },
   { label: "Полезно", href: "/polezno" },
   { label: "За нас", href: "/za-nas" },
+  { label: "Контакти", href: "/kontakti" },
 ]
 
 export const contact = {
