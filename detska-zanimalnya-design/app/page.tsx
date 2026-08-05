@@ -97,10 +97,10 @@ const skills = [
 ]
 
 const gallery = [
-  { src: "/images/room-blue-flowers.png", alt: "Класна стая с цветни завеси и маси във формата на цвете", cls: "md:col-span-2 md:row-span-2" },
-  { src: "/images/playroom-sofa.png", alt: "Кът за игра със зелен диван и килим с пътища", cls: "" },
-  { src: "/images/foam-alphabet.png", alt: "Стена с меки пъзели с букви от азбуката", cls: "" },
-  { src: "/images/room-green-whiteboard.png", alt: "Зелена класна стая с бяла дъска и маси", cls: "md:col-span-2" },
+  { src: "/images/photo-classroom-road.png", alt: "Ученици пишат заедно на групови чинове", cls: "md:col-span-2 md:row-span-2" },
+  { src: "/images/photo-playroom.png", alt: "Кът за игра с настолни и конструктивни игри", cls: "" },
+  { src: "/images/photo-toddlers-banner.png", alt: "Малчугани рисуват пред банера на Хралупата", cls: "" },
+  { src: "/images/photo-green-room.png", alt: "Група деца учат в зелената класна стая", cls: "md:col-span-2" },
 ]
 
 function Hero() {
@@ -252,8 +252,8 @@ export default function Home() {
           <div className="relative">
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[40px] border-[10px] border-cream soft-shadow">
               <Image
-                src="/images/room-alphabet.png"
-                alt="Класна стая с постери с азбуката и цветни кошове за играчки"
+                src="/images/photo-blue-room.png"
+                alt="Деца пишат заедно в синята класна стая на Хралупата"
                 fill
                 sizes="(max-width: 1024px) 90vw, 560px"
                 className="object-cover"
