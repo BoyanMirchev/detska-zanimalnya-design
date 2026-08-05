@@ -27,11 +27,11 @@ const facilities = [
 ]
 
 const gallery = [
-  { src: "/images/room-green-whiteboard.png", alt: "Зелена класна стая с бяла дъска" },
-  { src: "/images/room-blue-flowers.png", alt: "Синя стая с цветно килимче" },
-  { src: "/images/foam-alphabet.png", alt: "Стена с азбука от гумени плочки" },
-  { src: "/images/room-mess.png", alt: "Стая с постери на азбука" },
-  { src: "/images/hall-sofa.png", alt: "Коридор със зелен диван" },
+  { src: "/images/photo-toddlers-banner.png", alt: "Малчугани рисуват пред банера на Хралупата" },
+  { src: "/images/photo-classroom-road.png", alt: "Ученици пишат заедно на групови чинове" },
+  { src: "/images/photo-green-room.png", alt: "Група деца учат в зелената класна стая" },
+  { src: "/images/photo-blue-room.png", alt: "Деца пишат в синята класна стая" },
+  { src: "/images/photo-playroom.png", alt: "Зона за игри с настолни и конструктивни игри" },
   { src: "/images/banner-owl-closeup.png", alt: "Банер с логото на Хралупата" },
 ]
 
@@ -52,8 +52,8 @@ export default function ZaNasPage() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
           <div className="relative aspect-[4/3] overflow-hidden rounded-[36px] border-8 border-white soft-shadow">
             <Image
-              src="/images/class-green-lego.png"
-              alt="Класна стая с цветни столове и килимче"
+              src="/images/photo-classroom-road.png"
+              alt="Ученици пишат заедно на групови чинове в занималнята"
               fill
               sizes="(max-width: 1024px) 90vw, 45vw"
               className="object-cover"
@@ -133,8 +133,8 @@ export default function ZaNasPage() {
           </div>
           <div className="relative aspect-[4/3] overflow-hidden rounded-[36px] border-8 border-white soft-shadow">
             <Image
-              src="/images/hall-sofa.png"
-              alt="Уютна зона за четене и почивка в занималня Хралупата"
+              src="/images/photo-playroom.png"
+              alt="Уютна зона за игри и почивка в занималня Хралупата"
               fill
               sizes="(max-width: 1024px) 90vw, 45vw"
               className="object-cover"

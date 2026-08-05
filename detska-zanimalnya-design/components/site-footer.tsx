@@ -21,7 +21,7 @@ export function SiteFooter() {
           </Link>
           <p className="mt-5 max-w-sm font-semibold leading-7 text-ink/60">
             Целодневна ученическа занималня с топла грижа, индивидуален подход и много усмивки – от 1. до 7. клас,
-            предучилищна група и Junior.
+            предучилищна група и лятна занималня.
           </p>
         </div>
 

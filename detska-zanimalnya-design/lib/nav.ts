@@ -25,12 +25,6 @@ export const zanimalnyaChildren: NavChild[] = [
     href: "/zanimalnya/preduchilishtna",
   },
   {
-    label: "Занималня Junior 2–5 години",
-    short: "Занималня Junior",
-    age: "2–5 години",
-    href: "/zanimalnya/junior",
-  },
-  {
     label: "Лятна занималня",
     short: "Лятна занималня",
     age: "5–12 години",
@@ -38,10 +32,31 @@ export const zanimalnyaChildren: NavChild[] = [
   },
 ]
 
+export const kursoveChildren: NavChild[] = [
+  {
+    label: "Шах за деца",
+    short: "Шах",
+    age: "над 5 г.",
+    href: "/kursove/shah",
+  },
+  {
+    label: "Английски език",
+    short: "Английски",
+    age: "Pre A1 – B2",
+    href: "/kursove/angliyski",
+  },
+  {
+    label: "Предприемачество и финанси",
+    short: "Предприемачество",
+    age: "10–14 г.",
+    href: "/kursove/predpriemachestvo",
+  },
+]
+
 export const navItems: NavItem[] = [
   { label: "Начало", href: "/" },
   { label: "Занималня", href: "/zanimalnya/uchebna", children: zanimalnyaChildren },
-  { label: "Курсове", href: "/kursove" },
+  { label: "Курсове", href: "/kursove", children: kursoveChildren },
   { label: "Програмиране", href: "/programirane" },
   { label: "Полезно", href: "/polezno" },
   { label: "За нас", href: "/za-nas" },
