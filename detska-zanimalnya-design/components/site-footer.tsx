@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Clock3, Phone } from "lucide-react"
+import { Clock3, Phone, Facebook, Instagram } from "lucide-react"
 import { contact, navItems, zanimalnyaChildren } from "@/lib/nav"
 
 export function SiteFooter() {
@@ -23,6 +23,26 @@ export function SiteFooter() {
             Целодневна ученическа занималня с топла грижа, индивидуален подход и много усмивки – от 1. до 7. клас,
             предучилищна група и лятна занималня.
           </p>
+          <div className="mt-6 flex items-center gap-3">
+            <a
+              href={contact.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook страница на Хралупата"
+              className="grid h-11 w-11 place-items-center rounded-full bg-brand-soft text-brand-dark transition hover:-translate-y-1 hover:bg-brand hover:text-white"
+            >
+              <Facebook className="h-5 w-5" />
+            </a>
+            <a
+              href={contact.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram профил на Хралупата"
+              className="grid h-11 w-11 place-items-center rounded-full bg-brand-soft text-brand-dark transition hover:-translate-y-1 hover:bg-brand hover:text-white"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
+          </div>
         </div>
 
         <div>

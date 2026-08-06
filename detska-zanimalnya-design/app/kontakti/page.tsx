@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Phone, Clock3, MessageCircleMore, CalendarCheck } from "lucide-react"
+import { Phone, Clock3, MessageCircleMore, CalendarCheck, Facebook, Instagram, MapPin, School } from "lucide-react"
 import { PageHero, SectionHeading } from "@/components/sections"
 import { ContactDialog } from "@/components/contact-dialog"
 import { Reveal } from "@/components/reveal"
@@ -15,6 +15,21 @@ const phones = [
   { label: "Основен телефон", value: contact.phonePrimary, href: contact.phonePrimaryHref },
   { label: "Втори телефон", value: contact.phoneSecondary, href: contact.phoneSecondaryHref },
 ]
+
+const schools = [
+  "134 СУ „Димчо Дебелянов“",
+  "18 СУ „Уилям Гладстоун“",
+  "30 СУ „Братя Миладинови“",
+  "76 ОУ „Уилиам Сароян“",
+  "46 ОУ „Константин Фотинов“",
+  "41 СУ „Св. Патриарх Евтимий“",
+  "32 СУ „Св. Климент Охридски“",
+]
+
+const mapSrc =
+  "https://www.google.com/maps?q=" +
+  encodeURIComponent("ул. Княз Борис I 127, 1000 София, България") +
+  "&output=embed"
 
 export default function KontaktiPage() {
   return (
@@ -96,6 +111,28 @@ export default function KontaktiPage() {
                 </a>
               </div>
 
+              <div className="mt-6 flex items-center gap-3">
+                <span className="text-sm font-bold text-white/70">Последвайте ни:</span>
+                <a
+                  href={contact.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook страница на Хралупата"
+                  className="grid h-11 w-11 place-items-center rounded-full bg-white/15 text-white transition hover:-translate-y-1 hover:bg-white hover:text-brand-dark"
+                >
+                  <Facebook className="h-5 w-5" />
+                </a>
+                <a
+                  href={contact.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram профил на Хралупата"
+                  className="grid h-11 w-11 place-items-center rounded-full bg-white/15 text-white transition hover:-translate-y-1 hover:bg-white hover:text-brand-dark"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+              </div>
+
               <div className="mt-auto flex items-start gap-3 rounded-[20px] bg-white/10 px-5 py-4 pt-8 sm:mt-10">
                 <CalendarCheck className="mt-0.5 h-6 w-6 shrink-0 text-sun" />
                 <p className="font-semibold leading-7 text-white/85">
@@ -103,6 +140,57 @@ export default function KontaktiPage() {
                   разгледайте пространството и се запознайте с екипа ни.
                 </p>
               </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-paper px-5 pb-20 sm:px-8 lg:pb-24">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading eyebrow="Локация" title="Ще ни намерите в центъра на София." />
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            {/* Map */}
+            <Reveal as="div" className="overflow-hidden rounded-[32px] border border-brand/12 bg-cream">
+              <div className="flex items-center gap-3 px-6 py-5">
+                <span className="grid h-12 w-12 place-items-center rounded-[16px] bg-brand text-white">
+                  <MapPin className="h-6 w-6" />
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-ink/55">Адрес</p>
+                  <p className="text-lg font-black text-ink">София център, {contact.address}</p>
+                </div>
+              </div>
+              <div className="aspect-[16/10] w-full">
+                <iframe
+                  src={mapSrc}
+                  title="Карта с местоположението на занималня Хралупата"
+                  className="h-full w-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              </div>
+            </Reveal>
+
+            {/* Schools */}
+            <Reveal as="div" delay={120} className="rounded-[32px] border border-brand/12 bg-paper p-7 sm:p-9">
+              <span className="grid h-14 w-14 place-items-center rounded-[18px] bg-leaf/20 text-leaf-dark">
+                <School className="h-7 w-7" />
+              </span>
+              <h3 className="mt-5 text-2xl font-extrabold text-ink">Водене и взимане от училище</h3>
+              <p className="mt-3 font-semibold leading-7 text-ink/65">
+                Намираме се в непосредствена близост, като предлагаме водене и взимане от училище за децата, посещаващи
+                следните училища:
+              </p>
+              <ul className="mt-6 grid gap-2.5">
+                {schools.map((school) => (
+                  <li key={school} className="flex items-start gap-3 rounded-2xl border border-brand/10 bg-cream px-4 py-3">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                    <span className="font-bold text-ink/80">{school}</span>
+                  </li>
+                ))}
+              </ul>
             </Reveal>
           </div>
         </div>
