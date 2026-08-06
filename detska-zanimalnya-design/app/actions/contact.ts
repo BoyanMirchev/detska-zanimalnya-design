@@ -1,6 +1,6 @@
 "use server"
 
-import { sql } from "@/lib/db"
+import { sql, ensureContactSchema } from "@/lib/db"
 
 export type ContactFormState = {
   success?: boolean
@@ -27,6 +27,7 @@ export async function submitContactRequest(
   }
 
   try {
+    await ensureContactSchema()
     await sql`
       INSERT INTO contact_requests (name, email, phone, child_age, message, image_paths)
       VALUES (${name}, ${email}, ${phone || null}, ${childAge || null}, ${message}, '[]'::jsonb)

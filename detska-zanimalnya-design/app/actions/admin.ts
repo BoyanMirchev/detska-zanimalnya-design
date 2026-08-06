@@ -1,6 +1,6 @@
 "use server"
 
-import { sql, type ContactRequest } from "@/lib/db"
+import { sql, ensureContactSchema, type ContactRequest } from "@/lib/db"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
@@ -46,6 +46,7 @@ export async function logout() {
 
 export async function getContactRequests(): Promise<ContactRequest[]> {
   if (!(await isAuthenticated())) throw new Error("Unauthorized")
+  await ensureContactSchema()
   const rows = await sql`
     SELECT id, name, email, phone, child_age, message, status, created_at,
            source, child_name, age_group, services, school, shift, other_note, newsletter
