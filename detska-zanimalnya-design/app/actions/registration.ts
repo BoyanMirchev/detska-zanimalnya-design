@@ -1,6 +1,6 @@
 "use server"
 
-import { sql } from "@/lib/db"
+import { sql, ensureContactSchema } from "@/lib/db"
 
 export type RegistrationFormState = {
   success?: boolean
@@ -34,6 +34,7 @@ export async function submitRegistration(
   const newsletterBool = newsletter === "yes" ? true : newsletter === "no" ? false : null
 
   try {
+    await ensureContactSchema()
     await sql`
       INSERT INTO contact_requests
         (name, email, phone, source, child_name, age_group, services, school, shift, other_note, newsletter, image_paths)
