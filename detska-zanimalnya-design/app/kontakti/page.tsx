@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
-import { Phone, Clock3, MessageCircleMore, CalendarCheck, Facebook, Instagram, MapPin, School } from "lucide-react"
+import { Phone, Clock3, MessageCircleMore, CalendarCheck, MapPin, School } from "lucide-react"
+import { Facebook, Instagram } from "@/components/social-icons"
 import { PageHero, SectionHeading } from "@/components/sections"
 import { ContactDialog } from "@/components/contact-dialog"
 import { Reveal } from "@/components/reveal"

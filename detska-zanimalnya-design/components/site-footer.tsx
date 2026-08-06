@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Clock3, Phone, Facebook, Instagram } from "lucide-react"
+import { Clock3, Phone } from "lucide-react"
+import { Facebook, Instagram } from "@/components/social-icons"
 import { contact, navItems, zanimalnyaChildren } from "@/lib/nav"
 
 export function SiteFooter() {

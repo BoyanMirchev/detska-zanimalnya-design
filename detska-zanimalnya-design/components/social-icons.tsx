@@ -17,3 +17,5 @@ export function InstagramIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+export { FacebookIcon as Facebook, InstagramIcon as Instagram }
