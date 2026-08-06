@@ -70,4 +70,7 @@ export const contact = {
   phoneSecondary: "088 882 7634",
   phoneSecondaryHref: "tel:+359888827634",
   hours: "07:30 – 19:00",
+  address: "ул. „Княз Борис I“ 127, 1000 София",
+  facebook: "https://facebook.com/profile.php?id=61593067162915",
+  instagram: "https://instagram.com/zanimalnyahralupata",
 }
