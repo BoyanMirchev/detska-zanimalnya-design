@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState, useTransition } from "react"
-import { Baby, Check, Clock3, Mail, Phone, Trash2 } from "lucide-react"
+import { Baby, Check, Clock3, GraduationCap, Mail, Phone, School, Trash2, User } from "lucide-react"
 import type { ContactRequest } from "@/lib/db"
 import { deleteRequest, updateStatus } from "@/app/actions/admin"
 
@@ -83,6 +83,13 @@ export function AdminDashboard({ requests }: { requests: ContactRequest[] }) {
                     >
                       {STATUSES.find((s) => s.value === req.status)?.label ?? req.status}
                     </span>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-extrabold ${
+                        req.source === "registration" ? "bg-[#DD5B26]/15 text-[#B8441A]" : "bg-[#17324D]/8 text-[#17324D]"
+                      }`}
+                    >
+                      {req.source === "registration" ? "Регистрация" : "Съобщение"}
+                    </span>
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-[#17324D]/70">
@@ -96,21 +103,66 @@ export function AdminDashboard({ requests }: { requests: ContactRequest[] }) {
                         {req.phone}
                       </a>
                     )}
+                    {req.child_name && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <User className="h-4 w-4" />
+                        {req.child_name}
+                      </span>
+                    )}
                     {req.child_age && (
                       <span className="inline-flex items-center gap-1.5">
                         <Baby className="h-4 w-4" />
                         {req.child_age}
                       </span>
                     )}
+                    {req.age_group && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <GraduationCap className="h-4 w-4" />
+                        {req.age_group}
+                      </span>
+                    )}
+                    {req.school && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <School className="h-4 w-4" />
+                        {req.school}
+                      </span>
+                    )}
+                    {req.shift && <span className="inline-flex items-center gap-1.5">Смяна: {req.shift}</span>}
                     <span className="inline-flex items-center gap-1.5 text-[#17324D]/45">
                       <Clock3 className="h-4 w-4" />
                       {formatDate(req.created_at)}
                     </span>
                   </div>
 
-                  <p className="mt-4 whitespace-pre-wrap rounded-2xl bg-[#F7FAFC] px-4 py-3 font-semibold leading-7 text-[#17324D]/85">
-                    {req.message}
-                  </p>
+                  {req.services && req.services.length > 0 && (
+                    <div className="mt-3">
+                      <p className="mb-1.5 text-xs font-extrabold uppercase tracking-wide text-[#17324D]/45">
+                        Интерес към услуги
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {req.services.map((service) => (
+                          <span
+                            key={service}
+                            className="inline-flex items-center rounded-full bg-[#7BA23F]/15 px-3 py-1 text-xs font-extrabold text-[#4F6B29]"
+                          >
+                            {service}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(req.message || req.other_note) && (
+                    <p className="mt-4 whitespace-pre-wrap rounded-2xl bg-[#F7FAFC] px-4 py-3 font-semibold leading-7 text-[#17324D]/85">
+                      {req.message || req.other_note}
+                    </p>
+                  )}
+
+                  {req.newsletter != null && (
+                    <p className="mt-2 text-sm font-bold text-[#17324D]/55">
+                      Бюлетин: {req.newsletter ? "Да, желае" : "Не желае"}
+                    </p>
+                  )}
                 </div>
               </div>
 

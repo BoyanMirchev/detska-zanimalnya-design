@@ -47,7 +47,8 @@ export async function logout() {
 export async function getContactRequests(): Promise<ContactRequest[]> {
   if (!(await isAuthenticated())) throw new Error("Unauthorized")
   const rows = await sql`
-    SELECT id, name, email, phone, child_age, message, status, created_at
+    SELECT id, name, email, phone, child_age, message, status, created_at,
+           source, child_name, age_group, services, school, shift, other_note, newsletter
     FROM contact_requests
     ORDER BY created_at DESC
   `
