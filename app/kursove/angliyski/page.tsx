@@ -2,9 +2,24 @@ import type { Metadata } from "next"
 import { CoursePage } from "@/components/course-page"
 
 export const metadata: Metadata = {
-  title: "Английски език за деца | Хралупата",
+  title: "Английски език за деца в София",
+
   description:
-    "Курс по английски език за деца в Хралупата – нива Pre A1 до B2, групи до 6 деца, две занятия седмично през цялата учебна година.",
+    "Курс по английски език за деца в София от Pre A1 до B2. Малки групи до 6 деца, обучение според нивото и занятия два пъти седмично.",
+
+  alternates: {
+    canonical: "/kursove/angliyski",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Английски език за деца в София | Хралупата",
+    description:
+      "Курс по английски език за деца от Pre A1 до B2 в малки групи и обучение според нивото.",
+    url: "/kursove/angliyski",
+  },
 }
 
 export default function AngliyskiPage() {

@@ -3,9 +3,24 @@ import { Brain, Target, Sparkles } from "lucide-react"
 import { CoursePage } from "@/components/course-page"
 
 export const metadata: Metadata = {
-  title: "Шах за деца | Хралупата",
+  title: "Шах за деца в София",
+
   description:
-    "Курс по шах за деца над 5 години в Хралупата – логика, концентрация и стратегическо мислене в малки групи по ниво.",
+    "Курс по шах за деца над 5 години в София. Обучение в малки групи според нивото за развитие на логика, концентрация и стратегическо мислене.",
+
+  alternates: {
+    canonical: "/kursove/shah",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Шах за деца в София | Хралупата",
+    description:
+      "Курс по шах за деца над 5 години в малки групи за развитие на логика, концентрация и стратегическо мислене.",
+    url: "/kursove/shah",
+  },
 }
 
 export default function ShahPage() {

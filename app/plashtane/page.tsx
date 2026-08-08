@@ -5,9 +5,15 @@ import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 import { CopyField } from "@/components/copy-field"
 
 export const metadata: Metadata = {
-  title: "Плащане | Хралупата",
+  title: "Плащане",
+
   description:
-    "Начини на плащане на таксите в занималня Хралупата - плащане по банков път (Postbank) и плащане на място в брой или с карта.",
+    "Информация за начините на плащане на таксите в ученическа занималня Хралупата.",
+
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 const bankRows = [

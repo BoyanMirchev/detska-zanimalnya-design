@@ -3,9 +3,24 @@ import { Sun, Palette, Bus, Utensils } from "lucide-react"
 import { ProgramPage } from "@/components/program-page"
 
 export const metadata: Metadata = {
-  title: "Лятна занималня | Хралупата",
+  title: "Лятна занималня за деца в София",
+
   description:
-    "Лятна занималня в Хралупата - игри, творчество, спорт и приключения през ваканцията, с топла храна и транспорт.",
+    "Лятна занималня за деца в София с целодневна и полудневна програма, игри, творчество, спорт, образователни занимания, храна и транспорт.",
+
+  alternates: {
+    canonical: "/zanimalnya/liatna",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Лятна занималня за деца в София | Хралупата",
+    description:
+      "Лятна програма с игри, спорт, творчество, образователни занимания и приключения през ваканцията.",
+    url: "/zanimalnya/liatna",
+  },
 }
 
 export default function LiatnaPage() {

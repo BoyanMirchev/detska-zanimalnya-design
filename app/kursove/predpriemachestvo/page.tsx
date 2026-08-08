@@ -3,9 +3,24 @@ import { Laptop, FlaskConical, Puzzle } from "lucide-react"
 import { CoursePage } from "@/components/course-page"
 
 export const metadata: Metadata = {
-  title: "Предприемачество и финанси за деца | Хралупата",
+  title: "Предприемачество и финанси за деца в София",
+
   description:
-    "Курс по предприемачество, финанси и маркетинг за деца на възраст 10–14 години – реални практически знания за бизнеса и икономиката.",
+    "Курс по предприемачество и финансова грамотност за деца от 10 до 14 години в София. Практически знания за бизнес, финанси, маркетинг и икономика.",
+
+  alternates: {
+    canonical: "/kursove/predpriemachestvo",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Предприемачество и финанси за деца в София | Хралупата",
+    description:
+      "Практически курс за деца от 10 до 14 години по предприемачество, финанси, маркетинг и бизнес.",
+    url: "/kursove/predpriemachestvo",
+  },
 }
 
 export default function PredpriemachestvoPage() {

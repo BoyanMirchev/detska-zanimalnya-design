@@ -3,9 +3,24 @@ import { Pencil, BookOpen, Palette, Sparkles, Bus, Clock } from "lucide-react"
 import { ProgramPage } from "@/components/program-page"
 
 export const metadata: Metadata = {
-  title: "Предучилищна група 5–7 години | Хралупата",
+  title: "Предучилищна подготовка за деца в София",
+
   description:
-    "Предучилищна подготовка за деца 5–7 години — плавен преход към училище чрез игра, писане, четене и математически представи.",
+    "Предучилищна подготовка за деца от 5 до 7 години в София. Подготовка за първи клас чрез четене, писане, математика, творчество и развитие на социални умения.",
+
+  alternates: {
+    canonical: "/zanimalnya/preduchilishtna",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Предучилищна подготовка за деца в София | Хралупата",
+    description:
+      "Подготовка за първи клас за деца от 5 до 7 години чрез четене, писане, математика и занимания в спокойна среда.",
+    url: "/zanimalnya/preduchilishtna",
+  },
 }
 
 export default function Page() {

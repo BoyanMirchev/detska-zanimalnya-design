@@ -3,9 +3,24 @@ import { BookOpen, Brain, Calculator, HeartHandshake, Bus, Clock } from "lucide-
 import { ProgramPage } from "@/components/program-page"
 
 export const metadata: Metadata = {
-  title: "Учебна занималня 1–7 клас | Хралупата",
+  title: "Учебна занималня за деца 1–7 клас в София",
+
   description:
-    "Целодневна ученическа занималня за деца от 1. до 7. клас — писане на домашни, засилена математика, БЕЛ, английски, шах и природни науки.",
+    "Учебна занималня в София за деца от 1. до 7. клас. Писане на домашни, подготовка за контролни, математика, БЕЛ, индивидуален подход, транспорт и кетъринг.",
+
+  alternates: {
+    canonical: "/zanimalnya/uchebna",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Учебна занималня за деца 1–7 клас в София | Хралупата",
+    description:
+      "Учебна занималня в София с подготовка на домашни, математика, БЕЛ и индивидуална подкрепа за ученици от 1. до 7. клас.",
+    url: "/zanimalnya/uchebna",
+  },
 }
 
 export default function Page() {

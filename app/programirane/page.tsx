@@ -3,9 +3,24 @@ import { Code2, Cpu, Gamepad2, Bot, Users, Clock3, Laptop, Package } from "lucid
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 
 export const metadata: Metadata = {
-  title: "Програмиране | Хралупата",
+  title: "Програмиране и роботика за деца в София",
+
   description:
-    "Занимания по програмиране за деца в Хралупата – логика, творчество и първи стъпки в дигиталния свят.",
+    "Курс по програмиране и роботика за деца в София. Малки групи, създаване на игри, основи на програмирането, логика и практически проекти.",
+
+  alternates: {
+    canonical: "/programirane",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Програмиране и роботика за деца в София | Хралупата",
+    description:
+      "Курс по програмиране и роботика за деца с практически проекти, създаване на игри и развитие на логическото мислене.",
+    url: "/programirane",
+  },
 }
 
 const features = [

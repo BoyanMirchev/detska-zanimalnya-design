@@ -4,9 +4,24 @@ import { Heart, Sprout, Shield, Lightbulb, HeartHandshake, Check } from "lucide-
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 
 export const metadata: Metadata = {
-  title: "За нас | Хралупата",
+  title: "За Хралупата – ученическа занималня в София",
+
   description:
-    "Занималня Хралупата - топло и уютно място, където децата учат, играят и растат с грижа и индивидуален подход.",
+    "Научете повече за ученическа занималня Хралупата в София – нашия подход, среда, принципи и начина, по който помагаме на децата да учат и растат уверено.",
+
+  alternates: {
+    canonical: "/za-nas",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "За Хралупата – ученическа занималня в София",
+    description:
+      "Нашият подход, образователна среда и принципи в ученическа занималня Хралупата.",
+    url: "/za-nas",
+  },
 }
 
 const values = [

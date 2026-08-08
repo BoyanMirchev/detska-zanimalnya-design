@@ -4,9 +4,24 @@ import { Clock, Backpack, Utensils, HeartHandshake } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 
 export const metadata: Metadata = {
-  title: "Полезно | Хралупата",
+  title: "Информация за родители",
+
   description:
-    "Полезна информация за родители - работно време, дневен режим, какво да носи детето и често задавани въпроси за занималня Хралупата.",
+    "Полезна информация за родители за занималня Хралупата в София – работно време, дневен режим, храна, транспорт, цени и често задавани въпроси.",
+
+  alternates: {
+    canonical: "/polezno",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Информация за родители | Хралупата",
+    description:
+      "Работно време, дневен режим, храна, транспорт, цени и отговори на често задавани въпроси.",
+    url: "/polezno",
+  },
 }
 
 const schedule = [
