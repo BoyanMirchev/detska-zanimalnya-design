@@ -4,6 +4,7 @@ import "./globals.css"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { RegistrationSection } from "@/components/registration-section"
+import { GoogleAnalytics } from "@next/third-parties/google"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.хралупата.com"),
@@ -51,6 +52,8 @@ export default function RootLayout({
         <RegistrationSection />
         <SiteFooter />
       </body>
+
+      <GoogleAnalytics gaId="G-WPHGCMLJ86" />
     </html>
   )
 }
