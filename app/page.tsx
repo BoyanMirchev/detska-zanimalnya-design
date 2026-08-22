@@ -24,6 +24,7 @@ import {
 import { ContactDialog } from "@/components/contact-dialog"
 import { BottomCTA, SectionHeading } from "@/components/sections"
 import { Reveal } from "@/components/reveal"
+import { PhoneLink } from "@/components/phone-link"
 import { contact } from "@/lib/nav"
 
 const programs = [
@@ -131,13 +132,13 @@ function Hero() {
             вдъхновяваща среда. Работим целогодишно от {contact.hours} ч.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a
+            <PhoneLink
               href={contact.phonePrimaryHref}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-4 font-extrabold text-white transition hover:-translate-y-1 hover:bg-brand-dark"
             >
               <Phone className="h-5 w-5" />
               {contact.phonePrimary}
-            </a>
+            </PhoneLink>
             <ContactDialog />
           </div>
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 text-sm font-bold text-ink/65">
