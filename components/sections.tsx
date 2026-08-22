@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { ArrowRight, MessageCircleMore, Phone, Sparkles } from "lucide-react"
 import { ContactDialog } from "@/components/contact-dialog"
+import { PhoneLink } from "@/components/phone-link"
 import { contact } from "@/lib/nav"
 
 export function PageHero({
@@ -41,13 +42,13 @@ export function PageHero({
           </h1>
           <p className="mt-7 max-w-xl text-lg font-semibold leading-8 text-ink/65">{text}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
+            <PhoneLink
               href={contact.phonePrimaryHref}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-4 font-extrabold text-white transition hover:-translate-y-1 hover:bg-brand-dark"
             >
               <Phone className="h-5 w-5" />
               Обади се: {contact.phonePrimary}
-            </a>
+            </PhoneLink>
             <ContactDialog />
           </div>
         </div>
@@ -85,13 +86,13 @@ export function BottomCTA() {
             </p>
           </div>
           <div className="flex flex-col gap-3">
-            <a
+            <PhoneLink
               href={contact.phonePrimaryHref}
               className="inline-flex min-w-[240px] items-center justify-center gap-2 rounded-full bg-ink px-7 py-4 font-extrabold text-white transition hover:-translate-y-1"
             >
               <Phone className="h-5 w-5" />
               {contact.phonePrimary}
-            </a>
+            </PhoneLink>
             <a
               href={contact.phoneSecondaryHref}
               className="inline-flex min-w-[240px] items-center justify-center gap-2 rounded-full bg-white px-7 py-4 font-extrabold text-brand-dark transition hover:-translate-y-1"

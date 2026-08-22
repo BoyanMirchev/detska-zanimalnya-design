@@ -3,6 +3,7 @@ import { Phone, Clock3, MessageCircleMore, CalendarCheck, MapPin, School } from 
 import { Facebook, Instagram } from "@/components/social-icons"
 import { PageHero, SectionHeading } from "@/components/sections"
 import { ContactDialog } from "@/components/contact-dialog"
+import { PhoneLink } from "@/components/phone-link"
 import { Reveal } from "@/components/reveal"
 import { contact } from "@/lib/nav"
 
@@ -78,9 +79,10 @@ export default function KontaktiPage() {
                 </div>
                 <div className="mt-7 grid gap-3">
                   {phones.map((phone) => (
-                    <a
+                    <PhoneLink
                       key={phone.href}
                       href={phone.href}
+                      track={phone.href === contact.phonePrimaryHref}
                       className="group flex items-center justify-between gap-4 rounded-[20px] border border-brand/12 bg-cream px-5 py-4 transition hover:-translate-y-0.5 hover:border-brand/30"
                     >
                       <div>
@@ -90,7 +92,7 @@ export default function KontaktiPage() {
                       <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-white transition group-hover:scale-110">
                         <Phone className="h-5 w-5" />
                       </span>
-                    </a>
+                    </PhoneLink>
                   ))}
                 </div>
               </div>
@@ -118,13 +120,13 @@ export default function KontaktiPage() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <ContactDialog />
-                <a
+                <PhoneLink
                   href={contact.phonePrimaryHref}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 font-extrabold text-brand-dark transition hover:-translate-y-1"
                 >
                   <Phone className="h-5 w-5" />
                   {contact.phonePrimary}
-                </a>
+                </PhoneLink>
               </div>
 
               <div className="mt-6 flex items-center gap-3">

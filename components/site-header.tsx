@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ChevronDown, Menu, Phone, X } from "lucide-react"
+import { PhoneLink } from "@/components/phone-link"
 import { contact, navItems } from "@/lib/nav"
 
 function isActive(href: string, pathname: string) {
@@ -77,13 +78,13 @@ export function SiteHeader() {
               </Link>
             )
           })}
-          <a
+          <PhoneLink
             href={contact.phonePrimaryHref}
             className="ml-2 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-dark"
           >
             <Phone className="h-4 w-4" />
             {contact.phonePrimary}
-          </a>
+          </PhoneLink>
         </nav>
 
         {/* Mobile menu button */}
@@ -159,14 +160,14 @@ export function SiteHeader() {
               )
             })}
           </nav>
-          <a
-            href={contact.phonePrimaryHref}
-            onClick={() => setOpen(false)}
-            className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-3 font-extrabold text-white"
-          >
-            <Phone className="h-4 w-4" />
-            {contact.phonePrimary}
-          </a>
+            <PhoneLink
+              href={contact.phonePrimaryHref}
+              onClick={() => setOpen(false)}
+              className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-3 font-extrabold text-white"
+            >
+              <Phone className="h-4 w-4" />
+              {contact.phonePrimary}
+            </PhoneLink>
         </div>
       )}
     </header>

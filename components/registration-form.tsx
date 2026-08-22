@@ -3,6 +3,7 @@
 import { useActionState } from "react"
 import { ArrowRight, Check, Loader2, Sparkles } from "lucide-react"
 import { submitRegistration, type RegistrationFormState } from "@/app/actions/registration"
+import { PhoneLink } from "@/components/phone-link"
 import { contact } from "@/lib/nav"
 
 const initialState: RegistrationFormState = {}
@@ -48,9 +49,12 @@ export function RegistrationForm() {
           </h2>
           <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-ink/65">
             Обадете се на{" "}
-            <a href={contact.phonePrimaryHref} className="font-extrabold text-brand-dark underline-offset-2 hover:underline">
+            <PhoneLink
+              href={contact.phonePrimaryHref}
+              className="font-extrabold text-brand-dark underline-offset-2 hover:underline"
+            >
               {contact.phonePrimary}
-            </a>{" "}
+            </PhoneLink>{" "}
             и{" "}
             <a href={contact.phoneSecondaryHref} className="font-extrabold text-brand-dark underline-offset-2 hover:underline">
               {contact.phoneSecondary}

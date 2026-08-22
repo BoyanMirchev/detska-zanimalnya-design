@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Clock3, Phone } from "lucide-react"
 import { Facebook, Instagram } from "@/components/social-icons"
+import { PhoneLink } from "@/components/phone-link"
 import { contact, navItems, zanimalnyaChildren } from "@/lib/nav"
 
 export function SiteFooter() {
@@ -73,10 +74,10 @@ export function SiteFooter() {
               ))}
           </ul>
           <div className="mt-5 grid gap-2">
-            <a href={contact.phonePrimaryHref} className="flex items-center gap-2 font-extrabold text-ink">
+            <PhoneLink href={contact.phonePrimaryHref} className="flex items-center gap-2 font-extrabold text-ink">
               <Phone className="h-4 w-4 text-brand" />
               {contact.phonePrimary}
-            </a>
+            </PhoneLink>
             <a href={contact.phoneSecondaryHref} className="flex items-center gap-2 font-extrabold text-ink">
               <Phone className="h-4 w-4 text-brand" />
               {contact.phoneSecondary}
