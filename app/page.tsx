@@ -102,7 +102,7 @@ const skills = [
 
 const gallery = [
   { src: "/images/photo-classroom-road.png", alt: "Ученици пишат заедно на групови чинове", cls: "md:col-span-2 md:row-span-2" },
-  { src: "/images/photo-playroom.png", alt: "Кът за игра с настолни и конструктивни игри", cls: "" },
+  { src: "/images/playroom-sofa.png", alt: "Кът за игра с настолни и конструктивни игри", cls: "" },
   { src: "/images/photo-toddlers-banner.png", alt: "Малчугани рисуват пред банера на Хралупата", cls: "" },
   { src: "/images/photo-green-room.png", alt: "Група деца учат в зелената класна стая", cls: "md:col-span-2" },
 ]

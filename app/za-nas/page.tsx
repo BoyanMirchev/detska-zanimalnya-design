@@ -46,7 +46,7 @@ const gallery = [
   { src: "/images/photo-classroom-road.png", alt: "Ученици пишат заедно на групови чинове" },
   { src: "/images/photo-green-room.png", alt: "Група деца учат в зелената класна стая" },
   { src: "/images/photo-blue-room.png", alt: "Деца пишат в синята класна стая" },
-  { src: "/images/photo-playroom.png", alt: "Зона за игри с настолни и конструктивни игри" },
+  { src: "/images/playroom-sofa.png", alt: "Зона за игри с настолни и конструктивни игри" },
   { src: "/images/banner-owl-closeup.png", alt: "Банер с логото на Хралупата" },
 ]
 
@@ -148,7 +148,7 @@ export default function ZaNasPage() {
           </div>
           <div className="relative aspect-[4/3] overflow-hidden rounded-[36px] border-8 border-white soft-shadow">
             <Image
-              src="/images/photo-playroom.png"
+              src="/images/playroom-sofa.png"
               alt="Уютна зона за игри и почивка в занималня Хралупата"
               fill
               sizes="(max-width: 1024px) 90vw, 45vw"
