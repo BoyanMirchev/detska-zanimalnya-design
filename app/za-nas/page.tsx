@@ -46,7 +46,7 @@ const gallery = [
   { src: "/images/photo-classroom-road.png", alt: "Ученици пишат заедно на групови чинове" },
   { src: "/images/photo-green-room.png", alt: "Група деца учат в зелената класна стая" },
   { src: "/images/photo-blue-room.png", alt: "Деца пишат в синята класна стая" },
-  { src: "/images/playroom-sofa.png", alt: "Зона за игри с настолни и конструктивни игри" },
+  { src: "/images/photo-classroom-road.png", alt: "Деца играят и се занимават заедно в занималнята" },
   { src: "/images/banner-owl-closeup.png", alt: "Банер с логото на Хралупата" },
 ]
 
@@ -130,7 +130,7 @@ export default function ZaNasPage() {
       <section className="px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
           <div>
-            <SectionHeading eyebrow="Нашата база" title="Пространства, създадени за спокойно учене." />
+            <SectionHeading eyebrow="Нашата база" title="Пространства, съз��адени за спокойно учене." />
             <p className="mt-6 text-lg font-semibold leading-8 text-ink/65">
               Занималнята е обзаведена така, че всяко кътче да има своята роля — за учене, за творчество, за четене и
               за почивка.
@@ -148,8 +148,8 @@ export default function ZaNasPage() {
           </div>
           <div className="relative aspect-[4/3] overflow-hidden rounded-[36px] border-8 border-white soft-shadow">
             <Image
-              src="/images/playroom-sofa.png"
-              alt="Уютна зона за игри и почивка в занималня Хралупата"
+              src="/images/photo-toddlers-banner.png"
+              alt="Деца играят в уютната зона на занималня Хралупата"
               fill
               sizes="(max-width: 1024px) 90vw, 45vw"
               className="object-cover"
