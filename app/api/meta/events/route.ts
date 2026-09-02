@@ -5,7 +5,7 @@ import { NextResponse } from "next/server"
 const GRAPH_API_VERSION = "v23.0"
 
 // Only events this app is allowed to forward server-side.
-const ALLOWED_EVENT_NAMES = new Set(["Contact"])
+const ALLOWED_EVENT_NAMES = new Set(["Contact", "Lead"])
 
 function getClientIp(request: NextRequest) {
   const forwardedFor = request.headers.get("x-forwarded-for")

@@ -1,6 +1,7 @@
 "use server"
 
 import { sql, ensureContactSchema } from "@/lib/db"
+import { validateContact } from "@/lib/contact-validation"
 
 export type ContactFormState = {
   success?: boolean
@@ -17,13 +18,11 @@ export async function submitContactRequest(
   const childAge = String(formData.get("childAge") || "").trim()
   const message = String(formData.get("message") || "").trim()
 
-  if (!name || !email || !message) {
-    return { error: "Моля, попълнете име, имейл и съобщение." }
-  }
-
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  if (!emailOk) {
-    return { error: "Моля, въведете валиден имейл адрес." }
+  // Authoritative server-side validation — never trust the client alone.
+  const errors = validateContact({ name, email, phone, childAge, message })
+  const firstError = errors.name || errors.email || errors.phone || errors.childAge || errors.message
+  if (firstError) {
+    return { error: firstError }
   }
 
   try {
