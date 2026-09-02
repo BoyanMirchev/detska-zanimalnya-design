@@ -36,8 +36,10 @@ export function validateEmail(value: string): string | undefined {
 
 export function validatePhone(value: string): string | undefined {
   const v = normalizePhone(value)
-  // Optional field: empty is allowed (email is the required contact channel).
-  if (!v) return undefined
+  // Required field.
+  if (!v) {
+    return "Моля, въведете вашия телефонен номер."
+  }
   // Bulgarian formats: 0XXXXXXXXX (10 digits) or +359XXXXXXXXX.
   if (!/^(0\d{9}|\+359\d{9})$/.test(v)) {
     return "Моля, въведете валиден телефонен номер."
