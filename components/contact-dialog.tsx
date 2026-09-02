@@ -206,12 +206,13 @@ export function ContactDialog() {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="phone" className="text-sm font-extrabold text-[#3B2416]">
-                        Телефон
+                        Телефон <span className="text-[#F27B6B]">*</span>
                       </label>
                       <input
                         id="phone"
                         name="phone"
                         type="tel"
+                        required
                         value={fields.phone}
                         onChange={(e) => updateField("phone", e.target.value)}
                         onBlur={() => markTouched("phone")}
