@@ -1,6 +1,7 @@
 "use server"
 
 import { sql, ensureContactSchema } from "@/lib/db"
+import { validateRegistration } from "@/lib/registration-validation"
 
 export type RegistrationFormState = {
   success?: boolean
@@ -22,13 +23,32 @@ export async function submitRegistration(
   const services = formData.getAll("services").map((s) => String(s))
   const newsletter = String(formData.get("newsletter") || "")
 
-  if (!name || !email || !phone) {
-    return { error: "Моля, попълнете име, имейл и телефон." }
-  }
-
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  if (!emailOk) {
-    return { error: "Моля, въведете валиден имейл адрес." }
+  // Authoritative server-side validation — mirrors the client rules and rejects
+  // invalid requests even if the client checks are bypassed. Notes and
+  // newsletter are intentionally excluded (optional fields).
+  const errors = validateRegistration({
+    name,
+    childName,
+    email,
+    phone,
+    ageGroup,
+    school,
+    shift,
+    services,
+    otherNote,
+    newsletter,
+  })
+  const firstError =
+    errors.name ||
+    errors.childName ||
+    errors.email ||
+    errors.phone ||
+    errors.ageGroup ||
+    errors.school ||
+    errors.shift ||
+    errors.services
+  if (firstError) {
+    return { error: firstError }
   }
 
   const newsletterBool = newsletter === "yes" ? true : newsletter === "no" ? false : null
