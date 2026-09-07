@@ -27,6 +27,66 @@ import { Reveal } from "@/components/reveal"
 import { PhoneLink } from "@/components/phone-link"
 import { contact } from "@/lib/nav"
 
+export const metadata: Metadata = {
+  title: {
+    absolute: "Ученическа занималня в София | Хралупата",
+  },
+  description:
+    "Ученическа занималня в София за деца от 1. до 7. клас. Подготовка на домашни, малки групи, образователни занимания и грижа в Хралупата.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "bg_BG",
+    siteName: "Хралупата",
+    title: "Ученическа занималня в София | Хралупата",
+    description:
+      "Ученическа занималня в София за деца от 1. до 7. клас. Подготовка на домашни, малки групи и грижа в Хралупата.",
+    url: "/",
+    images: [
+      {
+        url: "/images/banner-hallway.png",
+        width: 1200,
+        height: 630,
+        alt: "Ученическа занималня Хралупата в центъра на София",
+      },
+    ],
+  },
+}
+
+const faqs = [
+  {
+    question: "За кои класове е ученическата занималня?",
+    answer:
+      "Ученическата занималня „Хралупата“ е за деца от 1. до 7. клас, а предучилищната група е за деца на 5–7 години.",
+  },
+  {
+    question: "Къде се намира занималня Хралупата?",
+    answer:
+      "Намираме се в центъра на София, на " + contact.address + ", в непосредствена близост до няколко училища в района.",
+  },
+  {
+    question: "Помагате ли на децата с домашните работи?",
+    answer:
+      "Да. Помагаме с подготовката на домашните, затвърждаваме учебния материал и преговаряме трудните теми в спокойни малки групи.",
+  },
+  {
+    question: "Какво е работното време на занималнята?",
+    answer: "Работим целогодишно всеки делничен ден от " + contact.hours + " ч.",
+  },
+  {
+    question: "Има ли занимания по време на ваканциите?",
+    answer:
+      "Да. През лятото предлагаме лятна занималня с тематични седмици, игри навън и спорт за деца на 5–12 години.",
+  },
+  {
+    question: "Водите ли и взимате ли децата от училище?",
+    answer:
+      "Да, предлагаме водене и взимане от училище за деца, посещаващи училищата в непосредствена близост до нас.",
+  },
+]
+
 const programs = [
   {
     icon: BookOpen,
@@ -118,7 +178,7 @@ function Hero() {
             <Star className="h-4 w-4 fill-sun text-sun" />
             Място за любопитни малки умове
           </div>
-          <h1 className="max-w-3xl text-[3rem] font-extrabold leading-[0.94] tracking-[-0.03em] text-ink sm:text-[4.5rem] lg:text-[5.5rem]">
+          <p className="max-w-3xl text-[3rem] font-extrabold leading-[0.94] tracking-[-0.03em] text-ink sm:text-[4.5rem] lg:text-[5.5rem]">
             Всеки ден е ново
             <span className="relative ml-3 inline-block text-brand">
               приключение.
@@ -126,10 +186,14 @@ function Hero() {
                 <path d="M4 14C78 2 221 2 326 13" stroke="#F4B63F" strokeWidth="9" strokeLinecap="round" />
               </svg>
             </span>
+          </p>
+          <h1 className="mt-9 max-w-xl text-xl font-extrabold leading-8 text-ink sm:text-2xl">
+            Ученическа занималня в София за деца от 1. до 7. клас
           </h1>
-          <p className="mt-8 max-w-xl text-lg font-semibold leading-8 text-ink/65 sm:text-xl">
-            Ученическа занималня „Хралупата“ – мястото, където ученето, играта и творчеството се срещат в спокойна и
-            вдъхновяваща среда. Работим целогодишно от {contact.hours} ч.
+          <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-ink/65">
+            Ученическа занималня „Хралупата“ в центъра на София е място за учене, развитие и забавление за деца от 1. до
+            7. клас. Помагаме с подготовката на домашните работи, затвърждаването на учебния материал и развитието на
+            уменията на всяко дете в спокойна и приятелска среда.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <PhoneLink
@@ -193,8 +257,55 @@ function Hero() {
 }
 
 export default function Home() {
+  const siteUrl = "https://www.хралупата.com"
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "EducationalOrganization",
+        "@id": `${siteUrl}/#organization`,
+        name: "Хралупата",
+        alternateName: "Ученическа занималня Хралупата",
+        description:
+          "Ученическа занималня в центъра на София за деца от 1. до 7. клас – учебна подготовка, малки групи, предучилищна и лятна занималня.",
+        url: siteUrl,
+        logo: `${siteUrl}/images/logo-round.png`,
+        image: `${siteUrl}/images/banner-hallway.png`,
+        telephone: "+359886679774",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "ул. „Княз Борис I“ 127",
+          addressLocality: "София",
+          postalCode: "1000",
+          addressCountry: "BG",
+        },
+        areaServed: "София",
+        openingHoursSpecification: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "07:30",
+          closes: "19:00",
+        },
+        sameAs: [contact.facebook, contact.instagram],
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${siteUrl}/#faq`,
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      },
+    ],
+  }
+
   return (
     <main className="overflow-hidden">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
 
       <section className="overflow-hidden border-y border-brand/10 bg-ink py-4 text-white">
@@ -280,6 +391,30 @@ export default function Home() {
             <p className="mt-5 text-lg font-semibold leading-8 text-ink/65">
               Работим в малки групи, за да отделяме внимание на всяко дете, и съобразяваме задачите с неговата възраст,
               училищна програма, темпо на работа и индивидуални потребности.
+            </p>
+            <p className="mt-5 text-lg font-semibold leading-8 text-ink/65">
+              Хралупата се намира в центъра на София и предлага удобна локация за семейства и ученици от района. При нас
+              ще откриете{" "}
+              <Link href="/zanimalnya/uchebna" className="font-extrabold text-brand-dark underline decoration-brand/30 underline-offset-4 transition hover:text-brand">
+                учебна занималня
+              </Link>
+              ,{" "}
+              <Link href="/zanimalnya/preduchilishtna" className="font-extrabold text-brand-dark underline decoration-brand/30 underline-offset-4 transition hover:text-brand">
+                предучилищна подготовка
+              </Link>{" "}
+              и{" "}
+              <Link href="/zanimalnya/liatna" className="font-extrabold text-brand-dark underline decoration-brand/30 underline-offset-4 transition hover:text-brand">
+                лятна занималня
+              </Link>
+              , както и{" "}
+              <Link href="/kursove" className="font-extrabold text-brand-dark underline decoration-brand/30 underline-offset-4 transition hover:text-brand">
+                курсове за деца
+              </Link>
+              .{" "}
+              <Link href="/kontakti" className="font-extrabold text-brand-dark underline decoration-brand/30 underline-offset-4 transition hover:text-brand">
+                Вижте местоположението и контактите
+              </Link>
+              .
             </p>
             <div className="mt-9 grid gap-4">
               {benefits.map((benefit) => {
@@ -457,6 +592,33 @@ export default function Home() {
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-paper px-5 py-24 sm:px-8 lg:py-32">
+        <div className="mx-auto max-w-4xl">
+          <SectionHeading align="center" eyebrow="Въпроси и отговори" title="Често задавани въпроси" />
+          <div className="mt-12 grid gap-4">
+            {faqs.map((faq, index) => (
+              <Reveal
+                as="article"
+                key={faq.question}
+                delay={index * 70}
+                className="rounded-[26px] border border-brand/12 bg-cream p-6 sm:p-8"
+              >
+                <h3 className="text-xl font-extrabold text-ink">{faq.question}</h3>
+                <p className="mt-3 font-semibold leading-7 text-ink/65">{faq.answer}</p>
+              </Reveal>
+            ))}
+          </div>
+          <p className="mt-10 text-center text-lg font-semibold leading-8 text-ink/65">
+            Не намирате отговор на въпроса си?{" "}
+            <Link href="/kontakti" className="font-extrabold text-brand-dark underline decoration-brand/30 underline-offset-4 transition hover:text-brand">
+              Свържете се с нас
+            </Link>
+            .
+          </p>
         </div>
       </section>
 
