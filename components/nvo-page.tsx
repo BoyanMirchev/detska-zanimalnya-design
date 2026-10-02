@@ -72,6 +72,7 @@ export type NvoPageProps = {
   heroCta: string
   heroImage: string
   heroImageAlt: string
+  heroImageLandscape?: boolean
   sections: NvoSection[]
   finalCta: { title: string; text: string; cta: string }
 }
@@ -87,7 +88,21 @@ function CheckItem({ children }: { children: ReactNode }) {
   )
 }
 
-function NvoHero({ grade, text, cta, image, imageAlt }: { grade: string; text: string; cta: string; image: string; imageAlt: string }) {
+function NvoHero({
+  grade,
+  text,
+  cta,
+  image,
+  imageAlt,
+  landscape = false,
+}: {
+  grade: string
+  text: string
+  cta: string
+  image: string
+  imageAlt: string
+  landscape?: boolean
+}) {
   return (
     <section className="noise relative px-5 pb-16 pt-32 sm:px-8 lg:pt-40">
       <div className="animate-float absolute -left-28 top-40 h-72 w-72 rounded-full bg-sun/20 blur-3xl" />
@@ -128,13 +143,22 @@ function NvoHero({ grade, text, cta, image, imageAlt }: { grade: string; text: s
             </PhoneLink>
           </div>
         </div>
-        <div className="relative mx-auto w-full max-w-[520px]">
+        <div className={`relative mx-auto w-full ${landscape ? "max-w-[620px]" : "max-w-[520px]"}`}>
           <div className="animate-bob absolute -right-4 -top-4 z-10 grid h-16 w-16 place-items-center rounded-full bg-sun text-ink shadow-lg">
             <Sparkles className="h-7 w-7" aria-hidden="true" />
           </div>
           <div className="animate-float absolute -bottom-5 -left-5 z-10 h-14 w-14 rounded-2xl bg-leaf/90 shadow-lg" />
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[40px] border-[10px] border-white bg-brand-soft soft-shadow">
-            <Image src={image} alt={imageAlt} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-cover" priority />
+          <div
+            className={`relative ${landscape ? "aspect-[4/3]" : "aspect-[4/5]"} overflow-hidden rounded-[40px] border-[10px] border-white bg-brand-soft soft-shadow`}
+          >
+            <Image
+              src={image}
+              alt={imageAlt}
+              fill
+              sizes={landscape ? "(max-width: 1024px) 90vw, 620px" : "(max-width: 1024px) 90vw, 520px"}
+              className="object-cover"
+              priority
+            />
           </div>
         </div>
       </div>
@@ -387,7 +411,8 @@ export function NvoPage(props: NvoPageProps) {
         text={props.heroText}
         cta={props.heroCta}
         image={props.heroImage}
-        imageAlt={props.heroImageAlt}
+          imageAlt={props.heroImageAlt}
+          landscape={props.heroImageLandscape}
       />
 
       <CourseSwitcher slug={props.slug} />

@@ -37,8 +37,9 @@ export default function Nvo4Page() {
       grade="4."
       heroText="Уверена подготовка по двата основни предмета с индивидуално внимание, системен преговор и много практика."
       heroCta="Запиши детето"
-      heroImage="/images/photo-blue-room.png"
-      heroImageAlt="Учебна стая в Хралупата за подготовка за НВО 4. клас"
+      heroImage="/images/nvo-4-klas.png"
+      heroImageAlt="Усмихнати деца около дъска с надпис „НВО IV клас – подготовка по математика и БЕЛ“"
+      heroImageLandscape
       sections={[
         {
           type: "text",
