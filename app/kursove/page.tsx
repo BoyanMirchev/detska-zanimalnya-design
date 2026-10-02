@@ -11,6 +11,10 @@ import {
   Drama,
   Music,
   PiggyBank,
+  PencilRuler,
+  GraduationCap,
+  ClipboardCheck,
+  type LucideIcon,
 } from "lucide-react"
 
 import {PageHero, BottomCTA, SectionHeading } from "@/components/sections"
@@ -36,11 +40,40 @@ export const metadata: Metadata = {
   },
 }
 
-const courses = [
+type CourseCard = {
+  icon: LucideIcon
+  title: string
+  subtitle?: string
+  href?: string
+  text: string
+}
+
+const courses: CourseCard[] = [
   {
     icon: BookOpen,
     title: "Български език и математика",
     text: "Преговор на изучените теми, упражнения и практически задачи, подготовка за тестове, правопис, граматика и работа върху конкретните затруднения.",
+  },
+  {
+    icon: PencilRuler,
+    title: "НВО 4. клас",
+    subtitle: "Математика и български език и литература",
+    href: "/kursove/nvo-4-klas",
+    text: "Системна подготовка в малки групи, работа върху пропуските и задачи по формата на НВО.",
+  },
+  {
+    icon: GraduationCap,
+    title: "НВО 7. клас",
+    subtitle: "Математика и български език и литература",
+    href: "/kursove/nvo-7-klas",
+    text: "Целенасочена подготовка за НВО и кандидатстване след 7. клас с пробни тестове и индивидуален подход.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "НВО 10. клас",
+    subtitle: "Математика и български език и литература",
+    href: "/kursove/nvo-10-klas",
+    text: "Подготовка по актуалния формат на НВО с упражнения, анализ на резултатите и работа върху пропуските.",
   },
   {
     icon: Languages,
@@ -111,6 +144,12 @@ export default function KursovePage() {
       <h3 className="mt-5 text-xl font-extrabold text-ink">
         {c.title}
       </h3>
+
+      {c.subtitle && (
+        <p className="mt-1 text-sm font-extrabold text-brand-dark">
+          {c.subtitle}
+        </p>
+      )}
 
       <p className="mt-2 font-semibold leading-7 text-ink/60">
         {c.text}

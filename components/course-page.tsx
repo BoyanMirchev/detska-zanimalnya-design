@@ -28,6 +28,32 @@ export type CoursePageProps = {
   priceNote?: string
 }
 
+export function CourseSwitcher({ slug }: { slug: string }) {
+  return (
+    <nav aria-label="Курсове" className="px-5 sm:px-8">
+      <div className="mx-auto flex max-w-7xl flex-wrap gap-2">
+        {kursoveChildren.map((child) => {
+          const active = child.href === `/kursove/${slug}`
+          return (
+            <Link
+              key={child.href}
+              href={child.href}
+              aria-current={active ? "page" : undefined}
+              className={`rounded-full border px-4 py-2 text-sm font-extrabold transition ${
+                active
+                  ? "border-brand bg-brand text-white"
+                  : "border-brand/20 bg-paper text-ink/70 hover:border-brand/40 hover:text-brand-dark"
+              }`}
+            >
+              {child.short}
+            </Link>
+          )
+        })}
+      </div>
+    </nav>
+  )
+}
+
 export function CoursePage(props: CoursePageProps) {
   return (
     <main className="overflow-hidden">
@@ -41,26 +67,7 @@ export function CoursePage(props: CoursePageProps) {
       />
 
       {/* Course switcher */}
-      <div className="px-5 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-wrap gap-2">
-          {kursoveChildren.map((child) => {
-            const active = child.href === `/kursove/${props.slug}`
-            return (
-              <Link
-                key={child.href}
-                href={child.href}
-                className={`rounded-full border px-4 py-2 text-sm font-extrabold transition ${
-                  active
-                    ? "border-brand bg-brand text-white"
-                    : "border-brand/20 bg-paper text-ink/70 hover:border-brand/40 hover:text-brand-dark"
-                }`}
-              >
-                {child.short}
-              </Link>
-            )
-          })}
-        </div>
-      </div>
+      <CourseSwitcher slug={props.slug} />
 
       {/* Intro */}
       <section className="px-5 py-20 sm:px-8 lg:py-24">

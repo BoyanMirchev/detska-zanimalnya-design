@@ -51,6 +51,24 @@ export const kursoveChildren: NavChild[] = [
     age: "10–14 г.",
     href: "/kursove/predpriemachestvo",
   },
+  {
+    label: "Подготовка за НВО 4. клас",
+    short: "НВО 4. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-4-klas",
+  },
+  {
+    label: "Подготовка за НВО 7. клас",
+    short: "НВО 7. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-7-klas",
+  },
+  {
+    label: "Подготовка за НВО 10. клас",
+    short: "НВО 10. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-10-klas",
+  },
 ]
 
 export const navItems: NavItem[] = [
