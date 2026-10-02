@@ -13,7 +13,7 @@ export default async function AdminPage() {
 
   if (!authed) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#F2F7FB] px-5 py-16">
+      <main className="flex min-h-screen items-center justify-center bg-[#F2F7FB] px-5 pb-16 pt-32 lg:pt-40">
         <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl">
           <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFB37B]/25 text-[#17324D]">
             <Lock className="h-7 w-7" />
