@@ -1,7 +1,10 @@
-import { Lock, LogOut, Sparkles } from "lucide-react"
-import { getContactRequests, isAuthenticated, logout } from "@/app/actions/admin"
+import { Lock } from "lucide-react"
+import { getContactRequests, isAuthenticated } from "@/app/actions/admin"
 import { AdminLoginForm } from "@/components/admin-login-form"
 import { AdminDashboard } from "@/components/admin-dashboard"
+import { AdminShell } from "@/components/admin/admin-shell"
+import { AttentionList, PaymentsSummaryCards } from "@/components/admin/payments-overview"
+import { getPaymentsOverview } from "@/lib/students-data"
 
 export const dynamic = "force-dynamic"
 
@@ -27,33 +30,15 @@ export default async function AdminPage() {
     )
   }
 
-  const requests = await getContactRequests()
+  const [requests, overview] = await Promise.all([getContactRequests(), getPaymentsOverview()])
 
   return (
-    <main className="min-h-screen bg-[#F2F7FB] px-5 py-10 sm:px-8">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#9ED9CA]/30 px-4 py-1.5 text-sm font-extrabold text-[#1F6B5C]">
-              <Sparkles className="h-4 w-4" />
-              Малки откриватели
-            </span>
-            <h1 className="mt-3 text-3xl font-extrabold text-[#17324D] sm:text-4xl">Запитвания от клиенти</h1>
-            <p className="mt-1 font-bold text-[#17324D]/55">Всички съобщения, изпратени през сайта.</p>
-          </div>
-          <form action={logout}>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-extrabold text-[#17324D] shadow-sm transition hover:-translate-y-0.5"
-            >
-              <LogOut className="h-5 w-5" />
-              Изход
-            </button>
-          </form>
-        </header>
-
-        <AdminDashboard requests={requests} />
-      </div>
-    </main>
+    <AdminShell title="Запитвания от клиенти" subtitle="Всички съобщения, изпратени през сайта.">
+      <section aria-label="Плащания" className="flex flex-col gap-4">
+        <PaymentsSummaryCards overview={overview} />
+        <AttentionList items={overview.attention} limit={6} />
+      </section>
+      <AdminDashboard requests={requests} />
+    </AdminShell>
   )
 }
