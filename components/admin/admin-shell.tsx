@@ -15,7 +15,7 @@ export function AdminShell({
   children: ReactNode
 }) {
   return (
-    <main className="min-h-screen bg-[#F2F7FB] px-5 py-10 sm:px-8">
+    <main className="min-h-screen bg-[#F2F7FB] px-5 pb-10 pt-32 sm:px-8 lg:pt-40">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <header className="flex flex-col gap-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
