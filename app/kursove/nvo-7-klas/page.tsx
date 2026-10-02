@@ -37,8 +37,9 @@ export default function Nvo7Page() {
       grade="7."
       heroText="Системна подготовка, работа върху пропуските и пробни изпити за по-уверено представяне на НВО."
       heroCta="Запиши се"
-      heroImage="/images/photo-green-room.png"
-      heroImageAlt="Учебна стая в Хралупата за подготовка за НВО 7. клас"
+      heroImage="/images/nvo-7-klas.png"
+      heroImageAlt="Усмихнати ученици около дъска с надпис „НВО VII клас – подготовка по математика и БЕЛ“"
+      heroImageLandscape
       sections={[
         {
           type: "text",

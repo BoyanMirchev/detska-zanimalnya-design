@@ -37,8 +37,9 @@ export default function Nvo10Page() {
       grade="10."
       heroText="Подреди знанията, развий стратегия и се подготви уверено за НВО."
       heroCta="Запиши се"
-      heroImage="/images/room-green-whiteboard.png"
-      heroImageAlt="Учебна стая с бяла дъска в Хралупата за подготовка за НВО 10. клас"
+      heroImage="/images/nvo-10-klas.png"
+      heroImageAlt="Усмихнати ученици около дъска с надпис „НВО X клас – подготовка по математика и БЕЛ“"
+      heroImageLandscape
       sections={[
         {
           type: "text",
