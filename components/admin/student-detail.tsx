@@ -2,7 +2,9 @@
 
 import { useCallback, useState, useTransition } from "react"
 import { Loader2, Mail, Pencil, Phone, Plus, Trash2, UtensilsCrossed, BookOpen } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { deletePayment } from "@/app/actions/students"
+import { DeleteStudentDialog } from "@/components/admin/delete-student-dialog"
 import { formatDateBG } from "@/lib/dates"
 import { formatMoney } from "@/lib/money"
 import {
@@ -31,7 +33,9 @@ export function StudentDetail({
   payments: Payment[]
   today: string
 }) {
+  const router = useRouter()
   const [editingStudent, setEditingStudent] = useState(false)
+  const [deletingStudent, setDeletingStudent] = useState(false)
   const [paymentDialog, setPaymentDialog] = useState<PaymentDialogState | null>(null)
   const [deleting, setDeleting] = useState<Payment | null>(null)
   const [historyFilter, setHistoryFilter] = useState<(typeof HISTORY_FILTERS)[number]["value"]>("all")
@@ -56,10 +60,16 @@ export function StudentDetail({
           <h2 id="student-info" className="text-lg font-extrabold text-[#17324D]">
             Данни за ученика
           </h2>
-          <button type="button" onClick={() => setEditingStudent(true)} className={secondaryButton}>
-            <Pencil className="h-4 w-4" />
-            Редактирай
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => setEditingStudent(true)} className={secondaryButton}>
+              <Pencil className="h-4 w-4" />
+              Редактирай
+            </button>
+            <button type="button" onClick={() => setDeletingStudent(true)} className={dangerButton}>
+              <Trash2 className="h-4 w-4" />
+              Изтрий ученика
+            </button>
+          </div>
         </div>
         <dl className="mt-4 grid gap-4 text-[#17324D] sm:grid-cols-2 lg:grid-cols-3">
           <Info label="Ученик" value={`${student.first_name} ${student.last_name}`} />
@@ -234,6 +244,11 @@ export function StudentDetail({
         payment={deleting}
         onClose={() => setDeleting(null)}
         onDeleted={() => setToast("Плащането беше анулирано.")}
+      />
+      <DeleteStudentDialog
+        student={deletingStudent ? student : null}
+        onClose={() => setDeletingStudent(false)}
+        onDeleted={() => router.push("/admin/students")}
       />
       <Toast message={toast} onDone={clearToast} />
     </div>

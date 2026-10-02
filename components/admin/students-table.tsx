@@ -3,7 +3,8 @@
 import { useCallback, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronRight, Plus, Search } from "lucide-react"
+import { ChevronRight, Plus, Search, Trash2 } from "lucide-react"
+import { DeleteStudentDialog, type DeletableStudent } from "@/components/admin/delete-student-dialog"
 import { formatDateBG } from "@/lib/dates"
 import { formatMoney } from "@/lib/money"
 import { getPaymentStatus, type PaymentStatus } from "@/lib/payment-status"
@@ -49,6 +50,7 @@ export function StudentsTable({ students, today }: { students: StudentRow[]; tod
   const [classFilter, setClassFilter] = useState("")
   const [showInactive, setShowInactive] = useState(false)
   const [adding, setAdding] = useState(false)
+  const [deleting, setDeleting] = useState<DeletableStudent | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const clearToast = useCallback(() => setToast(null), [])
 
@@ -205,15 +207,31 @@ export function StudentsTable({ students, today }: { students: StudentRow[]; tod
                         </span>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-right">
-                      <Link
-                        href={`/admin/students/${r.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-[#17324D]/5 px-4 py-2 text-sm font-extrabold transition hover:bg-[#17324D]/10"
-                      >
-                        Отвори
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/admin/students/${r.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-[#17324D]/5 px-4 py-2 text-sm font-extrabold transition hover:bg-[#17324D]/10"
+                        >
+                          Отвори
+                          <ChevronRight className="h-4 w-4" />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setDeleting(r)
+                          }}
+                          title="Изтрий ученик"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F27B6B]/15 text-[#C7503F] transition hover:bg-[#F27B6B]/25"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">
+                            Изтрий {r.first_name} {r.last_name}
+                          </span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -256,6 +274,19 @@ export function StudentsTable({ students, today }: { students: StudentRow[]; tod
                     </div>
                   </dl>
                 </Link>
+                <div className="mt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setDeleting(r)}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[#F27B6B]/15 px-4 py-2 text-sm font-extrabold text-[#C7503F] transition hover:bg-[#F27B6B]/25"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Изтрий
+                    <span className="sr-only">
+                      {r.first_name} {r.last_name}
+                    </span>
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -268,6 +299,14 @@ export function StudentsTable({ students, today }: { students: StudentRow[]; tod
         onSaved={(id) => {
           setToast("Ученикът беше добавен успешно.")
           if (id) router.push(`/admin/students/${id}`)
+        }}
+      />
+      <DeleteStudentDialog
+        student={deleting}
+        onClose={() => setDeleting(null)}
+        onDeleted={() => {
+          setToast("Ученикът беше изтрит.")
+          router.refresh()
         }}
       />
       <Toast message={toast} onDone={clearToast} />

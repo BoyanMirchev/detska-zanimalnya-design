@@ -68,6 +68,21 @@ export async function updateStudent(id: number, input: Record<string, unknown>):
   })
 }
 
+export async function deleteStudent(id: number): Promise<ActionResult> {
+  return guarded(async () => {
+    if (!isId(id)) return { ok: false, error: "Невалиден ученик." }
+    const existing = await sql`SELECT id FROM students WHERE id = ${id}`
+    if (existing.length === 0) return { ok: false, error: "Ученикът не е намерен." }
+    await sql.transaction([
+      sql`DELETE FROM payment_audit WHERE payment_id IN (SELECT id FROM payments WHERE student_id = ${id})`,
+      sql`DELETE FROM payments WHERE student_id = ${id}`,
+      sql`DELETE FROM students WHERE id = ${id}`,
+    ])
+    revalidateStudent(id)
+    return { ok: true, id }
+  })
+}
+
 export async function addPayment(
   studentId: number,
   type: PaymentType,
