@@ -1,4 +1,5 @@
 import Link from "next/link"
+import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
 import { ArrowRight, Check } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
@@ -26,6 +27,8 @@ export type CoursePageProps = {
   prices?: CoursePriceRow[]
   priceTitle?: string
   priceNote?: string
+  children?: ReactNode
+  cta?: ReactNode
 }
 
 export function CourseSwitcher({ slug }: { slug: string }) {
@@ -82,6 +85,8 @@ export function CoursePage(props: CoursePageProps) {
           </div>
         </div>
       </section>
+
+      {props.children}
 
       {/* Highlights */}
       {props.highlights && (
@@ -231,7 +236,7 @@ export function CoursePage(props: CoursePageProps) {
         </section>
       )}
 
-      <BottomCTA />
+      {props.cta ?? <BottomCTA />}
     </main>
   )
 }

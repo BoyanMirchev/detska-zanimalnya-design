@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
-import { Code2, Cpu, Gamepad2, Bot, Users, Clock3, Laptop, Package } from "lucide-react"
+import { Users, Clock3, Laptop, Package } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
+import {
+  ProgramiraneContent,
+  ProgramiraneEnrollCTA,
+  ProgramiraneIntro,
+} from "@/components/programirane-content"
 
 export const metadata: Metadata = {
   title: "Програмиране и роботика за деца в София",
@@ -23,29 +28,6 @@ export const metadata: Metadata = {
   },
 }
 
-const features = [
-  {
-    icon: Code2,
-    title: "Основи на кода",
-    text: "Децата се запознават с първите блокове, команди и логиката зад всяка програма.",
-  },
-  {
-    icon: Gamepad2,
-    title: "Създаване на игри",
-    text: "Учим чрез създаване на собствени малки игри и интерактивни проекти.",
-  },
-  {
-    icon: Bot,
-    title: "Роботика",
-    text: "Конструиране и оживяване на прости роботи с реални материали и комплекти.",
-  },
-  {
-    icon: Cpu,
-    title: "Логическо мислене",
-    text: "Алгоритми, последователност и решаване на проблеми стъпка по стъпка.",
-  },
-]
-
 const details = [
   { icon: Users, title: "Групи до 8 деца", text: "Малки групи за повече внимание към всяко дете." },
   { icon: Clock3, title: "Час и половина", text: "Всеки понеделник от 18:00 до 19:30 ч." },
@@ -66,41 +48,16 @@ export default function ProgramiranePage() {
   return (
     <main className="overflow-hidden">
       <PageHero
-        badge="Дигитални умения за деца"
-        title="Първи стъпки в света на"
-        highlight="програмирането."
-        text="Курсът се провежда в малки групи до 8 деца на територията на академията с продължителност час и половина. В цената е включен индивидуален комплект за всяко дете с всички необходими материали и лаптоп."
-        image="/images/class-green-lego.png"
-        imageAlt="Класна стая с конструктори за занимания по програмиране и роботика"
+        badge="Първи стъпки в света на технологиите"
+        title="Програмиране за"
+        highlight="деца."
+        text="Програмирането учи децата не просто как да работят с компютър, а как да мислят логично, да решават проблеми и да превръщат идеите си в работещи проекти."
+        image="/images/programirane-deca.png"
+        imageAlt="Усмихнати деца програмират на лаптопи с цветни блокове на екрана, а на масата има малък робот и конструктор"
       />
 
-      <section className="px-5 py-20 sm:px-8 lg:py-24">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading eyebrow="Какво учим" title="Учене чрез игра и създаване." />
-          <p className="mt-6 max-w-2xl text-lg font-semibold leading-8 text-ink/65">
-            Заниманията развиват логическото мислене, творчеството и уменията за решаване на проблеми. Стъпка по стъпка
-            децата преминават през четири модула, изграждайки едно завършено ниво.
-          </p>
-
-          <div className="mt-14 grid gap-5 md:grid-cols-2">
-            {features.map((feature) => {
-              const Icon = feature.icon
-              return (
-                <article
-                  key={feature.title}
-                  className="rounded-[30px] border border-brand/12 bg-paper p-7 transition duration-300 hover:-translate-y-1 hover:border-brand/30"
-                >
-                  <span className="grid h-14 w-14 place-items-center rounded-[20px] bg-brand-soft text-brand-dark">
-                    <Icon className="h-7 w-7" />
-                  </span>
-                  <h3 className="mt-6 text-2xl font-extrabold text-ink">{feature.title}</h3>
-                  <p className="mt-3 font-semibold leading-7 text-ink/65">{feature.text}</p>
-                </article>
-              )
-            })}
-          </div>
-        </div>
-      </section>
+      <ProgramiraneIntro />
+      <ProgramiraneContent />
 
       <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-5xl">
@@ -143,6 +100,10 @@ export default function ProgramiranePage() {
           </p>
         </div>
       </section>
+
+      <div className="bg-paper pt-4">
+        <ProgramiraneEnrollCTA />
+      </div>
 
       <BottomCTA />
     </main>
