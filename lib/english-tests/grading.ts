@@ -87,7 +87,15 @@ export type PlacementOutcome = {
   levelName: string | null
   conclusive: boolean
   reason: "placed" | "insufficient_total" | "insufficient_level_evidence" | "below_lowest_level" | "no_rules"
-  levels: { levelId: number; levelName: string; questions: number; percent: number | null; passed: boolean | null }[]
+  levels: {
+    levelId: number
+    levelName: string
+    questions: number
+    percent: number | null
+    minPercent: number
+    enoughQuestions: boolean
+    passed: boolean | null
+  }[]
 }
 
 /**
@@ -114,6 +122,8 @@ export function estimatePlacement(
       levelName: rule.levelName,
       questions: stats.questions,
       percent,
+      minPercent: rule.minPercent,
+      enoughQuestions: enoughEvidence,
       passed: enoughEvidence ? (percent ?? 0) >= rule.minPercent : null,
     }
   })

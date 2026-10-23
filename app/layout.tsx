@@ -4,6 +4,7 @@ import "./globals.css"
 
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import { SiteChromeGate } from "@/components/site-chrome-gate"
 import { RegistrationSection } from "@/components/registration-section"
 import { GoogleAnalytics } from "@next/third-parties/google"
 
@@ -78,10 +79,14 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window, document, "clarity", "script", "y6u4y4y7d5");`}
         </Script>
 
-        <SiteHeader />
+        <SiteChromeGate>
+          <SiteHeader />
+        </SiteChromeGate>
         {children}
-        <RegistrationSection />
-        <SiteFooter />
+        <SiteChromeGate>
+          <RegistrationSection />
+          <SiteFooter />
+        </SiteChromeGate>
       </body>
 
       <GoogleAnalytics gaId="G-WPHGCMLJ86" />

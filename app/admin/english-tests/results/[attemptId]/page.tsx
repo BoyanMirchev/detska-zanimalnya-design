@@ -53,11 +53,11 @@ export default async function AdminResultPage({ params }: { params: Promise<{ at
             </p>
           </Card>
 
-          {r.placement && r.placement.perLevel.length > 0 && (
+          {r.placement && r.placement.levels.length > 0 && (
             <Card>
               <h2 className="text-lg font-extrabold text-[#17324D]">Резултат по нива</h2>
               <ul className="mt-3 flex flex-col gap-2">
-                {r.placement.perLevel.map((l) => (
+                {r.placement.levels.map((l) => (
                   <li key={l.levelId} className="flex flex-wrap items-center gap-3 rounded-2xl bg-[#F7FAFC] px-4 py-3">
                     <span className="w-24 font-extrabold text-[#17324D]">{l.levelName}</span>
                     <span className="h-2.5 min-w-24 flex-1 overflow-hidden rounded-full bg-[#17324D]/8" aria-hidden>

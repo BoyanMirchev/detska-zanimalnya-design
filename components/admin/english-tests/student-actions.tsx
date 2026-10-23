@@ -16,7 +16,8 @@ export function StudentActions({ studentId, status }: { studentId: number; statu
     startTransition(async () => {
       setError(null)
       const res = await createPasswordResetLink(studentId)
-      if (!res.ok || !res.data) return setError(res.error ?? "Възникна грешка.")
+      if (!res.ok) return setError(res.error ?? "Възникна грешка.")
+      if (!res.data) return setError("Възникна грешка.")
       setLink(res.data.url)
       setCopied(false)
     })

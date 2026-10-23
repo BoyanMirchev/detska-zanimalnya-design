@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Copy, Pencil, Trash2 } from "lucide-react"
-import { deleteQuestion, duplicateQuestion, setQuestionsStatus } from "@/app/actions/english-tests/admin"
+import { deleteQuestion, duplicateQuestion, setQuestionsStatus, type ActionResult } from "@/app/actions/english-tests/admin"
 import type { AdminQuestionRow } from "@/lib/english-tests/admin-data"
 import { LABELS } from "@/lib/english-tests/types"
 import { FormError, Toast, secondaryButton } from "@/components/admin/ui"
@@ -28,14 +28,14 @@ export function QuestionBank({ rows }: { rows: AdminQuestionRow[] }) {
       return next
     })
 
-  const run = (fn: () => Promise<{ ok: boolean; error?: string; message?: string; data?: { id: number } }>, after?: (id?: number) => void) =>
+  const run = (fn: () => Promise<ActionResult<unknown>>, after?: (id?: number) => void) =>
     startTransition(async () => {
       setError(null)
       const res = await fn()
       if (!res.ok) return setError(res.error ?? "Възникна грешка.")
       if (res.message) setToast(res.message)
       setSelected(new Set())
-      after?.(res.data?.id)
+      after?.((res.data as { id?: number } | undefined)?.id)
       router.refresh()
     })
 
