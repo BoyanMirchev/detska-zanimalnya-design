@@ -45,7 +45,7 @@ type TouchKey =
   | "shift"
   | "services"
 
-export function RegistrationForm() {
+export function RegistrationForm({ englishOnly = false }: { englishOnly?: boolean }) {
   const [state, formAction, pending] = useActionState(submitRegistration, initialState)
 
   // Controlled values for every REQUIRED field. Optional fields (otherNote,
@@ -124,16 +124,24 @@ export function RegistrationForm() {
           </h2>
           <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-ink/65">
             Обадете се на{" "}
-            <PhoneLink
-              href={contact.phonePrimaryHref}
-              className="font-extrabold text-brand-dark underline-offset-2 hover:underline"
-            >
-              {contact.phonePrimary}
-            </PhoneLink>{" "}
-            и{" "}
-            <a href={contact.phoneSecondaryHref} className="font-extrabold text-brand-dark underline-offset-2 hover:underline">
-              {contact.phoneSecondary}
-            </a>{" "}
+            {englishOnly ? (
+              <a href={contact.phoneEnglishHref} className="font-extrabold text-brand-dark underline-offset-2 hover:underline">
+                {contact.phoneEnglish}
+              </a>
+            ) : (
+              <>
+                <PhoneLink
+                  href={contact.phonePrimaryHref}
+                  className="font-extrabold text-brand-dark underline-offset-2 hover:underline"
+                >
+                  {contact.phonePrimary}
+                </PhoneLink>{" "}
+                и{" "}
+                <a href={contact.phoneSecondaryHref} className="font-extrabold text-brand-dark underline-offset-2 hover:underline">
+                  {contact.phoneSecondary}
+                </a>
+              </>
+            )}{" "}
             или попълнете формата по-долу:
           </p>
         </div>

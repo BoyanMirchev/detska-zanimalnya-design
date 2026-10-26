@@ -29,6 +29,8 @@ export type CoursePageProps = {
   priceNote?: string
   children?: ReactNode
   cta?: ReactNode
+  phone?: string
+  phoneHref?: string
 }
 
 export function CourseSwitcher({ slug }: { slug: string }) {
@@ -67,6 +69,8 @@ export function CoursePage(props: CoursePageProps) {
         text={props.heroText}
         image={props.heroImage}
         imageAlt={props.heroImageAlt}
+        phone={props.phone}
+        phoneHref={props.phoneHref}
       />
 
       {/* Course switcher */}
@@ -236,7 +240,9 @@ export function CoursePage(props: CoursePageProps) {
         </section>
       )}
 
-      {props.cta ?? <BottomCTA />}
+      {props.cta ?? (
+        <BottomCTA phone={props.phone} phoneHref={props.phoneHref} showSecondary={!props.phone} />
+      )}
     </main>
   )
 }

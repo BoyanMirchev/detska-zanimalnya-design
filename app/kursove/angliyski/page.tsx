@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { CoursePage } from "@/components/course-page"
+import { contact } from "@/lib/nav"
 import { AngliyskiContent, AngliyskiEnrollCTA } from "@/components/angliyski-content"
 
 export const metadata: Metadata = {
@@ -27,6 +28,8 @@ export default function AngliyskiPage() {
   return (
     <CoursePage
       slug="angliyski"
+      phone={contact.phoneEnglish}
+      phoneHref={contact.phoneEnglishHref}
       badge="Нива Pre A1 – B2"
       title="Английски език за"
       highlight="деца"

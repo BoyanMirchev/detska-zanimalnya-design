@@ -7,7 +7,10 @@ import {
   BookOpen,
   Brain,
   Check,
+  ClipboardCheck,
   Clock3,
+  Languages,
+  PenLine,
   GraduationCap,
   HeartHandshake,
   Lightbulb,
@@ -108,6 +111,62 @@ const programs = [
     age: "5–12 години",
     href: "/zanimalnya/liatna",
     text: "Тематични седмици, игри навън, спорт и много нови приятелства през ваканцията.",
+  },
+  {
+    icon: Puzzle,
+    title: "Шах",
+    age: "над 5 г.",
+    href: "/kursove/shah",
+    text: "Логика, концентрация и стратегическо мислене чрез игра, задачи и приятелски партии.",
+  },
+  {
+    icon: Languages,
+    title: "Английски",
+    age: "Pre A1 – B2",
+    href: "/kursove/angliyski",
+    text: "Говорене, слушане, четене и писане в малки групи според нивото на всяко дете.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Тест по английски",
+    age: "Онлайн",
+    href: "/testove",
+    text: "Безплатен онлайн тест, който показва нивото и помага да изберем правилната група.",
+  },
+  {
+    icon: Lightbulb,
+    title: "Предприемачество",
+    age: "10–14 г.",
+    href: "/kursove/predpriemachestvo",
+    text: "Първи стъпки във финансите, идеите и екипната работа чрез реални мини проекти.",
+  },
+  {
+    icon: PenLine,
+    title: "НВО 4. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-4-klas",
+    text: "Спокойна подготовка за първото национално външно оценяване с много практика.",
+  },
+  {
+    icon: Target,
+    title: "НВО 7. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-7-klas",
+    text: "Систематична подготовка за изпитите след 7. клас и кандидатстване в желаното училище.",
+  },
+  {
+    icon: Brain,
+    title: "НВО 10. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-10-klas",
+    text: "Преговор на ключовите теми, решаване на изпитни формати и работа по пропуските.",
+  },
+  {
+    icon: GraduationCap,
+    title: "НВО 12. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-12-klas",
+    text: "Целенасочена подготовка за матурите с пробни изпити и ясен план до изпита.",
   },
 ]
 
@@ -327,20 +386,20 @@ export default function Home() {
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
             <SectionHeading eyebrow="Нашите програми" title="Различни занимания. Една обща цел." />
             <p className="max-w-2xl text-lg font-semibold leading-8 text-ink/65 lg:justify-self-end">
-              Всяка програма съчетава полезна структура с достатъчно свобода за въображение, движение и приятелства.
+              Всяка програма съчетава полезна структура с достатъчно свобода за ��ъображение, движение и приятелства.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-5 md:grid-cols-2">
+          <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {programs.map((program, index) => {
               const Icon = program.icon
               return (
-                <Reveal as="div" key={program.title} delay={index * 90}>
+                <Reveal as="div" key={program.title} delay={(index % 3) * 90}>
                 <Link
                   href={program.href}
                   className="group relative block overflow-hidden rounded-[34px] border border-brand/12 bg-paper p-7 transition duration-300 hover:-translate-y-1 hover:border-brand/30 sm:p-9"
                 >
-                  <span className="absolute right-7 top-7 text-6xl font-black text-brand/8">0{index + 1}</span>
+                  <span className="absolute right-7 top-7 text-6xl font-black text-brand/8">{String(index + 1).padStart(2, "0")}</span>
                   <div className="grid h-14 w-14 place-items-center rounded-[20px] bg-brand-soft text-brand-dark transition duration-300 group-hover:-rotate-6 group-hover:scale-105">
                     <Icon className="h-7 w-7" />
                   </div>
