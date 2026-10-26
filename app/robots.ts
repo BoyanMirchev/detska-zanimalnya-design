@@ -8,6 +8,9 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         "/admin/",
         "/api/",
+        "/testove/dashboard",
+        "/testove/rezultati/",
+        "/testove/nova-parola",
       ],
     },
 

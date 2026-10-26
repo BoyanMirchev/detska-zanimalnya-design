@@ -46,6 +46,12 @@ export const kursoveChildren: NavChild[] = [
     href: "/kursove/angliyski",
   },
   {
+    label: "Онлайн тест по английски",
+    short: "Тест по английски",
+    age: "Онлайн",
+    href: "/testove",
+  },
+  {
     label: "Предприемачество и финанси",
     short: "Предприемачество",
     age: "10–14 г.",
