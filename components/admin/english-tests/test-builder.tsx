@@ -8,23 +8,14 @@ import { saveTest } from "@/app/actions/english-tests/admin"
 import type { AdminCategory, AdminLevel, AdminTestDetail, PickerQuestion } from "@/lib/english-tests/admin-data"
 import {
   DEFAULT_TEST_SETTINGS,
-  DIFFICULTIES,
   EMPTY_SELECTION_CONFIG,
   LABELS,
-  type Difficulty,
   type SelectionConfig,
   type SelectionMethod,
   type TestSettings,
   type TestType,
 } from "@/lib/english-tests/types"
 import { Field, FormError, Toast, inputClass, primaryButton } from "@/components/admin/ui"
-
-const toLocalInput = (iso: string | null) => {
-  if (!iso) return ""
-  const d = new Date(iso)
-  const pad = (n: number) => String(n).padStart(2, "0")
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
 
 const toggleIn = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value])
 
@@ -165,10 +156,9 @@ export function TestBuilder({
       questions.filter(
         (q) =>
           (effectiveLevelIds.length === 0 || effectiveLevelIds.includes(q.levelId)) &&
-          (config.categoryIds.length === 0 || config.categoryIds.includes(q.categoryId)) &&
-          (config.difficulties.length === 0 || config.difficulties.includes(q.difficulty)),
+          (config.categoryIds.length === 0 || config.categoryIds.includes(q.categoryId)),
       ),
-    [questions, effectiveLevelIds, config.categoryIds, config.difficulties],
+    [questions, effectiveLevelIds, config.categoryIds],
   )
   const poolByLevel = useMemo(() => {
     const map = new Map<number, number>()
@@ -210,11 +200,16 @@ export function TestBuilder({
         durationMinutes: form.get("durationMinutes"),
         questionCount: useAllocations ? allocationTotal : questionCount,
         selectionMethod: method,
-        selectionConfig: testType === "level" ? { ...config, levelIds: [], allocations: [] } : useAllocations ? config : { ...config, allocations: [] },
+        selectionConfig:
+          testType === "level"
+            ? { ...config, difficulties: [], levelIds: [], allocations: [] }
+            : useAllocations
+              ? { ...config, difficulties: [] }
+              : { ...config, difficulties: [], allocations: [] },
         questionIds,
         settings,
-        availableFrom: form.get("availableFrom") ? new Date(String(form.get("availableFrom"))).toISOString() : "",
-        availableUntil: form.get("availableUntil") ? new Date(String(form.get("availableUntil"))).toISOString() : "",
+        availableFrom: "",
+        availableUntil: "",
         expectedVersion: test?.editVersion,
       })
       if (!res.ok) {
@@ -342,20 +337,6 @@ export function TestBuilder({
                   ))}
               </div>
             </fieldset>
-            <fieldset className="flex flex-col gap-2">
-              <legend className="mb-1 text-sm font-extrabold text-[#17324D]">Трудност (празно = всички)</legend>
-              <div className="flex flex-wrap gap-2">
-                {DIFFICULTIES.map((d) => (
-                  <Chip
-                    key={d}
-                    active={config.difficulties.includes(d)}
-                    onClick={() => setConfig((c) => ({ ...c, difficulties: toggleIn<Difficulty>(c.difficulties, d) }))}
-                  >
-                    {LABELS.difficulty[d]}
-                  </Chip>
-                ))}
-              </div>
-            </fieldset>
 
             {testType === "placement" ? (
               <div className="flex flex-col gap-2">
@@ -479,7 +460,7 @@ export function TestBuilder({
                             {q.text}
                           </span>
                           <span className="text-xs font-bold text-[#17324D]/50">
-                            {q.levelName} · {q.categoryName} · {LABELS.difficulty[q.difficulty]} · {q.points} т.
+                            {q.levelName} · {q.categoryName} · {q.points} т.
                             {shared > 0 && ` · в още ${shared} ${shared === 1 ? "тест" : "теста"}`}
                           </span>
                         </span>
@@ -500,7 +481,7 @@ export function TestBuilder({
               )}
               {questionIds.length > selectedQuestions.length && (
                 <p role="alert" className="rounded-2xl bg-[#F27B6B]/15 px-4 py-2 text-sm font-bold text-[#C7503F]">
-                  {questionIds.length - selectedQuestions.length} от избраните въпроси вече не са активни в банката. Премахнете ги или ги
+                  {questionIds.length - selectedQuestions.length} от избраните въпроси вече не са активни в банката. Премахнете ги ��ли ги
                   заменете, преди да запазите.
                 </p>
               )}
@@ -653,17 +634,6 @@ export function TestBuilder({
               onChange={(e) => set("cooldownHours", Math.max(0, Number(e.target.value) || 0))}
               className={inputClass}
             />
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Достъпност" description="По желание: ограничете периода, в който тестът може да бъде започнат.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Достъпен от" htmlFor="t-from" error={errors.availableFrom}>
-            <input id="t-from" name="availableFrom" type="datetime-local" defaultValue={toLocalInput(test?.availableFrom ?? null)} className={inputClass} />
-          </Field>
-          <Field label="Достъпен до" htmlFor="t-until" error={errors.availableUntil}>
-            <input id="t-until" name="availableUntil" type="datetime-local" defaultValue={toLocalInput(test?.availableUntil ?? null)} className={inputClass} />
           </Field>
         </div>
       </Section>
