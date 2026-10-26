@@ -130,6 +130,8 @@ const STATEMENTS = [
     updated_at timestamptz NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS et_tests_status_idx ON et_tests (status)`,
+  // Optimistic-concurrency token: every admin save must present the version it loaded.
+  `ALTER TABLE et_tests ADD COLUMN IF NOT EXISTS edit_version int NOT NULL DEFAULT 1`,
 
   `CREATE TABLE IF NOT EXISTS et_test_questions (
     id serial PRIMARY KEY,
@@ -246,12 +248,32 @@ const STATEMENTS = [
    ) AS v(name, description, ord)
    WHERE EXISTS (SELECT 1 FROM flag)
    ON CONFLICT DO NOTHING`,
+  // Separately flagged so existing installs gain C1/C2 exactly once; ON CONFLICT also skips names an admin already created.
+  `WITH flag AS (INSERT INTO et_meta (key) VALUES ('seed_levels_c1_c2_v1') ON CONFLICT DO NOTHING RETURNING 1),
+   base AS (SELECT COALESCE(MAX(display_order), 0) AS max_order FROM et_levels)
+   INSERT INTO et_levels (name, description, display_order)
+   SELECT v.name, v.description, base.max_order + v.ord FROM base, (VALUES
+     ('C1', 'Advanced — напреднало ниво', 1),
+     ('C2', 'Proficiency — владеене на езика', 2)
+   ) AS v(name, description, ord)
+   WHERE EXISTS (SELECT 1 FROM flag)
+   ON CONFLICT DO NOTHING`,
   `WITH flag AS (INSERT INTO et_meta (key) VALUES ('seed_categories_v1') ON CONFLICT DO NOTHING RETURNING 1)
    INSERT INTO et_categories (name, description)
    SELECT v.name, v.description FROM (VALUES
      ('Grammar', 'Граматика'),
      ('Vocabulary', 'Речников запас'),
      ('Reading', 'Четене с разбиране')
+   ) AS v(name, description)
+   WHERE EXISTS (SELECT 1 FROM flag)
+   ON CONFLICT DO NOTHING`,
+  `WITH flag AS (INSERT INTO et_meta (key) VALUES ('seed_categories_advanced_v1') ON CONFLICT DO NOTHING RETURNING 1)
+   INSERT INTO et_categories (name, description)
+   SELECT v.name, v.description FROM (VALUES
+     ('Idioms', 'Идиоматични изрази'),
+     ('Collocations', 'Словосъчетания (колокации)'),
+     ('Usage in context', 'Употреба в контекст и нюанси в значението'),
+     ('Academic & literary language', 'Академичен и литературен език')
    ) AS v(name, description)
    WHERE EXISTS (SELECT 1 FROM flag)
    ON CONFLICT DO NOTHING`,

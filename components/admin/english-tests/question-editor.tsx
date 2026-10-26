@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Plus, Trash2 } from "lucide-react"
 import { saveQuestion } from "@/app/actions/english-tests/admin"
 import type { AdminCategory, AdminLevel, AdminQuestionDetail } from "@/lib/english-tests/admin-data"
-import { DIFFICULTIES, LABELS, QUESTION_STATUSES, QUESTION_TYPES, type QuestionType } from "@/lib/english-tests/types"
+import { LABELS, QUESTION_STATUSES, QUESTION_TYPES, type QuestionType } from "@/lib/english-tests/types"
 import { Field, FormError, Toast, inputClass, primaryButton, secondaryButton } from "@/components/admin/ui"
 
 type Option = { key: number; text: string; isCorrect: boolean }
@@ -105,6 +105,12 @@ export function QuestionEditor({
           <p className="rounded-2xl bg-[#9ED9CA]/25 px-4 py-3 text-sm font-bold text-[#1F6B5C]">
             Този въпрос вече е използван в {question?.attemptCount} опита. Промените няма да засегнат старите резултати — всеки опит
             пази копие на въпроса такъв, какъвто е бил.
+          </p>
+        )}
+        {question && question.tests.length > 1 && (
+          <p role="note" className="rounded-2xl bg-[#DD5B26]/10 px-4 py-3 text-sm font-bold text-[#B5461C]">
+            Внимание: този въпрос се използва в {question.tests.length} теста ({question.tests.map((t) => t.title).join(", ")}). Промяната ще
+            важи за новите опити във всички тях. Ако искате промяна само за един тест, използвайте „Дублирай“ и заменете въпроса в този тест.
           </p>
         )}
 
@@ -233,15 +239,7 @@ export function QuestionEditor({
             ))}
           </select>
         </Field>
-        <Field label="Трудност" htmlFor="q-diff" error={errors.difficulty}>
-          <select id="q-diff" name="difficulty" defaultValue={question?.difficulty ?? "medium"} className={inputClass}>
-            {DIFFICULTIES.map((d) => (
-              <option key={d} value={d}>
-                {LABELS.difficulty[d]}
-              </option>
-            ))}
-          </select>
-        </Field>
+        <input type="hidden" name="difficulty" value={question?.difficulty ?? "medium"} />
         <Field label="Точки" htmlFor="q-points" error={errors.points}>
           <input id="q-points" name="points" type="number" min={1} max={100} defaultValue={question?.points ?? 1} className={inputClass} />
         </Field>

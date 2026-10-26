@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown, Menu, Phone, X } from "lucide-react"
+import { ChevronDown, Menu, Phone, UserRound, X } from "lucide-react"
 import { PhoneLink } from "@/components/phone-link"
 import { contact, navItems } from "@/lib/nav"
 
@@ -22,7 +22,7 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-[24px] border border-brand/15 bg-cream/90 px-4 py-3 shadow-[0_12px_40px_rgba(59,36,22,0.1)] backdrop-blur-xl sm:px-6">
+      <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-4 rounded-[24px] border border-brand/15 bg-cream/90 px-4 py-3 shadow-[0_12px_40px_rgba(59,36,22,0.1)] backdrop-blur-xl sm:px-6">
         {/* Left: navigation */}
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Основна навигация">
           {navItems.map((item) => {
@@ -37,7 +37,7 @@ export function SiteHeader() {
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-1 rounded-full px-4 py-2.5 text-sm font-extrabold transition ${
+                    className={`flex items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-extrabold transition ${
                       active ? "bg-brand/12 text-brand-dark" : "text-ink/75 hover:text-brand-dark"
                     }`}
                     aria-expanded={desktopSub === item.label}
@@ -70,7 +70,7 @@ export function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-full px-4 py-2.5 text-sm font-extrabold transition ${
+                className={`whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-extrabold transition ${
                   active ? "bg-brand/12 text-brand-dark" : "text-ink/75 hover:text-brand-dark"
                 }`}
               >
@@ -80,11 +80,19 @@ export function SiteHeader() {
           })}
           <PhoneLink
             href={contact.phonePrimaryHref}
-            className="ml-2 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-dark"
+            className="ml-2 inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand px-4 py-2.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-dark"
           >
             <Phone className="h-4 w-4" />
             {contact.phonePrimary}
           </PhoneLink>
+          <Link
+            href="/testove/dashboard"
+            className="ml-2 grid h-10 w-10 shrink-0 place-items-center rounded-full border border-brand/25 text-brand-dark transition hover:-translate-y-0.5 hover:bg-brand/12"
+            aria-label="Моят профил"
+            title="Моят профил"
+          >
+            <UserRound className="h-5 w-5" />
+          </Link>
         </nav>
 
         {/* Mobile menu button */}
@@ -168,6 +176,14 @@ export function SiteHeader() {
               <Phone className="h-4 w-4" />
               {contact.phonePrimary}
             </PhoneLink>
+            <Link
+              href="/testove/dashboard"
+              onClick={() => setOpen(false)}
+              className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-brand/25 px-5 py-3 font-extrabold text-brand-dark hover:bg-cream"
+            >
+              <UserRound className="h-4 w-4" />
+              Моят профил
+            </Link>
         </div>
       )}
     </header>

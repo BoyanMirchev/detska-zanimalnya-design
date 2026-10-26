@@ -35,6 +35,9 @@ async function guard<T>(fn: () => Promise<ActionResult<T>>): Promise<ActionResul
 
 const validId = (id: unknown): id is number => Number.isInteger(id) && (id as number) > 0
 
+const CONFLICT_MESSAGE =
+  "Тестът е бил променен от друг администратор, докато редактирахте. Промените ви не са запазени — копирайте ги, презаредете страницата и опитайте отново."
+
 /* ---------------- Levels ---------------- */
 
 export async function saveLevel(id: number | null, input: { name: string; description: string; displayOrder: number }) {
@@ -255,25 +258,72 @@ export async function saveTest(id: number | null, raw: Record<string, unknown>) 
         RETURNING id
       `
       testId = row.id
-    } else {
-      if (!validId(id)) return { ok: false, error: "Невалиден тест." }
-      testId = id
       await sql`
-        UPDATE et_tests SET title = ${t.title}, description = ${t.description}, test_type = ${t.testType}, level_id = ${t.levelId},
-          duration_minutes = ${t.durationMinutes}, question_count = ${Math.max(t.questionCount, 1)}, selection_method = ${t.selectionMethod},
-          selection_config = ${values.config}::jsonb, settings = ${values.settings}::jsonb,
-          available_from = ${t.availableFrom}, available_until = ${t.availableUntil}, updated_at = now()
-        WHERE id = ${id}
-      `
-    }
-    await sql.transaction([
-      sql`DELETE FROM et_test_questions WHERE test_id = ${testId}`,
-      sql`
         INSERT INTO et_test_questions (test_id, question_id, display_order)
         SELECT ${testId}, q.id, q.ord FROM unnest(${values.questions}::int[]) WITH ORDINALITY AS q(id, ord)
-      `,
-    ])
-    await audit(id === null ? "test.create" : "test.update", "test", testId, { title: t.title })
+      `
+      await audit("test.create", "test", testId, { title: t.title })
+    } else {
+      if (!validId(id)) return { ok: false, error: "Невалиден тест." }
+      const expected = Number(raw.expectedVersion)
+      if (!Number.isInteger(expected) || expected < 1) return { ok: false, error: "Липсва версия на теста. Презаредете страницата." }
+      testId = id
+      const [before] = await sql`SELECT * FROM et_tests WHERE id = ${id}`
+      if (!before) return { ok: false, error: "Тестът не е намерен." }
+      if (before.edit_version !== expected) return { ok: false, error: CONFLICT_MESSAGE }
+      const beforeQuestions = (await sql`SELECT question_id FROM et_test_questions WHERE test_id = ${id} ORDER BY display_order, id`).map(
+        (r) => r.question_id as number,
+      )
+
+      try {
+        // One transaction: lock the row, abort (division by zero) if another admin saved meanwhile, then write everything.
+        // Attempts keep their own snapshots, so none of this touches started or finished attempts.
+        await sql.transaction([
+          sql`SELECT 1 / (CASE WHEN edit_version = ${expected} THEN 1 ELSE 0 END) FROM et_tests WHERE id = ${id} FOR UPDATE`,
+          sql`
+            UPDATE et_tests SET title = ${t.title}, description = ${t.description}, test_type = ${t.testType}, level_id = ${t.levelId},
+              duration_minutes = ${t.durationMinutes}, question_count = ${Math.max(t.questionCount, 1)}, selection_method = ${t.selectionMethod},
+              selection_config = ${values.config}::jsonb, settings = ${values.settings}::jsonb,
+              available_from = ${t.availableFrom}, available_until = ${t.availableUntil},
+              edit_version = edit_version + 1, updated_at = now()
+            WHERE id = ${id}
+          `,
+          sql`DELETE FROM et_test_questions WHERE test_id = ${id}`,
+          sql`
+            INSERT INTO et_test_questions (test_id, question_id, display_order)
+            SELECT ${id}, q.id, q.ord FROM unnest(${values.questions}::int[]) WITH ORDINALITY AS q(id, ord)
+          `,
+        ])
+      } catch (err) {
+        if ((err as { code?: string }).code === "22012") return { ok: false, error: CONFLICT_MESSAGE }
+        throw err
+      }
+
+      const iso = (v: unknown) => (v ? new Date(v as string).toISOString() : null)
+      const changed = Object.entries({
+        title: before.title !== t.title,
+        description: before.description !== t.description,
+        testType: before.test_type !== t.testType,
+        levelId: before.level_id !== t.levelId,
+        durationMinutes: before.duration_minutes !== t.durationMinutes,
+        questionCount: before.question_count !== Math.max(t.questionCount, 1),
+        selectionMethod: before.selection_method !== t.selectionMethod,
+        selectionConfig: JSON.stringify(before.selection_config) !== JSON.stringify(JSON.parse(values.config)),
+        settings: JSON.stringify(before.settings) !== JSON.stringify(JSON.parse(values.settings)),
+        availability: iso(before.available_from) !== iso(t.availableFrom) || iso(before.available_until) !== iso(t.availableUntil),
+        questions: beforeQuestions.join(",") !== values.questions.join(","),
+      })
+        .filter(([, v]) => v)
+        .map(([k]) => k)
+      await audit("test.update", "test", testId, {
+        title: t.title,
+        fromVersion: expected,
+        toVersion: expected + 1,
+        changed,
+        questionsAdded: values.questions.filter((q) => !beforeQuestions.includes(q)),
+        questionsRemoved: beforeQuestions.filter((q) => !values.questions.includes(q)),
+      })
+    }
 
     // A published test must remain startable after edits.
     const [current] = await sql`SELECT * FROM et_tests WHERE id = ${testId}`

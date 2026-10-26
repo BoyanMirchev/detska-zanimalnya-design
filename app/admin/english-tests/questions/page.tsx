@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { requireAdminPage } from "@/lib/english-tests/auth"
 import { PAGE_SIZE, listCategories, listLevels, listQuestions } from "@/lib/english-tests/admin-data"
-import { DIFFICULTIES, LABELS, QUESTION_STATUSES } from "@/lib/english-tests/types"
+import { LABELS, QUESTION_STATUSES } from "@/lib/english-tests/types"
 import { EtShell, Pagination } from "@/components/admin/english-tests/et-shell"
 import { QuestionBank } from "@/components/admin/english-tests/question-bank"
 import { inputClass, primaryButton, secondaryButton } from "@/components/admin/ui"
@@ -18,7 +18,7 @@ export default async function QuestionsPage({ searchParams }: { searchParams: Pr
     q: sp.q?.slice(0, 100),
     level: num(sp.level),
     category: num(sp.category),
-    difficulty: DIFFICULTIES.includes(sp.difficulty as never) ? sp.difficulty : undefined,
+    difficulty: undefined,
     status: sp.status === "all" || QUESTION_STATUSES.includes(sp.status as never) ? sp.status : undefined,
     sort: ["updated", "level", "points", "text"].includes(sp.sort ?? "") ? sp.sort : "updated",
     page: num(sp.page) ?? 1,
@@ -33,7 +33,7 @@ export default async function QuestionsPage({ searchParams }: { searchParams: Pr
   return (
     <EtShell
       title="Банка с въпроси"
-      subtitle="Създавайте, редактирайте и организирайте въпросите по ниво, категория и трудност."
+      subtitle="Създавайте, редактирайте и организирайте въпросите по ниво и категория."
       actions={
         <Link href="/admin/english-tests/questions/new" className="inline-flex items-center rounded-full bg-[#DD5B26] px-6 py-3 font-extrabold text-white shadow-sm transition hover:-translate-y-0.5">
           Нов въпрос
@@ -63,17 +63,6 @@ export default async function QuestionsPage({ searchParams }: { searchParams: Pr
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-extrabold text-[#17324D]/60">Трудност</span>
-          <select name="difficulty" defaultValue={filters.difficulty ?? ""} className={inputClass}>
-            <option value="">Всички</option>
-            {DIFFICULTIES.map((d) => (
-              <option key={d} value={d}>
-                {LABELS.difficulty[d]}
               </option>
             ))}
           </select>

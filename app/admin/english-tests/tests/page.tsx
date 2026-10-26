@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { CheckCircle2, Pencil } from "lucide-react"
 import { requireAdminPage } from "@/lib/english-tests/auth"
 import { listTests } from "@/lib/english-tests/admin-data"
 import { LABELS, type TestStatus } from "@/lib/english-tests/types"
@@ -9,9 +10,9 @@ export const dynamic = "force-dynamic"
 
 const tone = { draft: "gray", published: "green", unpublished: "orange", archived: "gray" } as const
 
-export default async function TestsPage() {
+export default async function TestsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
   await requireAdminPage()
-  const tests = await listTests()
+  const [tests, { saved }] = await Promise.all([listTests(), searchParams])
 
   return (
     <EtShell
@@ -23,6 +24,13 @@ export default async function TestsPage() {
         </Link>
       }
     >
+      {saved && (
+        <p role="status" className="mb-4 flex items-center gap-2 rounded-2xl bg-[#9ED9CA]/30 px-4 py-3 font-extrabold text-[#1F6B5C]">
+          <CheckCircle2 className="h-5 w-5 shrink-0" aria-hidden="true" />
+          Промените са запазени успешно!
+          {saved === "hidden" && " Тестът е скрит от учениците, защото вече няма достатъчно подходящи въпроси."}
+        </p>
+      )}
       {tests.length === 0 ? (
         <EmptyState title="Все още няма тестове">Създайте първия тест от бутона „Нов тест“.</EmptyState>
       ) : (
@@ -46,6 +54,14 @@ export default async function TestsPage() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/admin/english-tests/${t.id}/edit`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[#17324D] px-4 py-2 text-sm font-extrabold text-white transition hover:bg-[#17324D]/85"
+                >
+                  <Pencil className="h-4 w-4" aria-hidden="true" />
+                  Редактирай
+                  <span className="sr-only"> {t.title}</span>
+                </Link>
                 <Link href={`/admin/english-tests/results?test=${t.id}`} className="text-sm font-extrabold text-[#DD5B26] hover:underline">
                   Резултати
                 </Link>
