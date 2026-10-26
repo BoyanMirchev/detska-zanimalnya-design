@@ -11,6 +11,7 @@ export function PageHero({
   text,
   image,
   imageAlt,
+  showEnglishPhone = false,
 }: {
   badge: string
   title: string
@@ -18,6 +19,7 @@ export function PageHero({
   text: string
   image: string
   imageAlt: string
+  showEnglishPhone?: boolean
 }) {
   return (
     <section className="noise relative px-5 pb-16 pt-32 sm:px-8 lg:pt-40">
@@ -51,6 +53,16 @@ export function PageHero({
             </PhoneLink>
             <ContactDialog />
           </div>
+          {showEnglishPhone && (
+            <PhoneLink
+              href={contact.phoneEnglishHref}
+              track={false}
+              className="mt-4 inline-flex items-center gap-2 font-extrabold text-ink/70 transition hover:text-brand-dark"
+            >
+              <Phone className="h-4 w-4 text-brand" />
+              Номер за Английски: {contact.phoneEnglish}
+            </PhoneLink>
+          )}
         </div>
         <div className="relative mx-auto w-full max-w-[520px]">
           <div className="animate-bob absolute -right-4 -top-4 z-10 grid h-16 w-16 place-items-center rounded-full bg-sun text-ink shadow-lg">
