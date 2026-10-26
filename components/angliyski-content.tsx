@@ -62,6 +62,12 @@ export function AngliyskiContent() {
     <>
       <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto flex max-w-6xl flex-col gap-10">
+          <p className="max-w-4xl text-pretty text-xl font-semibold leading-9 text-ink/75">
+            Английският език е ключ към нови възможности, а най-добрият начин да бъде усвоен е чрез практика,
+            общуване и забавление. В „Хралупата“ превръщаме ученето в естествен и вдъхновяващ процес, в който
+            децата развиват увереност да говорят, разбират и мислят на английски. Работим в малки групи до 6 деца,
+            за да осигурим индивидуално внимание, активно участие и напредък за всяко дете.
+          </p>
           <div className="flex max-w-3xl flex-col gap-5">
             <SectionHeading eyebrow="Умения" title="Какво развиваме?" />
             <p className="text-lg font-semibold leading-8 text-ink/65">
