@@ -130,6 +130,8 @@ const STATEMENTS = [
     updated_at timestamptz NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS et_tests_status_idx ON et_tests (status)`,
+  // Optimistic-concurrency token: every admin save must present the version it loaded.
+  `ALTER TABLE et_tests ADD COLUMN IF NOT EXISTS edit_version int NOT NULL DEFAULT 1`,
 
   `CREATE TABLE IF NOT EXISTS et_test_questions (
     id serial PRIMARY KEY,

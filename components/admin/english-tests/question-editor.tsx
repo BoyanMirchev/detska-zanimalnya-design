@@ -107,6 +107,12 @@ export function QuestionEditor({
             пази копие на въпроса такъв, какъвто е бил.
           </p>
         )}
+        {question && question.tests.length > 1 && (
+          <p role="note" className="rounded-2xl bg-[#DD5B26]/10 px-4 py-3 text-sm font-bold text-[#B5461C]">
+            Внимание: този въпрос се използва в {question.tests.length} теста ({question.tests.map((t) => t.title).join(", ")}). Промяната ще
+            важи за новите опити във всички тях. Ако искате промяна само за един тест, използвайте „Дублирай“ и заменете въпроса в този тест.
+          </p>
+        )}
 
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-1 text-sm font-extrabold text-[#17324D]">Тип въпрос</legend>

@@ -239,7 +239,12 @@ export async function getQuestion(id: number): Promise<AdminQuestionDetail | nul
 export async function listPickerQuestions() {
   await requireAdmin()
   const rows = await sql`
-    SELECT q.id, q.text, q.type, q.difficulty, q.points, q.level_id, q.category_id, l.name AS level_name, c.name AS category_name
+    SELECT q.id, q.text, q.type, q.difficulty, q.points, q.level_id, q.category_id, l.name AS level_name, c.name AS category_name,
+           COALESCE((SELECT json_agg(json_build_object('text', o.text, 'isCorrect', o.is_correct) ORDER BY o.display_order, o.id)
+                     FROM et_question_options o WHERE o.question_id = q.id), '[]'::json) AS options,
+           COALESCE((SELECT json_agg(json_build_object('id', t.id, 'title', t.title) ORDER BY t.id)
+                     FROM et_test_questions tq JOIN et_tests t ON t.id = tq.test_id
+                     WHERE tq.question_id = q.id AND t.status <> 'archived'), '[]'::json) AS tests
     FROM et_questions q
     JOIN et_levels l ON l.id = q.level_id
     JOIN et_categories c ON c.id = q.category_id
@@ -256,6 +261,8 @@ export async function listPickerQuestions() {
     categoryId: r.category_id as number,
     levelName: r.level_name as string,
     categoryName: r.category_name as string,
+    options: r.options as { text: string; isCorrect: boolean }[],
+    tests: r.tests as { id: number; title: string }[],
   }))
 }
 
@@ -306,6 +313,8 @@ export type AdminTestDetail = {
   availableUntil: string | null
   placementRules: (PlacementRuleConfig & { version: number }) | null
   attemptCount: number
+  activeAttemptCount: number
+  editVersion: number
 }
 
 export async function getTest(id: number): Promise<AdminTestDetail | null> {
@@ -316,7 +325,7 @@ export async function getTest(id: number): Promise<AdminTestDetail | null> {
   const [questions, rules, attempts] = await Promise.all([
     sql`SELECT question_id FROM et_test_questions WHERE test_id = ${id} ORDER BY display_order, id`,
     sql`SELECT rule_configuration, version FROM et_placement_rules WHERE test_id = ${id} ORDER BY version DESC LIMIT 1`,
-    sql`SELECT count(*)::int AS n FROM et_attempts WHERE test_id = ${id}`,
+    sql`SELECT count(*)::int AS n, count(*) FILTER (WHERE status IN ('in_progress', 'grading'))::int AS active FROM et_attempts WHERE test_id = ${id}`,
   ])
   return {
     id: t.id,
@@ -335,6 +344,8 @@ export async function getTest(id: number): Promise<AdminTestDetail | null> {
     availableUntil: iso(t.available_until),
     placementRules: rules[0] ? { ...(rules[0].rule_configuration as PlacementRuleConfig), version: rules[0].version } : null,
     attemptCount: attempts[0].n,
+    activeAttemptCount: attempts[0].active,
+    editVersion: t.edit_version ?? 1,
   }
 }
 

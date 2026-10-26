@@ -1,7 +1,9 @@
 "use client"
 
-import { useMemo, useState, useTransition } from "react"
+import { useEffect, useMemo, useRef, useState, useTransition } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { ArrowDown, ArrowUp, Check, Eye, EyeOff, PenSquare, Replace, Users, X } from "lucide-react"
 import { saveTest } from "@/app/actions/english-tests/admin"
 import type { AdminCategory, AdminLevel, AdminTestDetail, PickerQuestion } from "@/lib/english-tests/admin-data"
 import {
@@ -90,6 +92,67 @@ export function TestBuilder({
   const [error, setError] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
+  const [replacingId, setReplacingId] = useState<number | null>(null)
+  const [previewIds, setPreviewIds] = useState<number[]>([])
+  const [formTouched, setFormTouched] = useState(false)
+
+  const stateSnapshot = JSON.stringify({ testType, levelId, method, config, questionIds, questionCount, settings })
+  const initialSnapshot = useRef(stateSnapshot)
+  const dirty = formTouched || stateSnapshot !== initialSnapshot.current
+  const allowLeave = useRef(false)
+  const LEAVE_PROMPT = "Имате незапазени промени. Сигурни ли сте, че искате да напуснете страницата?"
+
+  useEffect(() => {
+    if (!dirty) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (allowLeave.current) return
+      e.preventDefault()
+      e.returnValue = ""
+    }
+    // Client-side navigation (Next Link) doesn't fire beforeunload, so intercept internal link clicks too.
+    const onClick = (e: MouseEvent) => {
+      if (allowLeave.current || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return
+      const anchor = (e.target as HTMLElement).closest("a")
+      if (!anchor || anchor.target === "_blank" || !anchor.href || anchor.href.startsWith("#")) return
+      if (!window.confirm(LEAVE_PROMPT)) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
+    window.addEventListener("beforeunload", onBeforeUnload)
+    document.addEventListener("click", onClick, true)
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload)
+      document.removeEventListener("click", onClick, true)
+    }
+  }, [dirty])
+
+  function cancel() {
+    if (dirty && !window.confirm(LEAVE_PROMPT)) return
+    allowLeave.current = true
+    router.push("/admin/english-tests/tests")
+  }
+
+  function moveQuestion(index: number, delta: -1 | 1) {
+    setQuestionIds((ids) => {
+      const target = index + delta
+      if (target < 0 || target >= ids.length) return ids
+      const next = [...ids]
+      ;[next[index], next[target]] = [next[target], next[index]]
+      return next
+    })
+  }
+
+  function pickFromBank(id: number) {
+    if (replacingId !== null) {
+      if (!questionIds.includes(id)) setQuestionIds((ids) => ids.map((x) => (x === replacingId ? id : x)))
+      setReplacingId(null)
+      return
+    }
+    setQuestionIds((ids) => toggleIn(ids, id))
+  }
+
+  const otherTests = (q: PickerQuestion) => q.tests.filter((t) => t.id !== test?.id)
 
   const set = <K extends keyof TestSettings>(key: K, value: TestSettings[K]) => setSettings((s) => ({ ...s, [key]: value }))
 
@@ -152,24 +215,39 @@ export function TestBuilder({
         settings,
         availableFrom: form.get("availableFrom") ? new Date(String(form.get("availableFrom"))).toISOString() : "",
         availableUntil: form.get("availableUntil") ? new Date(String(form.get("availableUntil"))).toISOString() : "",
+        expectedVersion: test?.editVersion,
       })
       if (!res.ok) {
         setErrors(res.errors ?? {})
         setError(res.error ?? "Моля, коригирайте маркираните полета.")
+        window.scrollTo({ top: 0, behavior: "smooth" })
         return
       }
-      setToast(res.message ?? "Запазено.")
-      if (!test && res.data) router.replace(`/admin/english-tests/${res.data.id}/edit`)
-      else router.refresh()
+      allowLeave.current = true
+      if (!test && res.data) {
+        router.replace(`/admin/english-tests/${res.data.id}/edit`)
+        return
+      }
+      const hidden = res.message?.includes("скрит")
+      router.push(`/admin/english-tests/tests?saved=${hidden ? "hidden" : "1"}`)
     })
   }
 
   return (
-    <form action={submit} className="flex flex-col gap-4">
+    <form
+      action={submit}
+      onChange={(e) => {
+        if ((e.target as HTMLElement).closest("[data-ignore-dirty]")) return
+        setFormTouched(true)
+      }}
+      className="flex flex-col gap-4"
+    >
       <FormError message={error} />
       {test && test.attemptCount > 0 && (
         <p className="rounded-2xl bg-[#9ED9CA]/25 px-4 py-3 text-sm font-bold text-[#1F6B5C]">
-          Тестът има {test.attemptCount} опита. Промените важат само за нови опити — завършените резултати остават непроменени.
+          Тестът има {test.attemptCount} опита
+          {test.activeAttemptCount > 0 ? `, от които ${test.activeAttemptCount} в момента се решават` : ""}. Промените важат само за нови опити —
+          започнатите и завършените опити запазват своите въпроси, отговори, правила за оценяване и краен срок.
         </p>
       )}
 
@@ -229,7 +307,7 @@ export function TestBuilder({
         </div>
       </Section>
 
-      <Section title="Въпроси" description="Изберете конкретни въпроси или оставете системата да подбере случайни от банката по критерии.">
+      <Section title="Въпроси в теста" description="Изберете конкретни въпроси или оставете системата да подбере случайни от банката по критерии.">
         <div className="flex flex-wrap gap-2">
           {(["random", "manual"] as const).map((m) => (
             <Chip key={m} active={method === m} onClick={() => setMethod(m)}>
@@ -342,7 +420,17 @@ export function TestBuilder({
           </div>
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2" data-ignore-dirty>
+              {replacingId !== null && (
+                <div role="status" className="flex items-center justify-between gap-2 rounded-2xl bg-[#DD5B26]/10 px-4 py-2 text-sm font-bold text-[#B5461C]">
+                  <span>
+                    Изберете въпрос от банката, който да замени въпрос №{questionIds.indexOf(replacingId) + 1}.
+                  </span>
+                  <button type="button" onClick={() => setReplacingId(null)} className="rounded-full px-2 font-extrabold hover:bg-[#DD5B26]/15">
+                    Отказ
+                  </button>
+                </div>
+              )}
               <div className="flex gap-2">
                 <input
                   aria-label="Търсене на въпрос"
@@ -369,26 +457,36 @@ export function TestBuilder({
               </div>
               <ul className="flex max-h-96 flex-col gap-1 overflow-y-auto rounded-2xl bg-[#F7FAFC] p-2" aria-label="Банка с въпроси">
                 {pickerRows.length === 0 && <li className="p-3 text-sm font-bold text-[#17324D]/55">Няма активни въпроси.</li>}
-                {pickerRows.map((q) => (
-                  <li key={q.id}>
-                    <label className="flex cursor-pointer items-start gap-3 rounded-xl px-3 py-2 hover:bg-white">
-                      <input
-                        type="checkbox"
-                        checked={questionIds.includes(q.id)}
-                        onChange={() => setQuestionIds((ids) => toggleIn(ids, q.id))}
-                        className="mt-1 h-4 w-4 accent-[#DD5B26]"
-                      />
-                      <span className="flex min-w-0 flex-col">
-                        <span lang="en" className="line-clamp-2 text-sm font-bold text-[#17324D]">
-                          {q.text}
+                {pickerRows.map((q) => {
+                  const selected = questionIds.includes(q.id)
+                  const shared = otherTests(q).length
+                  return (
+                    <li key={q.id}>
+                      <label
+                        className={`flex cursor-pointer items-start gap-3 rounded-xl px-3 py-2 hover:bg-white ${
+                          replacingId !== null && selected ? "cursor-not-allowed opacity-50" : ""
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          disabled={replacingId !== null && selected}
+                          onChange={() => pickFromBank(q.id)}
+                          className="mt-1 h-4 w-4 accent-[#DD5B26]"
+                        />
+                        <span className="flex min-w-0 flex-col">
+                          <span lang="en" className="line-clamp-2 text-sm font-bold text-[#17324D]">
+                            {q.text}
+                          </span>
+                          <span className="text-xs font-bold text-[#17324D]/50">
+                            {q.levelName} · {q.categoryName} · {LABELS.difficulty[q.difficulty]} · {q.points} т.
+                            {shared > 0 && ` · в още ${shared} ${shared === 1 ? "тест" : "теста"}`}
+                          </span>
                         </span>
-                        <span className="text-xs font-bold text-[#17324D]/50">
-                          {q.levelName} · {q.categoryName} · {LABELS.difficulty[q.difficulty]} · {q.points} т.
-                        </span>
-                      </span>
-                    </label>
-                  </li>
-                ))}
+                      </label>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
             <div className="flex flex-col gap-2">
@@ -400,25 +498,119 @@ export function TestBuilder({
                   {errors.questionIds}
                 </p>
               )}
-              <ol className="flex max-h-96 flex-col gap-1 overflow-y-auto rounded-2xl border-2 border-dashed border-[#17324D]/10 p-2">
+              {questionIds.length > selectedQuestions.length && (
+                <p role="alert" className="rounded-2xl bg-[#F27B6B]/15 px-4 py-2 text-sm font-bold text-[#C7503F]">
+                  {questionIds.length - selectedQuestions.length} от избраните въпроси вече не са активни в банката. Премахнете ги или ги
+                  заменете, преди да запазите.
+                </p>
+              )}
+              <ol className="flex max-h-[32rem] flex-col gap-2 overflow-y-auto rounded-2xl border-2 border-dashed border-[#17324D]/10 p-2">
                 {selectedQuestions.length === 0 && <li className="p-3 text-sm font-bold text-[#17324D]/55">Изберете въпроси от списъка.</li>}
-                {selectedQuestions.map((q, i) => (
-                  <li key={q.id} className="flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-sm">
-                    <span className="w-6 text-xs font-extrabold text-[#17324D]/40">{i + 1}.</span>
-                    <span lang="en" className="line-clamp-1 flex-1 text-sm font-bold text-[#17324D]">
-                      {q.text}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setQuestionIds((ids) => ids.filter((id) => id !== q.id))}
-                      className="rounded-full px-2 text-sm font-extrabold text-[#C7503F] hover:bg-[#F27B6B]/15"
+                {selectedQuestions.map((q, i) => {
+                  const shared = otherTests(q)
+                  const previewing = previewIds.includes(q.id)
+                  const replacing = replacingId === q.id
+                  const iconButton = "inline-flex h-8 w-8 items-center justify-center rounded-full text-[#17324D]/70 hover:bg-[#17324D]/10 disabled:opacity-30"
+                  return (
+                    <li
+                      key={q.id}
+                      className={`flex flex-col gap-2 rounded-xl bg-white px-3 py-2 shadow-sm ${replacing ? "ring-2 ring-[#DD5B26]" : ""}`}
                     >
-                      Премахни
-                      <span className="sr-only"> въпрос {i + 1}</span>
-                    </button>
-                  </li>
-                ))}
+                      <div className="flex items-start gap-2">
+                        <span className="w-6 pt-1 text-xs font-extrabold text-[#17324D]/40">{i + 1}.</span>
+                        <div className="flex min-w-0 flex-1 flex-col">
+                          <span lang="en" className="line-clamp-2 text-sm font-bold text-[#17324D]">
+                            {q.text}
+                          </span>
+                          <span className="text-xs font-bold text-[#17324D]/50">
+                            {q.levelName} · {q.categoryName} · {q.points} т.
+                          </span>
+                          {shared.length > 0 && (
+                            <span
+                              className="mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-[#9ED9CA]/30 px-2 py-0.5 text-xs font-extrabold text-[#1F6B5C]"
+                              title={shared.map((t) => t.title).join(", ")}
+                            >
+                              <Users className="h-3 w-3" aria-hidden="true" />
+                              Използва се и в {shared.length} {shared.length === 1 ? "друг тест" : "други теста"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1 pl-8">
+                        <button type="button" onClick={() => moveQuestion(i, -1)} disabled={i === 0} className={iconButton} aria-label={`Премести въпрос ${i + 1} нагоре`}>
+                          <ArrowUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveQuestion(i, 1)}
+                          disabled={i === selectedQuestions.length - 1}
+                          className={iconButton}
+                          aria-label={`Премести въпрос ${i + 1} надолу`}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewIds((ids) => toggleIn(ids, q.id))}
+                          className={iconButton}
+                          aria-expanded={previewing}
+                          aria-label={`${previewing ? "Скрий" : "Преглед на"} отговорите на въпрос ${i + 1}`}
+                        >
+                          {previewing ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setReplacingId(replacing ? null : q.id)}
+                          className={`${iconButton} ${replacing ? "bg-[#DD5B26]/15 text-[#B5461C]" : ""}`}
+                          aria-pressed={replacing}
+                          aria-label={`Замени въпрос ${i + 1}`}
+                        >
+                          <Replace className="h-4 w-4" />
+                        </button>
+                        <Link
+                          href={`/admin/english-tests/questions/${q.id}`}
+                          target="_blank"
+                          className={iconButton}
+                          aria-label={`Отвори въпрос ${i + 1} в редактора (нов раздел)`}
+                        >
+                          <PenSquare className="h-4 w-4" />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setQuestionIds((ids) => ids.filter((id) => id !== q.id))
+                            if (replacing) setReplacingId(null)
+                          }}
+                          className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-extrabold text-[#C7503F] hover:bg-[#F27B6B]/15"
+                        >
+                          <X className="h-4 w-4" aria-hidden="true" />
+                          Премахни
+                          <span className="sr-only"> въпрос {i + 1}</span>
+                        </button>
+                      </div>
+                      {previewing && (
+                        <ul className="ml-8 flex flex-col gap-1 rounded-xl bg-[#F7FAFC] p-2" aria-label={`Отговори на въпрос ${i + 1}`}>
+                          {q.options.map((o, oi) => (
+                            <li
+                              key={oi}
+                              lang="en"
+                              className={`flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-bold ${
+                                o.isCorrect ? "bg-[#9ED9CA]/30 text-[#1F6B5C]" : "text-[#17324D]/70"
+                              }`}
+                            >
+                              {o.isCorrect ? <Check className="h-4 w-4 shrink-0" aria-label="Верен отговор" /> : <span className="w-4 shrink-0" />}
+                              {o.text}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  )
+                })}
               </ol>
+              <p className="text-xs font-bold text-[#17324D]/55">
+                Редакцията на въпрос в банката засяга всички тестове, в които се използва. Започнатите и завършените опити не се променят.
+              </p>
             </div>
           </div>
         )}
@@ -479,10 +671,21 @@ export function TestBuilder({
       <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-full bg-[#17324D] px-5 py-3 text-white shadow-lg">
         <span className="text-sm font-extrabold">
           {finalCount} въпроса · {LABELS.testType[testType]}
+          {dirty && <span className="ml-2 text-[#F9C784]">· незапазени промени</span>}
         </span>
-        <button type="submit" disabled={pending} className={primaryButton}>
-          {pending ? "Запазване…" : test ? "Запази промените" : "Създай тест"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={cancel}
+            disabled={pending}
+            className="rounded-full px-5 py-3 font-extrabold text-white/85 transition hover:bg-white/10 disabled:opacity-50"
+          >
+            Отказ
+          </button>
+          <button type="submit" disabled={pending || replacingId !== null} className={primaryButton}>
+            {pending ? "Запазване…" : test ? "Запази промените" : "Създай тест"}
+          </button>
+        </div>
       </div>
       <Toast message={toast} onDone={() => setToast(null)} />
     </form>
