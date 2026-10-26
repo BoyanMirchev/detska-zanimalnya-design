@@ -11,6 +11,9 @@ export function PageHero({
   text,
   image,
   imageAlt,
+  showEnglishPhone = false,
+  phone = contact.phonePrimary,
+  phoneHref = contact.phonePrimaryHref,
 }: {
   badge: string
   title: string
@@ -18,6 +21,9 @@ export function PageHero({
   text: string
   image: string
   imageAlt: string
+  showEnglishPhone?: boolean
+  phone?: string
+  phoneHref?: string
 }) {
   return (
     <section className="noise relative px-5 pb-16 pt-32 sm:px-8 lg:pt-40">
@@ -43,14 +49,24 @@ export function PageHero({
           <p className="mt-7 max-w-xl text-lg font-semibold leading-8 text-ink/65">{text}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <PhoneLink
-              href={contact.phonePrimaryHref}
+              href={phoneHref}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-4 font-extrabold text-white transition hover:-translate-y-1 hover:bg-brand-dark"
             >
               <Phone className="h-5 w-5" />
-              Обади се: {contact.phonePrimary}
+              Обади се: {phone}
             </PhoneLink>
             <ContactDialog />
           </div>
+          {showEnglishPhone && (
+            <PhoneLink
+              href={contact.phoneEnglishHref}
+              track={false}
+              className="mt-4 inline-flex items-center gap-2 font-extrabold text-ink/70 transition hover:text-brand-dark"
+            >
+              <Phone className="h-4 w-4 text-brand" />
+              Номер за Английски: {contact.phoneEnglish}
+            </PhoneLink>
+          )}
         </div>
         <div className="relative mx-auto w-full max-w-[520px]">
           <div className="animate-bob absolute -right-4 -top-4 z-10 grid h-16 w-16 place-items-center rounded-full bg-sun text-ink shadow-lg">
@@ -66,7 +82,11 @@ export function PageHero({
   )
 }
 
-export function BottomCTA() {
+export function BottomCTA({
+  phone = contact.phonePrimary,
+  phoneHref = contact.phonePrimaryHref,
+  showSecondary = true,
+}: { phone?: string; phoneHref?: string; showSecondary?: boolean } = {}) {
   return (
     <section className="px-5 pb-24 pt-8 sm:px-8 lg:pb-32">
       <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[44px] bg-brand px-6 py-14 sm:px-12 lg:px-16 lg:py-20">
@@ -87,19 +107,21 @@ export function BottomCTA() {
           </div>
           <div className="flex flex-col gap-3">
             <PhoneLink
-              href={contact.phonePrimaryHref}
+              href={phoneHref}
               className="inline-flex min-w-[240px] items-center justify-center gap-2 rounded-full bg-ink px-7 py-4 font-extrabold text-white transition hover:-translate-y-1"
             >
               <Phone className="h-5 w-5" />
-              {contact.phonePrimary}
+              {phone}
             </PhoneLink>
-            <a
-              href={contact.phoneSecondaryHref}
-              className="inline-flex min-w-[240px] items-center justify-center gap-2 rounded-full bg-white px-7 py-4 font-extrabold text-brand-dark transition hover:-translate-y-1"
-            >
-              <Phone className="h-5 w-5" />
-              {contact.phoneSecondary}
-            </a>
+            {showSecondary && (
+              <a
+                href={contact.phoneSecondaryHref}
+                className="inline-flex min-w-[240px] items-center justify-center gap-2 rounded-full bg-white px-7 py-4 font-extrabold text-brand-dark transition hover:-translate-y-1"
+              >
+                <Phone className="h-5 w-5" />
+                {contact.phoneSecondary}
+              </a>
+            )}
             <ContactDialog />
           </div>
         </div>

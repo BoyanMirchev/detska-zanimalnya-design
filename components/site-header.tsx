@@ -19,6 +19,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [desktopSub, setDesktopSub] = useState<string | null>(null)
   const [mobileSub, setMobileSub] = useState<string | null>("Занималня")
+  const isEnglishPage = pathname.startsWith("/kursove/angliyski")
+  const headerPhone = isEnglishPage ? contact.phoneEnglish : contact.phonePrimary
+  const headerPhoneHref = isEnglishPage ? contact.phoneEnglishHref : contact.phonePrimaryHref
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6">
@@ -79,11 +82,11 @@ export function SiteHeader() {
             )
           })}
           <PhoneLink
-            href={contact.phonePrimaryHref}
+            href={headerPhoneHref}
             className="ml-2 inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand px-4 py-2.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-dark"
           >
             <Phone className="h-4 w-4" />
-            {contact.phonePrimary}
+            {headerPhone}
           </PhoneLink>
           <Link
             href="/testove/dashboard"
@@ -169,12 +172,12 @@ export function SiteHeader() {
             })}
           </nav>
             <PhoneLink
-              href={contact.phonePrimaryHref}
+              href={headerPhoneHref}
               onClick={() => setOpen(false)}
               className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-3 font-extrabold text-white"
             >
               <Phone className="h-4 w-4" />
-              {contact.phonePrimary}
+              {headerPhone}
             </PhoneLink>
             <Link
               href="/testove/dashboard"

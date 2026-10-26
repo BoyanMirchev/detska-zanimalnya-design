@@ -75,6 +75,12 @@ export const kursoveChildren: NavChild[] = [
     age: "Математика и БЕЛ",
     href: "/kursove/nvo-10-klas",
   },
+  {
+    label: "Подготовка за НВО 12. клас",
+    short: "НВО 12. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-12-klas",
+  },
 ]
 
 export const navItems: NavItem[] = [
@@ -93,6 +99,8 @@ export const contact = {
   phonePrimaryHref: "tel:+359886679774",
   phoneSecondary: "088 882 7634",
   phoneSecondaryHref: "tel:+359888827634",
+  phoneEnglish: "0877207176",
+  phoneEnglishHref: "tel:+359877207176",
   hours: "07:30 – 19:00",
   address: "ул. „Княз Борис I“ 127, 1000 София",
   facebook: "https://facebook.com/profile.php?id=61593067162915",

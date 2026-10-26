@@ -7,5 +7,5 @@ export function RegistrationSection() {
   const pathname = usePathname()
   // Hide the public registration form on the admin dashboard.
   if (pathname?.startsWith("/admin")) return null
-  return <RegistrationForm />
+  return <RegistrationForm englishOnly={pathname?.startsWith("/kursove/angliyski") ?? false} />
 }

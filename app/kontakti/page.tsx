@@ -31,6 +31,7 @@ export const metadata: Metadata = {
 const phones = [
   { label: "Основен телефон", value: contact.phonePrimary, href: contact.phonePrimaryHref },
   { label: "Втори телефон", value: contact.phoneSecondary, href: contact.phoneSecondaryHref },
+  { label: "Номер за Английски", value: contact.phoneEnglish, href: contact.phoneEnglishHref },
 ]
 
 const schools = [
@@ -58,6 +59,7 @@ export default function KontaktiPage() {
         text="Имате въпрос или искате да запишете детето си? Обадете ни се или ни пишете - ще се радваме да се запознаем и да отговорим на всичко, което ви вълнува."
         image="/images/photo-toddlers-banner.png"
         imageAlt="Деца рисуват пред банера на Хралупата"
+        showEnglishPhone
       />
 
       <section className="px-5 py-20 sm:px-8 lg:py-24">
