@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react"
 import { BookOpen, Ear, MessageCircle, Mic, PenLine, Puzzle, Sparkles, Type } from "lucide-react"
 import { SectionHeading } from "@/components/sections"
 import { CheckList, EnrollCTA, Paragraphs } from "@/components/course-content-parts"
+import { contact } from "@/lib/nav"
 
 const skills: { icon: LucideIcon; label: string }[] = [
   { icon: MessageCircle, label: "говорене" },
@@ -232,6 +233,8 @@ export function AngliyskiEnrollCTA() {
     <EnrollCTA
       title="Запишете детето си на английски език"
       text="Свържете се с нас за информация относно нивата, групите, графика и свободните места."
+      phone={contact.phoneEnglish}
+      phoneHref={contact.phoneEnglishHref}
     />
   )
 }

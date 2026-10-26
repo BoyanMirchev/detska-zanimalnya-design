@@ -82,6 +82,10 @@ export function SiteFooter() {
               <Phone className="h-4 w-4 text-brand" />
               {contact.phoneSecondary}
             </a>
+            <a href={contact.phoneEnglishHref} className="flex items-center gap-2 font-extrabold text-ink">
+              <Phone className="h-4 w-4 text-brand" />
+              Номер за Английски {contact.phoneEnglish}
+            </a>
             <span className="flex items-center gap-2 font-bold text-ink/60">
               <Clock3 className="h-4 w-4 text-leaf" />
               {contact.hours}

@@ -31,7 +31,17 @@ export function Paragraphs({ items }: { items: string[] }) {
   )
 }
 
-export function EnrollCTA({ title, text }: { title: string; text: string }) {
+export function EnrollCTA({
+  title,
+  text,
+  phone = contact.phonePrimary,
+  phoneHref = contact.phonePrimaryHref,
+}: {
+  title: string
+  text: string
+  phone?: string
+  phoneHref?: string
+}) {
   return (
     <section className="px-5 pb-20 sm:px-8 lg:pb-24">
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-[36px] bg-brand p-8 text-center text-white sm:p-12">
@@ -46,11 +56,11 @@ export function EnrollCTA({ title, text }: { title: string; text: string }) {
             <ArrowRight className="h-5 w-5" aria-hidden="true" />
           </Link>
           <PhoneLink
-            href={contact.phonePrimaryHref}
+            href={phoneHref}
             className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 px-7 py-4 font-extrabold text-white transition hover:-translate-y-1"
           >
             <Phone className="h-5 w-5" aria-hidden="true" />
-            {contact.phonePrimary}
+            {phone}
           </PhoneLink>
           <ContactDialog />
         </div>
