@@ -43,7 +43,7 @@ export function RegisterForm({ next }: { next?: string }) {
           <input id="lastName" name="lastName" defaultValue={v.lastName} required autoComplete="family-name" className={inputClass} {...described("lastName", e)} />
         </Field>
       </div>
-      <Field label="Потребителско име" htmlFor="username" error={e?.username} hint="3–30 знака: латински букви, цифри, точка, тире или долна черта.">
+      <Field label="Потребителско име" htmlFor="username" error={e?.username}>
         <input id="username" name="username" defaultValue={v.username} required autoComplete="username" autoCapitalize="none" spellCheck={false} className={inputClass} {...described("username", e)} />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">

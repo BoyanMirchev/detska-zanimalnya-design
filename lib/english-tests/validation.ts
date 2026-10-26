@@ -28,16 +28,12 @@ const idList = (v: unknown) =>
 
 /* ---------- Students ---------- */
 
-export const USERNAME_PATTERN = /^[a-z0-9](?:[a-z0-9._-]{1,28})[a-z0-9]$/
-
 export function normalizeUsername(value: unknown) {
   return str(value).toLowerCase()
 }
 
 export function validateUsername(username: string): string | null {
-  if (!USERNAME_PATTERN.test(username)) {
-    return "Потребителското име трябва да е 3–30 символа: латински букви, цифри, точка, тире или долна черта."
-  }
+  if (!username) return "Въведи потребителско име."
   return null
 }
 
@@ -45,7 +41,9 @@ export function validatePassword(password: string, username?: string): string | 
   if (password.length < 8) return "Паролата трябва да е поне 8 символа."
   if (password.length > 128) return "Паролата е твърде дълга."
   if (!/[a-zA-Zа-яА-Я]/.test(password) || !/\d/.test(password)) return "Паролата трябва да съдържа букви и цифри."
-  if (username && password.toLowerCase().includes(username)) return "Паролата не трябва да съдържа потребителското име."
+  if (username && username.length >= 3 && password.toLowerCase().includes(username)) {
+    return "Паролата не трябва да съдържа потребителското име."
+  }
   return null
 }
 

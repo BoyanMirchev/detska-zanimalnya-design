@@ -104,9 +104,10 @@ describe("selectRandomQuestions", () => {
 
 describe("credential validation", () => {
   it("validates usernames", () => {
-    expect(validateUsername("maria.p")).toBeNull()
-    expect(validateUsername("ab")).not.toBeNull()
-    expect(validateUsername("мария")).not.toBeNull()
+    expect(validateUsername("boyan.mirchev")).toBeNull()
+    expect(validateUsername("ab")).toBeNull()
+    expect(validateUsername("мария")).toBeNull()
+    expect(validateUsername("")).not.toBeNull()
   })
 
   it("validates passwords", () => {
