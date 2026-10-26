@@ -4,7 +4,7 @@ import { selectRandomQuestions, type PoolQuestion } from "./selection"
 import { validatePassword, validateUsername } from "./validation"
 import type { PlacementRuleConfig, SelectionConfig } from "./types"
 
-const q = (id: number, levelId: number, correct: number[], type: GradableQuestion["type"] = "single_choice"): GradableQuestion => ({
+const q = (id: number, levelId: number, correct: number[], type: GradableQuestion["type"] = "single"): GradableQuestion => ({
   attemptQuestionId: id,
   type,
   points: 1,
@@ -30,7 +30,7 @@ describe("gradeAttempt", () => {
   })
 
   it("uses all-or-nothing scoring for multiple-answer questions", () => {
-    const questions = [q(1, 1, [1, 2], "multiple_choice")]
+    const questions = [q(1, 1, [1, 2], "multiple")]
     expect(gradeAttempt(questions, new Map([[1, [1]]])).score).toBe(0)
     expect(gradeAttempt(questions, new Map([[1, [1, 2, 3]]])).score).toBe(0)
     expect(gradeAttempt(questions, new Map([[1, [2, 1]]])).score).toBe(1)
