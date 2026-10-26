@@ -75,6 +75,12 @@ export const kursoveChildren: NavChild[] = [
     age: "Математика и БЕЛ",
     href: "/kursove/nvo-10-klas",
   },
+  {
+    label: "Подготовка за НВО 12. клас",
+    short: "НВО 12. клас",
+    age: "Математика и БЕЛ",
+    href: "/kursove/nvo-12-klas",
+  },
 ]
 
 export const navItems: NavItem[] = [

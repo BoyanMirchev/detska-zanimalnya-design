@@ -70,6 +70,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/kursove/nvo-12-klas`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/programirane`,
       changeFrequency: "monthly",
       priority: 0.9,
