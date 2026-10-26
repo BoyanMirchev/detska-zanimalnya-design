@@ -4,17 +4,18 @@ import Link from "next/link"
 import { ArrowRight, Clock, ListChecks, Save, Target } from "lucide-react"
 import { SectionHeading } from "@/components/sections"
 import { getCurrentStudent } from "@/lib/english-tests/auth"
+import { getActiveLevelNames } from "@/lib/english-tests/student-data"
 
 export const metadata: Metadata = {
   title: "Онлайн тест по английски – определи нивото си | Хралупата",
   description:
-    "Безплатен онлайн входящ тест по английски език в Хралупата. Разбери ориентировъчното ниво на детето – от Pre A1 до B2 – и следи напредъка след всеки курс.",
+    "Безплатен онлайн входящ тест по английски език в Хралупата. Разбери ориентировъчното ниво на детето – от Pre-A1 до C2 – и следи напредъка след всеки курс.",
   alternates: { canonical: "/testove" },
   openGraph: {
     type: "website",
     locale: "bg_BG",
     title: "Онлайн тест по английски | Хралупата",
-    description: "Входящ тест и тестове по нива – от Pre A1 до B2.",
+    description: "Входящ тест и тестове по нива – от Pre-A1 до C2.",
   },
 }
 
@@ -36,10 +37,9 @@ const steps = [
   },
 ]
 
-const levels = ["Pre A1", "A1", "A2", "B1", "B2"]
-
 export default async function TestoveLandingPage() {
-  const student = await getCurrentStudent()
+  const [student, levels] = await Promise.all([getCurrentStudent(), getActiveLevelNames()])
+  const levelRange = levels.length > 1 ? `от ${levels[0]} до ${levels[levels.length - 1]}` : "по нива"
 
   return (
     <main>
@@ -53,7 +53,7 @@ export default async function TestoveLandingPage() {
               Какво ниво по английски е <span className="text-brand">детето?</span>
             </h1>
             <p className="max-w-xl text-lg font-semibold leading-8 text-ink/65 text-pretty">
-              Входящият тест дава ориентировъчно ниво от Pre A1 до B2, за да започне обучението от правилното място.
+              Входящият тест дава ориентировъчно ниво {levelRange}, за да започне обучението от правилното място.
               След всяко ниво може да се направи и тест за напредъка.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">

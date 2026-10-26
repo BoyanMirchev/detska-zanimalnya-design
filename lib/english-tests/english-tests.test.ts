@@ -71,6 +71,62 @@ describe("estimatePlacement", () => {
   })
 })
 
+describe("seven-level placement (Pre-A1 to C2)", () => {
+  const names = ["Pre-A1", "A1", "A2", "B1", "B2", "C1", "C2"]
+  const rules = {
+    minTotalAnswered: 30,
+    levels: names.map((levelName, i) => ({ levelId: i + 1, levelName, minPercent: 70, minQuestions: 6 })),
+  } as PlacementRuleConfig
+  const stats = (earnedPerLevel: number[]) =>
+    Object.fromEntries(earnedPerLevel.map((earned, i) => [i + 1, { questions: 6, earned, max: 6 }]))
+
+  it("grades C1 and C2 questions into their own level buckets", () => {
+    const questions = names.flatMap((_, level) =>
+      Array.from({ length: 6 }, (_, k) => q(level * 10 + k + 1, level + 1, [1000 + level * 10 + k])),
+    )
+    const answers = new Map(questions.filter((x) => x.levelId !== 7 || x.attemptQuestionId % 2 === 0).map((x) => [x.attemptQuestionId, x.correctOptionIds]))
+    const result = gradeAttempt(questions, answers)
+    expect(result.maxScore).toBe(42)
+    expect(result.perLevel[6]).toEqual({ questions: 6, earned: 6, max: 6 })
+    expect(result.perLevel[7]).toEqual({ questions: 6, earned: 3, max: 6 })
+  })
+
+  it("awards C1 or C2 only after every lower level is passed", () => {
+    expect(estimatePlacement(rules, stats([6, 6, 6, 6, 6, 5, 3]), 42).levelName).toBe("C1")
+    expect(estimatePlacement(rules, stats([6, 6, 6, 6, 6, 6, 6]), 42).levelName).toBe("C2")
+  })
+
+  it("does not award C1/C2 from a high overall score when a lower level fails", () => {
+    const out = estimatePlacement(rules, stats([6, 6, 6, 6, 2, 6, 6]), 42)
+    expect(out).toMatchObject({ levelName: "B1", conclusive: true })
+  })
+
+  it("requires teacher review when C1/C2 were not tested enough", () => {
+    const perLevel = { ...stats([6, 6, 6, 6, 6]), 6: { questions: 2, earned: 2, max: 2 } }
+    const out = estimatePlacement(rules, perLevel, 32)
+    expect(out).toMatchObject({ levelName: "B2", conclusive: false, reason: "insufficient_level_evidence" })
+  })
+
+  it("allocates six questions per level across all seven levels", () => {
+    const pool: PoolQuestion[] = Array.from({ length: 70 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, categoryId: 1, difficulty: "medium" }))
+    const allocations = names.map((_, i) => ({ levelId: i + 1, count: 6 }))
+    const res = selectRandomQuestions(pool, { levelIds: [], categoryIds: [], difficulties: [], allocations } as SelectionConfig, 42)
+    expect(res.ok).toBe(true)
+    if (res.ok) {
+      expect(new Set(res.ids).size).toBe(42)
+      for (let level = 1; level <= 7; level++) {
+        expect(res.ids.filter((id) => pool[id - 1].levelId === level)).toHaveLength(6)
+      }
+    }
+  })
+
+  it("rejects allocations when C2 has too few questions", () => {
+    const pool: PoolQuestion[] = Array.from({ length: 40 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, categoryId: 1, difficulty: "medium" }))
+    const allocations = names.map((_, i) => ({ levelId: i + 1, count: 6 }))
+    expect(selectRandomQuestions(pool, { levelIds: [], categoryIds: [], difficulties: [], allocations } as SelectionConfig, 42).ok).toBe(false)
+  })
+})
+
 describe("selectRandomQuestions", () => {
   const pool: PoolQuestion[] = Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,

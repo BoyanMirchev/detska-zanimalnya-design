@@ -17,6 +17,14 @@ export type AvailableTest = {
   eligibility: Eligibility
 }
 
+export async function getActiveLevelNames(): Promise<string[]> {
+  await ensureEnglishTestsSchema()
+  const rows = await sql`
+    SELECT name FROM et_levels WHERE is_active AND archived_at IS NULL ORDER BY display_order, id
+  `
+  return rows.map((row) => String(row.name))
+}
+
 export async function getAvailableTests(studentId: number): Promise<AvailableTest[]> {
   await ensureEnglishTestsSchema()
   await finalizeExpiredAttempts({ studentId })
