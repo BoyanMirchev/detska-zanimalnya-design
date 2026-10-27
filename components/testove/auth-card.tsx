@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 
 export function AuthCard({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-et-mist px-4 py-12 font-sans">
+    <main className="flex min-h-dvh items-center justify-center bg-et-mist px-4 pb-12 pt-32 font-sans sm:pt-36">
       <div className="flex w-full max-w-lg flex-col gap-6">
         <Link href="/testove" className="self-center font-display text-lg font-extrabold text-et-navy">
           Тестове по английски

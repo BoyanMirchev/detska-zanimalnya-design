@@ -217,16 +217,15 @@ export async function setQuestionsStatus(ids: number[], status: "active" | "inac
 export async function deleteQuestion(id: number) {
   return guard(async () => {
     if (!validId(id)) return { ok: false, error: "Невалиден въпрос." }
-    const [usage] = await sql`
-      SELECT (SELECT count(*)::int FROM et_test_questions WHERE question_id = ${id}) AS tests,
-             (SELECT count(*)::int FROM et_attempt_questions WHERE original_question_id = ${id}) AS attempts
-    `
-    if (usage.tests > 0 || usage.attempts > 0) {
-      return { ok: false, error: "Въпросът е използван в тест или опит. Архивирайте го вместо да го изтривате." }
-    }
-    await sql`DELETE FROM et_questions WHERE id = ${id}`
+    // Attempts keep immutable snapshots (FK is ON DELETE SET NULL), so past results stay intact.
+    const [, deleted] = await sql.transaction([
+      sql`DELETE FROM et_test_questions WHERE question_id = ${id}`,
+      sql`DELETE FROM et_questions WHERE id = ${id} RETURNING id`,
+    ])
+    if (deleted.length === 0) return { ok: false, error: "Въпросът не е намерен." }
     await audit("question.delete", "question", id)
     revalidatePath(`${BASE}/questions`)
+    revalidatePath(`${BASE}/tests`)
     return { ok: true, message: "Въпросът е изтрит." }
   })
 }
@@ -391,6 +390,29 @@ export async function savePlacementRules(testId: number, raw: unknown) {
     await audit("placement_rules.update", "test", testId, { version: row.version })
     revalidatePath(BASE, "layout")
     return { ok: true, data: { version: row.version }, message: `Правилата са запазени (версия ${row.version}).` }
+  })
+}
+
+export async function saveLevelDefaults(raw: unknown) {
+  return guard(async () => {
+    if (!Array.isArray(raw) || raw.length === 0 || raw.length > 50) return { ok: false, error: "Няма стойности за запазване." }
+    const items: { levelId: number; minPercent: number; minQuestions: number }[] = []
+    for (const entry of raw) {
+      const o = (entry ?? {}) as Record<string, unknown>
+      const levelId = Number(o.levelId)
+      const minPercent = Number(o.minPercent)
+      const minQuestions = Number(o.minQuestions)
+      if (!validId(levelId)) return { ok: false, error: "Невалидно ниво." }
+      if (!Number.isInteger(minPercent) || minPercent < 1 || minPercent > 100) return { ok: false, error: "Прагът трябва да е цяло число от 1 до 100." }
+      if (!Number.isInteger(minQuestions) || minQuestions < 1 || minQuestions > 100) return { ok: false, error: "Минималният брой въпроси трябва да е от 1 до 100." }
+      items.push({ levelId, minPercent, minQuestions })
+    }
+    for (const it of items) {
+      await sql`UPDATE et_levels SET default_min_percent = ${it.minPercent}, default_min_questions = ${it.minQuestions} WHERE id = ${it.levelId}`
+    }
+    await audit("levels.defaults_update", "level", items[0].levelId, { items })
+    revalidatePath(BASE, "layout")
+    return { ok: true, message: "Стойностите по подразбиране са запазени." }
   })
 }
 

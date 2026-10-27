@@ -71,7 +71,9 @@ export default async function ResultPage({ params }: { params: Promise<{ attempt
           <Panel className="flex flex-col gap-4">
             <h2 className="font-display text-xl font-extrabold">Ориентировъчно ниво</h2>
             {placement.conclusive && placement.levelName ? (
-              <p className="font-display text-3xl font-extrabold">Препоръчително ниво: {placement.levelName}</p>
+              <p className="rounded-2xl bg-et-mint/25 px-4 py-4 font-display text-3xl font-extrabold text-balance">
+                Ти си на ниво {placement.levelName}
+              </p>
             ) : (
               <p className="rounded-2xl bg-et-coral/15 px-4 py-3 font-extrabold text-berry">
                 Необходимо е допълнително оценяване.

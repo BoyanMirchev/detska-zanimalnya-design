@@ -7,7 +7,7 @@ const BASE = "/admin/english-tests"
 
 const LINKS = [
   { href: BASE, label: "Преглед", match: (p: string) => p === BASE },
-  { href: `${BASE}/levels`, label: "Нива и категории", match: (p: string) => p.startsWith(`${BASE}/levels`) },
+  { href: `${BASE}/levels`, label: "Нива", match: (p: string) => p.startsWith(`${BASE}/levels`) },
   { href: `${BASE}/questions`, label: "Банка с въпроси", match: (p: string) => p.startsWith(`${BASE}/questions`) },
   { href: `${BASE}/create`, label: "Създаване на тест", match: (p: string) => p === `${BASE}/create` },
   { href: `${BASE}/tests`, label: "Всички тестове", match: (p: string) => p.startsWith(`${BASE}/tests`) || p.endsWith("/edit") },

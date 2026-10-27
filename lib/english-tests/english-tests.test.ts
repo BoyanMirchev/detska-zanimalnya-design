@@ -60,10 +60,14 @@ describe("estimatePlacement", () => {
     expect(out).toMatchObject({ levelName: null, reason: "below_lowest_level" })
   })
 
-  it("is inconclusive with too few answers or too little level evidence", () => {
+  it("is inconclusive with too few answers or no tested level", () => {
     expect(estimatePlacement(rules, {}, 1).reason).toBe("insufficient_total")
+    expect(estimatePlacement(rules, {}, 4)).toMatchObject({ levelName: null, conclusive: false, reason: "insufficient_level_evidence" })
+  })
+
+  it("skips levels without enough questions", () => {
     const out = estimatePlacement(rules, { 1: { questions: 2, earned: 2, max: 2 }, 2: { questions: 1, earned: 1, max: 1 } }, 4)
-    expect(out).toMatchObject({ levelName: "A1", conclusive: false, reason: "insufficient_level_evidence" })
+    expect(out).toMatchObject({ levelName: "A1", conclusive: true, reason: "placed" })
   })
 
   it("reports missing rules", () => {
@@ -101,10 +105,20 @@ describe("seven-level placement (Pre-A1 to C2)", () => {
     expect(out).toMatchObject({ levelName: "B1", conclusive: true })
   })
 
-  it("requires teacher review when C1/C2 were not tested enough", () => {
+  it("stops at the highest tested level when C1/C2 were not tested enough", () => {
     const perLevel = { ...stats([6, 6, 6, 6, 6]), 6: { questions: 2, earned: 2, max: 2 } }
     const out = estimatePlacement(rules, perLevel, 32)
-    expect(out).toMatchObject({ levelName: "B2", conclusive: false, reason: "insufficient_level_evidence" })
+    expect(out).toMatchObject({ levelName: "B2", conclusive: true, reason: "placed" })
+  })
+
+  it("places a student even when Pre-A1 has no questions in the test", () => {
+    const perLevel = {
+      2: { questions: 6, earned: 6, max: 6 },
+      3: { questions: 6, earned: 5, max: 6 },
+      4: { questions: 6, earned: 4, max: 6 },
+      5: { questions: 2, earned: 1, max: 2 },
+    }
+    expect(estimatePlacement(rules, perLevel, 30)).toMatchObject({ levelName: "A2", conclusive: true })
   })
 
   it("allocates six questions per level across all seven levels", () => {

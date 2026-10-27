@@ -138,7 +138,7 @@ export function QuestionBank({ rows }: { rows: AdminQuestionRow[] }) {
                       disabled={pending}
                       className="rounded-full p-2 text-[#C7503F] hover:bg-[#F27B6B]/15"
                       onClick={() => {
-                        if (confirm("Да изтрия ли въпроса? Използваните въпроси могат само да бъдат архивирани.")) run(() => deleteQuestion(q.id))
+                        if (confirm("Да изтрия ли въпроса окончателно? Той ще бъде премахнат и от тестовете, в които участва. Досегашните резултати остават непроменени.")) run(() => deleteQuestion(q.id))
                       }}
                     >
                       <Trash2 className="h-4 w-4" />

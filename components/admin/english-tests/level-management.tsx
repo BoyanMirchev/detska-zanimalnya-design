@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowDown, ArrowUp, Pencil, Plus } from "lucide-react"
-import { moveLevel, saveCategory, saveLevel, setCategoryActive, setLevelState } from "@/app/actions/english-tests/admin"
+import { moveLevel, saveCategory, saveLevel, setLevelState } from "@/app/actions/english-tests/admin"
 import type { AdminCategory, AdminLevel } from "@/lib/english-tests/admin-data"
 import { Field, FormError, Modal, Toast, inputClass, primaryButton, secondaryButton } from "@/components/admin/ui"
 import { Pill } from "./et-shell"
@@ -31,7 +31,7 @@ export function LevelManagement({ levels, categories }: { levels: AdminLevel[]; 
   const activeLevels = levels.filter((l) => !l.archived)
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
+    <div className="mx-auto flex max-w-4xl flex-col gap-4">
       <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-6" aria-labelledby="levels-title">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -110,36 +110,6 @@ export function LevelManagement({ levels, categories }: { levels: AdminLevel[]; 
         <p className="mt-3 text-xs font-bold text-[#17324D]/50">
           Архивирането не изтрива нивото — историческите резултати остават непроменени.
         </p>
-      </section>
-
-      <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-6" aria-labelledby="categories-title">
-        <div className="flex items-center justify-between gap-3">
-          <h2 id="categories-title" className="text-lg font-extrabold text-[#17324D]">
-            Категории
-          </h2>
-          <button type="button" className={primaryButton} onClick={() => setEditing({ kind: "category", item: null })}>
-            <Plus className="h-4 w-4" /> Категория
-          </button>
-        </div>
-        <ul className="mt-4 flex flex-col gap-2">
-          {categories.map((c) => (
-            <li key={c.id} className="flex items-center gap-3 rounded-2xl bg-[#F7FAFC] px-4 py-3">
-              <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-2 font-extrabold text-[#17324D]">
-                  {c.name} {!c.isActive && <Pill tone="orange">Неактивна</Pill>}
-                </p>
-                <p className="text-sm font-bold text-[#17324D]/55">{c.questionCount} въпроса</p>
-              </div>
-              <button type="button" className={secondaryButton} onClick={() => setEditing({ kind: "category", item: c })}>
-                <Pencil className="h-4 w-4" />
-                <span className="sr-only">Редакция на {c.name}</span>
-              </button>
-              <button type="button" disabled={pending} className={secondaryButton} onClick={() => run(() => setCategoryActive(c.id, !c.isActive))}>
-                {c.isActive ? "Скрий" : "Покажи"}
-              </button>
-            </li>
-          ))}
-        </ul>
       </section>
 
       <EditDialog
