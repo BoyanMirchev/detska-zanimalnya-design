@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { savePlacementRules } from "@/app/actions/english-tests/admin"
+import { saveLevelDefaults, savePlacementRules } from "@/app/actions/english-tests/admin"
 import type { AdminLevel } from "@/lib/english-tests/admin-data"
 import type { PlacementRuleConfig } from "@/lib/english-tests/types"
 import { INCONCLUSIVE_MESSAGE } from "@/lib/english-tests/types"
@@ -24,9 +24,17 @@ export function PlacementRulesEditor({
   const [rows, setRows] = useState<Row[]>(() =>
     active.map((l) => {
       const existing = rules?.levels.find((r) => r.levelId === l.id)
-      return { levelId: l.id, enabled: rules ? !!existing : true, minQuestions: existing?.minQuestions ?? 3, minPercent: existing?.minPercent ?? 70 }
+      return {
+        levelId: l.id,
+        enabled: rules ? !!existing : true,
+        minQuestions: existing?.minQuestions ?? l.defaultMinQuestions,
+        minPercent: existing?.minPercent ?? l.defaultMinPercent,
+      }
     }),
   )
+  const [bulkPercent, setBulkPercent] = useState("")
+  const [bulkQuestions, setBulkQuestions] = useState("")
+  const [savingDefaults, startDefaults] = useTransition()
   const [minTotal, setMinTotal] = useState(rules?.minTotalAnswered ?? 5)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [toast, setToast] = useState<string | null>(null)
@@ -54,6 +62,35 @@ export function PlacementRulesEditor({
     })
   }
 
+  function applyToAll() {
+    const percent = Number(bulkPercent)
+    const questions = Number(bulkQuestions)
+    setRows((prev) =>
+      prev.map((r) =>
+        r.enabled
+          ? {
+              ...r,
+              ...(bulkPercent !== "" && percent >= 1 && percent <= 100 ? { minPercent: Math.round(percent) } : {}),
+              ...(bulkQuestions !== "" && questions >= 1 && questions <= 100 ? { minQuestions: Math.round(questions) } : {}),
+            }
+          : r,
+      ),
+    )
+  }
+
+  function saveAsDefaults() {
+    startDefaults(async () => {
+      setError(null)
+      const res = await saveLevelDefaults(rows.map(({ levelId, minPercent, minQuestions }) => ({ levelId, minPercent, minQuestions })))
+      if (!res.ok) {
+        setError(res.error ?? "Неуспешно запазване.")
+        return
+      }
+      setToast(res.message ?? "Запазено.")
+      router.refresh()
+    })
+  }
+
   const nameOf = (id: number) => levels.find((l) => l.id === id)?.name ?? "?"
 
   return (
@@ -71,6 +108,46 @@ export function PlacementRulesEditor({
         {rules && <span className="rounded-full bg-[#17324D]/5 px-3 py-1 text-xs font-extrabold text-[#17324D]">Версия {rules.version}</span>}
       </div>
       <FormError message={error ?? errors.levels ?? null} />
+
+      <div className="flex flex-col gap-3 rounded-2xl bg-[#F7FAFC] p-4">
+        <p className="text-sm font-bold leading-relaxed text-[#17324D]/70">
+          Всяка стойност в таблицата може да се променя свободно. За бърза промяна задайте обща стойност за всички включени нива.
+        </p>
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="flex flex-col gap-1 text-xs font-extrabold text-[#17324D]/70">
+            Праг за всички (%)
+            <input
+              type="number"
+              min={1}
+              max={100}
+              placeholder="напр. 60"
+              value={bulkPercent}
+              onChange={(e) => setBulkPercent(e.target.value)}
+              className={`${inputClass} w-32`}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs font-extrabold text-[#17324D]/70">
+            Мин. въпроси за всички
+            <input
+              type="number"
+              min={1}
+              max={100}
+              placeholder="напр. 4"
+              value={bulkQuestions}
+              onChange={(e) => setBulkQuestions(e.target.value)}
+              className={`${inputClass} w-32`}
+            />
+          </label>
+          <button
+            type="button"
+            onClick={applyToAll}
+            disabled={bulkPercent === "" && bulkQuestions === ""}
+            className="rounded-full bg-[#17324D] px-5 py-2.5 text-sm font-extrabold text-white disabled:opacity-40"
+          >
+            Приложи към всички
+          </button>
+        </div>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[560px] text-left text-sm">
@@ -145,7 +222,15 @@ export function PlacementRulesEditor({
         </p>
       )}
 
-      <div className="flex justify-end">
+      <div className="flex flex-wrap justify-end gap-3">
+        <button
+          type="button"
+          onClick={saveAsDefaults}
+          disabled={savingDefaults}
+          className="rounded-full bg-[#17324D]/5 px-5 py-2.5 text-sm font-extrabold text-[#17324D] hover:bg-[#17324D]/10 disabled:opacity-50"
+        >
+          {savingDefaults ? "Запазване…" : "Запази като стойности по подразбиране"}
+        </button>
         <button type="button" onClick={save} disabled={pending} className={primaryButton}>
           {pending ? "Запазване…" : rules ? "Запази нова версия" : "Запази правилата"}
         </button>

@@ -79,6 +79,8 @@ export type AdminLevel = {
   isActive: boolean
   archived: boolean
   questionCount: number
+  defaultMinPercent: number
+  defaultMinQuestions: number
 }
 
 export async function listLevels(): Promise<AdminLevel[]> {
@@ -95,6 +97,8 @@ export async function listLevels(): Promise<AdminLevel[]> {
     isActive: r.is_active,
     archived: r.archived_at !== null,
     questionCount: r.question_count,
+    defaultMinPercent: r.default_min_percent ?? 70,
+    defaultMinQuestions: r.default_min_questions ?? 3,
   }))
 }
 

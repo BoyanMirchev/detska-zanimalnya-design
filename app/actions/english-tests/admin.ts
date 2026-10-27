@@ -393,6 +393,29 @@ export async function savePlacementRules(testId: number, raw: unknown) {
   })
 }
 
+export async function saveLevelDefaults(raw: unknown) {
+  return guard(async () => {
+    if (!Array.isArray(raw) || raw.length === 0 || raw.length > 50) return { ok: false, error: "Няма стойности за запазване." }
+    const items: { levelId: number; minPercent: number; minQuestions: number }[] = []
+    for (const entry of raw) {
+      const o = (entry ?? {}) as Record<string, unknown>
+      const levelId = Number(o.levelId)
+      const minPercent = Number(o.minPercent)
+      const minQuestions = Number(o.minQuestions)
+      if (!validId(levelId)) return { ok: false, error: "Невалидно ниво." }
+      if (!Number.isInteger(minPercent) || minPercent < 1 || minPercent > 100) return { ok: false, error: "Прагът трябва да е цяло число от 1 до 100." }
+      if (!Number.isInteger(minQuestions) || minQuestions < 1 || minQuestions > 100) return { ok: false, error: "Минималният брой въпроси трябва да е от 1 до 100." }
+      items.push({ levelId, minPercent, minQuestions })
+    }
+    for (const it of items) {
+      await sql`UPDATE et_levels SET default_min_percent = ${it.minPercent}, default_min_questions = ${it.minQuestions} WHERE id = ${it.levelId}`
+    }
+    await audit("levels.defaults_update", "level", items[0].levelId, { items })
+    revalidatePath(BASE, "layout")
+    return { ok: true, message: "Стойностите по подразбиране са запазени." }
+  })
+}
+
 /* ---------------- Results & students ---------------- */
 
 export async function grantRetake(studentId: number, testId: number, extraAttempts: number, reason: string) {
