@@ -217,16 +217,15 @@ export async function setQuestionsStatus(ids: number[], status: "active" | "inac
 export async function deleteQuestion(id: number) {
   return guard(async () => {
     if (!validId(id)) return { ok: false, error: "Невалиден въпрос." }
-    const [usage] = await sql`
-      SELECT (SELECT count(*)::int FROM et_test_questions WHERE question_id = ${id}) AS tests,
-             (SELECT count(*)::int FROM et_attempt_questions WHERE original_question_id = ${id}) AS attempts
-    `
-    if (usage.tests > 0 || usage.attempts > 0) {
-      return { ok: false, error: "Въпросът е използван в тест или опит. Архивирайте го вместо да го изтривате." }
-    }
-    await sql`DELETE FROM et_questions WHERE id = ${id}`
+    // Attempts keep immutable snapshots (FK is ON DELETE SET NULL), so past results stay intact.
+    const [, deleted] = await sql.transaction([
+      sql`DELETE FROM et_test_questions WHERE question_id = ${id}`,
+      sql`DELETE FROM et_questions WHERE id = ${id} RETURNING id`,
+    ])
+    if (deleted.length === 0) return { ok: false, error: "Въпросът не е намерен." }
     await audit("question.delete", "question", id)
     revalidatePath(`${BASE}/questions`)
+    revalidatePath(`${BASE}/tests`)
     return { ok: true, message: "Въпросът е изтрит." }
   })
 }

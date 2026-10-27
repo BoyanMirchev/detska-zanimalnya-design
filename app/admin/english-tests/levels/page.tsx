@@ -9,7 +9,7 @@ export default async function LevelsPage() {
   await requireAdminPage()
   const [levels, categories] = await Promise.all([listLevels(), listCategories()])
   return (
-    <EtShell title="Нива и категории" subtitle="Управлявайте нивата на владеене и категориите на въпросите.">
+    <EtShell title="Нива" subtitle="Управлявайте нивата на владеене.">
       <LevelManagement levels={levels} categories={categories} />
     </EtShell>
   )
