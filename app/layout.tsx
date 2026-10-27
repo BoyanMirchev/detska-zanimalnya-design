@@ -79,8 +79,8 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window, document, "clarity", "script", "y6u4y4y7d5");`}
         </Script>
 
-        <SiteChromeGate>
-          <SiteHeader />
+<SiteChromeGate showOnAuth>
+<SiteHeader />
         </SiteChromeGate>
         {children}
         <SiteChromeGate>
