@@ -132,19 +132,27 @@ export function estimatePlacement(
     return { levelName: null, conclusive: false, reason: "insufficient_total", levels }
   }
 
+  return { ...resolvePlacementLevel(levels), levels }
+}
+
+/**
+ * Walks the levels in ascending order. Levels the test did not cover with enough
+ * questions are skipped, so they neither block nor award a level; the first
+ * tested level that is failed stops the climb.
+ */
+export function resolvePlacementLevel(
+  levels: PlacementOutcome["levels"],
+): Pick<PlacementOutcome, "levelName" | "conclusive" | "reason"> {
   let achieved: string | null = null
+  let anyTested = false
   for (const level of levels) {
-    if (level.passed === null) {
-      // Not enough questions at this level to decide: the result cannot be conclusive.
-      return { levelName: achieved, conclusive: false, reason: "insufficient_level_evidence", levels }
-    }
-    if (!level.passed) {
-      return achieved
-        ? { levelName: achieved, conclusive: true, reason: "placed", levels }
-        : { levelName: null, conclusive: true, reason: "below_lowest_level", levels }
-    }
+    if (level.passed === null) continue
+    anyTested = true
+    if (!level.passed) break
     achieved = level.levelName
   }
 
-  return { levelName: achieved, conclusive: true, reason: "placed", levels }
+  if (!anyTested) return { levelName: null, conclusive: false, reason: "insufficient_level_evidence" }
+  if (!achieved) return { levelName: null, conclusive: true, reason: "below_lowest_level" }
+  return { levelName: achieved, conclusive: true, reason: "placed" }
 }
