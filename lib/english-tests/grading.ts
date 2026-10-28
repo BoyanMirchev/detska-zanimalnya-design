@@ -94,6 +94,7 @@ export type PlacementOutcome = {
     questions: number
     percent: number | null
     minPercent: number
+    maxPercent?: number
     enoughQuestions: boolean
     passed: boolean | null
   }[]
@@ -149,31 +150,37 @@ function estimateByScoreBands(
   answeredTotal: number,
   overallPercent: number,
 ): PlacementOutcome {
-  const levels: PlacementOutcome["levels"] = rules.levels.map((rule) => ({
-    levelId: rule.levelId,
-    levelName: rule.levelName,
-    questions: perLevel[rule.levelId]?.questions ?? 0,
-    percent: overallPercent,
-    minPercent: rule.minPercent,
-    enoughQuestions: true,
-    passed: overallPercent >= rule.minPercent,
-  }))
+  const score = Math.floor(overallPercent)
+  const levels: PlacementOutcome["levels"] = rules.levels.map((rule, i) => {
+    const max = bandMax(rules.levels, i)
+    return {
+      levelId: rule.levelId,
+      levelName: rule.levelName,
+      questions: perLevel[rule.levelId]?.questions ?? 0,
+      percent: overallPercent,
+      minPercent: rule.minPercent,
+      maxPercent: max,
+      enoughQuestions: true,
+      passed: score >= rule.minPercent && score <= max,
+    }
+  })
 
   const mode = "score_bands" as const
   if (answeredTotal < rules.minTotalAnswered) {
     return { mode, levelName: null, conclusive: false, reason: "insufficient_total", levels }
   }
 
-  let achieved: string | null = null
-  let best = -1
-  for (const level of levels) {
-    if (level.passed && level.minPercent >= best) {
-      best = level.minPercent
-      achieved = level.levelName
-    }
-  }
+  const achieved = levels.find((l) => l.passed)?.levelName ?? null
   if (!achieved) return { mode, levelName: null, conclusive: true, reason: "below_lowest_level", levels }
   return { mode, levelName: achieved, conclusive: true, reason: "placed", levels }
+}
+
+/** Older rule versions only stored a start; their range ends just before the next level. */
+export function bandMax(levels: { minPercent: number; maxPercent?: number }[], index: number) {
+  const explicit = levels[index].maxPercent
+  if (explicit !== undefined) return explicit
+  const next = levels[index + 1]
+  return next ? Math.max(next.minPercent - 1, levels[index].minPercent) : 100
 }
 
 /**

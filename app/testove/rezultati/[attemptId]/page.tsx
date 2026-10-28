@@ -93,7 +93,7 @@ export default async function ResultPage({ params }: { params: Promise<{ attempt
                     >
                       <span className="font-extrabold">{l.levelName}</span>
                       <span>
-                        {l.minPercent}–{next ? Math.max(next.minPercent - 1, 0) : 100}%{current ? " · твоето ниво" : ""}
+                        {l.minPercent}–{l.maxPercent ?? (next ? Math.max(next.minPercent - 1, 0) : 100)}%{current ? " · твоето ниво" : ""}
                       </span>
                     </li>
                   )

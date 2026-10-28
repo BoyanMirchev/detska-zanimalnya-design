@@ -283,47 +283,37 @@ export function validatePlacementRules(
   const rawLevels = Array.isArray(r.levels) ? r.levels : []
   const seen = new Set<number>()
   const levels: PlacementRuleConfig["levels"] = []
-  const mode = r.mode === "score_bands" ? "score_bands" : "per_level"
+  const isPercent = (n: number) => Number.isInteger(n) && n >= 0 && n <= 100
 
   for (const item of rawLevels) {
     const o = (item ?? {}) as Record<string, unknown>
     const levelId = int(o.levelId)
-    const minQuestions = int(o.minQuestions)
     const minPercent = Number(o.minPercent)
+    const maxPercent = Number(o.maxPercent)
     const levelName = knownLevels.get(levelId)
     if (!levelName || seen.has(levelId)) {
       errors.levels = "Всяко ниво може да присъства само веднъж и трябва да съществува."
       continue
     }
-    if (mode === "score_bands") {
-      if (!Number.isFinite(minPercent) || minPercent < 0 || minPercent > 100) {
-        errors.levels = "Началният процент за всяко ниво трябва да е между 0 и 100%."
-        continue
-      }
-      const previous = levels[levels.length - 1]
-      if (previous && minPercent <= previous.minPercent) {
-        errors.levels = "Всяко следващо ниво трябва да започва от по-висок процент от предишното."
-        continue
-      }
-      seen.add(levelId)
-      levels.push({ levelId, levelName, minQuestions: 1, minPercent })
+    if (!isPercent(minPercent) || !isPercent(maxPercent)) {
+      errors.levels = `Процентите за ${levelName} трябва да са цели числа от 0 до 100.`
       continue
     }
-    if (Number.isNaN(minQuestions) || minQuestions < 1 || minQuestions > 100) {
-      errors.levels = "Минималният брой въпроси за ниво трябва да е между 1 и 100."
+    if (minPercent > maxPercent) {
+      errors.levels = `За ${levelName} „От“ не може да е по-голямо от „До“.`
       continue
     }
-    if (!Number.isFinite(minPercent) || minPercent < 1 || minPercent > 100) {
-      errors.levels = "��рагът трябва да е между 1 и 100%."
+    const previous = levels[levels.length - 1]
+    if (previous && minPercent <= (previous.maxPercent ?? previous.minPercent)) {
+      errors.levels = `${levelName} трябва да започва след края на ${previous.levelName} (над ${previous.maxPercent}%).`
       continue
     }
     seen.add(levelId)
-    levels.push({ levelId, levelName, minQuestions, minPercent })
+    levels.push({ levelId, levelName, minQuestions: 1, minPercent, maxPercent })
   }
 
-  if (Number.isNaN(minTotalAnswered) || minTotalAnswered < 0 || minTotalAnswered > 200)
-    errors.minTotalAnswered = "Невалиден минимален брой отговорени въпроси."
+  if (levels.length === 0 && !errors.levels) errors.levels = "Включете поне едно ниво."
 
   if (Object.keys(errors).length) return { ok: false, errors }
-  return { ok: true, data: { mode, levels, minTotalAnswered } }
+  return { ok: true, data: { mode: "score_bands", levels, minTotalAnswered: Number.isNaN(minTotalAnswered) ? 0 : Math.max(0, minTotalAnswered) } }
 }
