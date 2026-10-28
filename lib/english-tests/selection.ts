@@ -1,7 +1,7 @@
 import { randomInt } from "node:crypto"
 import type { SelectionConfig } from "./types"
 
-export type PoolQuestion = { id: number; levelId: number; categoryId: number; difficulty: string }
+export type PoolQuestion = { id: number; levelId: number; difficulty: string }
 
 export type RandomFn = (maxExclusive: number) => number
 
@@ -18,7 +18,6 @@ export function shuffle<T>(items: readonly T[], random: RandomFn = cryptoRandom)
 
 export function matchesFilters(q: PoolQuestion, config: SelectionConfig) {
   if (config.levelIds.length && !config.levelIds.includes(q.levelId)) return false
-  if (config.categoryIds.length && !config.categoryIds.includes(q.categoryId)) return false
   if (config.difficulties.length && !config.difficulties.includes(q.difficulty as never)) return false
   return true
 }

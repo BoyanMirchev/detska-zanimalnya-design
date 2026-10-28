@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowDown, ArrowUp, Check, Eye, EyeOff, PenSquare, Replace, Users, X } from "lucide-react"
 import { saveTest } from "@/app/actions/english-tests/admin"
-import type { AdminCategory, AdminLevel, AdminTestDetail, PickerQuestion } from "@/lib/english-tests/admin-data"
+import type { AdminLevel, AdminTestDetail, PickerQuestion } from "@/lib/english-tests/admin-data"
 import {
   DEFAULT_TEST_SETTINGS,
   EMPTY_SELECTION_CONFIG,
@@ -61,12 +61,10 @@ function Toggle({ label, hint, checked, onChange }: { label: string; hint?: stri
 export function TestBuilder({
   test,
   levels,
-  categories,
   questions,
 }: {
   test: AdminTestDetail | null
   levels: AdminLevel[]
-  categories: AdminCategory[]
   questions: PickerQuestion[]
 }) {
   const router = useRouter()
@@ -153,12 +151,8 @@ export function TestBuilder({
 
   const pool = useMemo(
     () =>
-      questions.filter(
-        (q) =>
-          (effectiveLevelIds.length === 0 || effectiveLevelIds.includes(q.levelId)) &&
-          (config.categoryIds.length === 0 || config.categoryIds.includes(q.categoryId)),
-      ),
-    [questions, effectiveLevelIds, config.categoryIds],
+      questions.filter((q) => effectiveLevelIds.length === 0 || effectiveLevelIds.includes(q.levelId)),
+    [questions, effectiveLevelIds],
   )
   const poolByLevel = useMemo(() => {
     const map = new Map<number, number>()
@@ -325,18 +319,6 @@ export function TestBuilder({
                 </div>
               </fieldset>
             )}
-            <fieldset className="flex flex-col gap-2">
-              <legend className="mb-1 text-sm font-extrabold text-[#17324D]">Категории (празно = всички)</legend>
-              <div className="flex flex-wrap gap-2">
-                {categories
-                  .filter((c) => c.isActive)
-                  .map((c) => (
-                    <Chip key={c.id} active={config.categoryIds.includes(c.id)} onClick={() => setConfig((x) => ({ ...x, categoryIds: toggleIn(x.categoryIds, c.id) }))}>
-                      {c.name}
-                    </Chip>
-                  ))}
-              </div>
-            </fieldset>
 
             {testType === "placement" ? (
               <div className="flex flex-col gap-2">
@@ -460,7 +442,7 @@ export function TestBuilder({
                             {q.text}
                           </span>
                           <span className="text-xs font-bold text-[#17324D]/50">
-                            {q.levelName} · {q.categoryName} · {q.points} т.
+                            {q.levelName} · {q.points} т.
                             {shared > 0 && ` · в още ${shared} ${shared === 1 ? "тест" : "теста"}`}
                           </span>
                         </span>
@@ -504,7 +486,7 @@ export function TestBuilder({
                             {q.text}
                           </span>
                           <span className="text-xs font-bold text-[#17324D]/50">
-                            {q.levelName} · {q.categoryName} · {q.points} т.
+                            {q.levelName} · {q.points} т.
                           </span>
                           {shared.length > 0 && (
                             <span

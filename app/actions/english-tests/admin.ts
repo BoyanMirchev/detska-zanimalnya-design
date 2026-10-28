@@ -7,7 +7,6 @@ import { AuthError, audit, requireAdmin, revokeAllStudentSessions } from "@/lib/
 import { generateToken, hashToken } from "@/lib/english-tests/crypto"
 import { resolveQuestionIds, type TestRow } from "@/lib/english-tests/engine"
 import {
-  validateCategory,
   validateLevel,
   validatePlacementRules,
   validateQuestion,
@@ -97,34 +96,6 @@ export async function moveLevel(id: number, direction: "up" | "down") {
   })
 }
 
-/* ---------------- Categories ---------------- */
-
-export async function saveCategory(id: number | null, input: { name: string; description: string }) {
-  return guard(async () => {
-    const parsed = validateCategory(input)
-    if (!parsed.ok) return { ok: false, errors: parsed.errors }
-    const { name, description } = parsed.data
-    if (id === null) {
-      await sql`INSERT INTO et_categories (name, description) VALUES (${name}, ${description})`
-    } else {
-      if (!validId(id)) return { ok: false, error: "Невалидна категория." }
-      await sql`UPDATE et_categories SET name = ${name}, description = ${description}, updated_at = now() WHERE id = ${id}`
-    }
-    await audit(id === null ? "category.create" : "category.update", "category", id, { name })
-    revalidatePath(`${BASE}/levels`)
-    return { ok: true, message: "Категорията е запазена." }
-  })
-}
-
-export async function setCategoryActive(id: number, active: boolean) {
-  return guard(async () => {
-    if (!validId(id)) return { ok: false, error: "Невалидна категория." }
-    await sql`UPDATE et_categories SET is_active = ${active}, updated_at = now() WHERE id = ${id}`
-    revalidatePath(`${BASE}/levels`)
-    return { ok: true }
-  })
-}
-
 /* ---------------- Questions ---------------- */
 
 export async function saveQuestion(id: number | null, raw: Record<string, unknown>) {
@@ -133,19 +104,17 @@ export async function saveQuestion(id: number | null, raw: Record<string, unknow
     if (!parsed.ok) return { ok: false, errors: parsed.errors }
     const q = parsed.data
     const [refs] = await sql`
-      SELECT (SELECT archived_at IS NULL FROM et_levels WHERE id = ${q.levelId}) AS level_ok,
-             (SELECT true FROM et_categories WHERE id = ${q.categoryId}) AS category_ok
+      SELECT (SELECT archived_at IS NULL FROM et_levels WHERE id = ${q.levelId}) AS level_ok
     `
     if (!refs.level_ok) return { ok: false, errors: { levelId: "Нивото не съществува или е архивирано." } }
-    if (!refs.category_ok) return { ok: false, errors: { categoryId: "Категорията не съществува." } }
 
     const options = JSON.stringify(q.options.map((o, i) => ({ ...o, order: i + 1 })))
     let questionId: number
     if (id === null) {
       const [row] = await sql`
         WITH q AS (
-          INSERT INTO et_questions (type, text, level_id, category_id, difficulty, points, explanation, status)
-          VALUES (${q.type}, ${q.text}, ${q.levelId}, ${q.categoryId}, ${q.difficulty}, ${q.points}, ${q.explanation}, ${q.status})
+          INSERT INTO et_questions (type, text, level_id, difficulty, points, explanation, status)
+          VALUES (${q.type}, ${q.text}, ${q.levelId}, ${q.difficulty}, ${q.points}, ${q.explanation}, ${q.status})
           RETURNING id
         ), o AS (
           INSERT INTO et_question_options (question_id, text, is_correct, display_order)
@@ -161,7 +130,7 @@ export async function saveQuestion(id: number | null, raw: Record<string, unknow
       // Attempts keep their own immutable snapshots, so editing the bank never alters started or finished attempts.
       await sql.transaction([
         sql`
-          UPDATE et_questions SET type = ${q.type}, text = ${q.text}, level_id = ${q.levelId}, category_id = ${q.categoryId},
+          UPDATE et_questions SET type = ${q.type}, text = ${q.text}, level_id = ${q.levelId},
             difficulty = ${q.difficulty}, points = ${q.points}, explanation = ${q.explanation}, status = ${q.status},
             version = version + 1, updated_at = now()
           WHERE id = ${id}
@@ -187,8 +156,8 @@ export async function duplicateQuestion(id: number) {
     const [row] = await sql`
       WITH src AS (SELECT * FROM et_questions WHERE id = ${id}),
       q AS (
-        INSERT INTO et_questions (type, text, level_id, category_id, difficulty, points, explanation, status)
-        SELECT type, text, level_id, category_id, difficulty, points, explanation, 'inactive' FROM src
+        INSERT INTO et_questions (type, text, level_id, difficulty, points, explanation, status)
+        SELECT type, text, level_id, difficulty, points, explanation, 'inactive' FROM src
         RETURNING id
       ), o AS (
         INSERT INTO et_question_options (question_id, text, is_correct, display_order)

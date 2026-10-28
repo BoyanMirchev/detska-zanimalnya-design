@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { requireAdminPage } from "@/lib/english-tests/auth"
-import { PAGE_SIZE, listCategories, listLevels, listQuestions } from "@/lib/english-tests/admin-data"
+import { PAGE_SIZE, listLevels, listQuestions } from "@/lib/english-tests/admin-data"
 import { LABELS, QUESTION_STATUSES } from "@/lib/english-tests/types"
 import { EtShell, Pagination } from "@/components/admin/english-tests/et-shell"
 import { QuestionBank } from "@/components/admin/english-tests/question-bank"
@@ -17,13 +17,12 @@ export default async function QuestionsPage({ searchParams }: { searchParams: Pr
   const filters = {
     q: sp.q?.slice(0, 100),
     level: num(sp.level),
-    category: num(sp.category),
     difficulty: undefined,
     status: sp.status === "all" || QUESTION_STATUSES.includes(sp.status as never) ? sp.status : undefined,
     sort: ["updated", "level", "points", "text"].includes(sp.sort ?? "") ? sp.sort : "updated",
     page: num(sp.page) ?? 1,
   }
-  const [result, levels, categories] = await Promise.all([listQuestions(filters), listLevels(), listCategories()])
+  const [result, levels] = await Promise.all([listQuestions(filters), listLevels()])
 
   const hrefFor = (page: number) => {
     const params = new URLSearchParams(Object.entries({ ...sp, page: String(page) }).filter(([, v]) => v) as [string, string][])
@@ -52,17 +51,6 @@ export default async function QuestionsPage({ searchParams }: { searchParams: Pr
             {levels.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-extrabold text-[#17324D]/60">Категория</span>
-          <select name="category" defaultValue={filters.category ?? ""} className={inputClass}>
-            <option value="">Всички</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
               </option>
             ))}
           </select>

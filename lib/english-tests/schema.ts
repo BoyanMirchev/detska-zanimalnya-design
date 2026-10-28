@@ -90,7 +90,7 @@ const STATEMENTS = [
     type text NOT NULL CHECK (type IN ('single', 'multiple', 'true_false')),
     text text NOT NULL,
     level_id int NOT NULL REFERENCES et_levels(id),
-    category_id int NOT NULL REFERENCES et_categories(id),
+    category_id int REFERENCES et_categories(id),
     difficulty text NOT NULL CHECK (difficulty IN ('easy', 'medium', 'hard')),
     points int NOT NULL CHECK (points BETWEEN 1 AND 100),
     explanation text,
@@ -100,7 +100,8 @@ const STATEMENTS = [
     updated_at timestamptz NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS et_questions_level_idx ON et_questions (level_id)`,
-  `CREATE INDEX IF NOT EXISTS et_questions_category_idx ON et_questions (category_id)`,
+  // Categories were retired; the legacy column stays (nullable) so older deployments keep working during rollout.
+  `ALTER TABLE et_questions ALTER COLUMN category_id DROP NOT NULL`,
   `CREATE INDEX IF NOT EXISTS et_questions_status_idx ON et_questions (status)`,
 
   `CREATE TABLE IF NOT EXISTS et_question_options (
@@ -256,25 +257,6 @@ const STATEMENTS = [
      ('C1', 'Advanced — напреднало ниво', 1),
      ('C2', 'Proficiency — владеене на езика', 2)
    ) AS v(name, description, ord)
-   WHERE EXISTS (SELECT 1 FROM flag)
-   ON CONFLICT DO NOTHING`,
-  `WITH flag AS (INSERT INTO et_meta (key) VALUES ('seed_categories_v1') ON CONFLICT DO NOTHING RETURNING 1)
-   INSERT INTO et_categories (name, description)
-   SELECT v.name, v.description FROM (VALUES
-     ('Grammar', 'Граматика'),
-     ('Vocabulary', 'Речников запас'),
-     ('Reading', 'Четене с разбиране')
-   ) AS v(name, description)
-   WHERE EXISTS (SELECT 1 FROM flag)
-   ON CONFLICT DO NOTHING`,
-  `WITH flag AS (INSERT INTO et_meta (key) VALUES ('seed_categories_advanced_v1') ON CONFLICT DO NOTHING RETURNING 1)
-   INSERT INTO et_categories (name, description)
-   SELECT v.name, v.description FROM (VALUES
-     ('Idioms', 'Идиоматични изрази'),
-     ('Collocations', 'Словосъчетания (колокации)'),
-     ('Usage in context', 'Употреба в контекст и нюанси в значението'),
-     ('Academic & literary language', 'Академичен и литературен език')
-   ) AS v(name, description)
    WHERE EXISTS (SELECT 1 FROM flag)
    ON CONFLICT DO NOTHING`,
 ]

@@ -69,7 +69,7 @@ export async function getOverviewStats() {
   }
 }
 
-/* ---------------- Levels & categories ---------------- */
+/* ---------------- Levels ---------------- */
 
 export type AdminLevel = {
   id: number
@@ -102,29 +102,12 @@ export async function listLevels(): Promise<AdminLevel[]> {
   }))
 }
 
-export type AdminCategory = { id: number; name: string; description: string; isActive: boolean; questionCount: number }
-
-export async function listCategories(): Promise<AdminCategory[]> {
-  await requireAdmin()
-  const rows = await sql`
-    SELECT c.*, (SELECT count(*)::int FROM et_questions q WHERE q.category_id = c.id AND q.status <> 'archived') AS question_count
-    FROM et_categories c ORDER BY c.name
-  `
-  return rows.map((r) => ({
-    id: r.id,
-    name: r.name,
-    description: r.description,
-    isActive: r.is_active,
-    questionCount: r.question_count,
-  }))
-}
 
 /* ---------------- Questions ---------------- */
 
 export type QuestionFilters = {
   q?: string
   level?: number
-  category?: number
   difficulty?: string
   status?: string
   sort?: string
@@ -136,7 +119,6 @@ export type AdminQuestionRow = {
   type: QuestionType
   text: string
   levelName: string
-  categoryName: string
   difficulty: Difficulty
   points: number
   status: QuestionStatus
@@ -155,16 +137,14 @@ export async function listQuestions(filters: QuestionFilters) {
 
   const rows = await sql`
     SELECT q.id, q.type, q.text, q.difficulty, q.points, q.status, q.updated_at,
-           l.name AS level_name, l.display_order, c.name AS category_name,
+           l.name AS level_name, l.display_order,
            (SELECT count(*)::int FROM et_question_options o WHERE o.question_id = q.id) AS option_count,
            (SELECT count(*)::int FROM et_test_questions tq WHERE tq.question_id = q.id) AS test_count,
            count(*) OVER ()::int AS total
     FROM et_questions q
     JOIN et_levels l ON l.id = q.level_id
-    JOIN et_categories c ON c.id = q.category_id
     WHERE (${search}::text IS NULL OR q.text ILIKE ${search})
       AND (${filters.level ?? null}::int IS NULL OR q.level_id = ${filters.level ?? null}::int)
-      AND (${filters.category ?? null}::int IS NULL OR q.category_id = ${filters.category ?? null}::int)
       AND (${filters.difficulty || null}::text IS NULL OR q.difficulty = ${filters.difficulty || null}::text)
       AND (${status}::text IS NULL OR q.status = ${status}::text)
       AND (NOT ${hideArchived} OR q.status <> 'archived')
@@ -184,7 +164,6 @@ export async function listQuestions(filters: QuestionFilters) {
         type: r.type,
         text: r.text,
         levelName: r.level_name,
-        categoryName: r.category_name,
         difficulty: r.difficulty,
         points: r.points,
         status: r.status,
@@ -201,7 +180,6 @@ export type AdminQuestionDetail = {
   type: QuestionType
   text: string
   levelId: number
-  categoryId: number
   difficulty: Difficulty
   points: number
   explanation: string
@@ -227,7 +205,6 @@ export async function getQuestion(id: number): Promise<AdminQuestionDetail | nul
     type: q.type,
     text: q.text,
     levelId: q.level_id,
-    categoryId: q.category_id,
     difficulty: q.difficulty,
     points: q.points,
     explanation: q.explanation ?? "",
@@ -243,7 +220,7 @@ export async function getQuestion(id: number): Promise<AdminQuestionDetail | nul
 export async function listPickerQuestions() {
   await requireAdmin()
   const rows = await sql`
-    SELECT q.id, q.text, q.type, q.difficulty, q.points, q.level_id, q.category_id, l.name AS level_name, c.name AS category_name,
+    SELECT q.id, q.text, q.type, q.difficulty, q.points, q.level_id, l.name AS level_name,
            COALESCE((SELECT json_agg(json_build_object('text', o.text, 'isCorrect', o.is_correct) ORDER BY o.display_order, o.id)
                      FROM et_question_options o WHERE o.question_id = q.id), '[]'::json) AS options,
            COALESCE((SELECT json_agg(json_build_object('id', t.id, 'title', t.title) ORDER BY t.id)
@@ -251,7 +228,6 @@ export async function listPickerQuestions() {
                      WHERE tq.question_id = q.id AND t.status <> 'archived'), '[]'::json) AS tests
     FROM et_questions q
     JOIN et_levels l ON l.id = q.level_id
-    JOIN et_categories c ON c.id = q.category_id
     WHERE q.status = 'active'
     ORDER BY l.display_order, q.id
   `
@@ -262,9 +238,7 @@ export async function listPickerQuestions() {
     difficulty: r.difficulty as Difficulty,
     points: r.points as number,
     levelId: r.level_id as number,
-    categoryId: r.category_id as number,
     levelName: r.level_name as string,
-    categoryName: r.category_name as string,
     options: r.options as { text: string; isCorrect: boolean }[],
     tests: r.tests as { id: number; title: string }[],
   }))

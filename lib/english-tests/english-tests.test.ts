@@ -145,9 +145,9 @@ describe("seven-level placement (Pre-A1 to C2)", () => {
   })
 
   it("allocates six questions per level across all seven levels", () => {
-    const pool: PoolQuestion[] = Array.from({ length: 70 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, categoryId: 1, difficulty: "medium" }))
+    const pool: PoolQuestion[] = Array.from({ length: 70 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, difficulty: "medium" }))
     const allocations = names.map((_, i) => ({ levelId: i + 1, count: 6 }))
-    const res = selectRandomQuestions(pool, { levelIds: [], categoryIds: [], difficulties: [], allocations } as SelectionConfig, 42)
+    const res = selectRandomQuestions(pool, { levelIds: [], difficulties: [], allocations } as SelectionConfig, 42)
     expect(res.ok).toBe(true)
     if (res.ok) {
       expect(new Set(res.ids).size).toBe(42)
@@ -158,9 +158,9 @@ describe("seven-level placement (Pre-A1 to C2)", () => {
   })
 
   it("rejects allocations when C2 has too few questions", () => {
-    const pool: PoolQuestion[] = Array.from({ length: 40 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, categoryId: 1, difficulty: "medium" }))
+    const pool: PoolQuestion[] = Array.from({ length: 40 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, difficulty: "medium" }))
     const allocations = names.map((_, i) => ({ levelId: i + 1, count: 6 }))
-    expect(selectRandomQuestions(pool, { levelIds: [], categoryIds: [], difficulties: [], allocations } as SelectionConfig, 42).ok).toBe(false)
+    expect(selectRandomQuestions(pool, { levelIds: [], difficulties: [], allocations } as SelectionConfig, 42).ok).toBe(false)
   })
 })
 
@@ -168,10 +168,9 @@ describe("selectRandomQuestions", () => {
   const pool: PoolQuestion[] = Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     levelId: (i % 3) + 1,
-    categoryId: 1,
     difficulty: "medium",
   }))
-  const base: SelectionConfig = { levelIds: [], categoryIds: [], difficulties: [], allocations: [] } as SelectionConfig
+  const base: SelectionConfig = { levelIds: [], difficulties: [], allocations: [] } as SelectionConfig
 
   it("returns unique questions of the requested count", () => {
     const res = selectRandomQuestions(pool, base, 8)
