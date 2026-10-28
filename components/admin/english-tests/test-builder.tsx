@@ -151,12 +151,14 @@ export function TestBuilder({
 
   const pool = useMemo(
     () =>
-      questions.filter((q) => effectiveLevelIds.length === 0 || effectiveLevelIds.includes(q.levelId)),
+      questions.filter(
+        (q) => effectiveLevelIds.length === 0 || (q.levelId != null && effectiveLevelIds.includes(q.levelId)),
+      ),
     [questions, effectiveLevelIds],
   )
   const poolByLevel = useMemo(() => {
     const map = new Map<number, number>()
-    for (const q of pool) map.set(q.levelId, (map.get(q.levelId) ?? 0) + 1)
+    for (const q of pool) if (q.levelId != null) map.set(q.levelId, (map.get(q.levelId) ?? 0) + 1)
     return map
   }, [pool])
 

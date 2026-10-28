@@ -17,7 +17,7 @@ export function shuffle<T>(items: readonly T[], random: RandomFn = cryptoRandom)
 }
 
 export function matchesFilters(q: PoolQuestion, config: SelectionConfig) {
-  if (config.levelIds.length && !config.levelIds.includes(q.levelId)) return false
+  if (config.levelIds.length && (q.levelId == null || !config.levelIds.includes(q.levelId))) return false
   if (config.difficulties.length && !config.difficulties.includes(q.difficulty as never)) return false
   return true
 }
@@ -62,7 +62,7 @@ export function selectRandomQuestions(
     const allocatedLevels = new Set(allocations.map((a) => a.levelId))
     // With full per-level allocations the remainder must not skew the configured distribution.
     const rest = shuffle(
-      eligible.filter((q) => !chosen.has(q.id) && (allocations.length === 0 || !allocatedLevels.has(q.levelId))),
+      eligible.filter((q) => !chosen.has(q.id) && (allocations.length === 0 || q.levelId == null || !allocatedLevels.has(q.levelId))),
       random,
     )
     if (rest.length < remainder) {
