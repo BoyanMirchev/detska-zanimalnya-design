@@ -104,8 +104,8 @@ type BankQuestion = {
   id: number
   type: QuestionSnapshot["type"]
   text: string
-  level_id: number
-  level_name: string
+  level_id: number | null
+  level_name: string | null
   difficulty: QuestionSnapshot["difficulty"]
   points: number
   explanation: string | null
@@ -155,7 +155,7 @@ export async function startAttempt(studentId: number, testId: number): Promise<S
     SELECT q.id, q.type, q.text, q.level_id, l.name AS level_name,
            q.difficulty, q.points, q.explanation
     FROM et_questions q
-    JOIN et_levels l ON l.id = q.level_id
+    LEFT JOIN et_levels l ON l.id = q.level_id
     WHERE q.id = ANY(${ids}::int[])
   `) as BankQuestion[]
   const options = await sql`

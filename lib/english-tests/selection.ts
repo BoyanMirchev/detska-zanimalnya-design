@@ -1,7 +1,8 @@
 import { randomInt } from "node:crypto"
+import { percentsToCounts } from "./allocation"
 import type { SelectionConfig } from "./types"
 
-export type PoolQuestion = { id: number; levelId: number; difficulty: string }
+export type PoolQuestion = { id: number; levelId: number | null; difficulty: string }
 
 export type RandomFn = (maxExclusive: number) => number
 
@@ -17,7 +18,7 @@ export function shuffle<T>(items: readonly T[], random: RandomFn = cryptoRandom)
 }
 
 export function matchesFilters(q: PoolQuestion, config: SelectionConfig) {
-  if (config.levelIds.length && !config.levelIds.includes(q.levelId)) return false
+  if (config.levelIds.length && (q.levelId == null || !config.levelIds.includes(q.levelId))) return false
   if (config.difficulties.length && !config.difficulties.includes(q.difficulty as never)) return false
   return true
 }
@@ -35,12 +36,11 @@ export function selectRandomQuestions(
   random: RandomFn = cryptoRandom,
 ): SelectionResult {
   const eligible = pool.filter((q) => matchesFilters(q, config))
-  const allocations = config.allocations.filter((a) => a.count > 0)
-  const allocated = allocations.reduce((sum, a) => sum + a.count, 0)
-
-  if (allocated > count) {
-    return { ok: false, error: `Разпределението по нива (${allocated}) надвишава броя въпроси (${count}).` }
+  const percentTotal = config.allocations.reduce((sum, a) => sum + Math.max(0, a.percent), 0)
+  if (percentTotal > 100) {
+    return { ok: false, error: `Сборът от процентите по нива (${percentTotal}%) надвишава 100%.` }
   }
+  const allocations = percentsToCounts(config.allocations, count).filter((a) => a.count > 0)
 
   const chosen = new Set<number>()
   for (const allocation of allocations) {
@@ -62,7 +62,7 @@ export function selectRandomQuestions(
     const allocatedLevels = new Set(allocations.map((a) => a.levelId))
     // With full per-level allocations the remainder must not skew the configured distribution.
     const rest = shuffle(
-      eligible.filter((q) => !chosen.has(q.id) && (allocations.length === 0 || !allocatedLevels.has(q.levelId))),
+      eligible.filter((q) => !chosen.has(q.id) && (allocations.length === 0 || q.levelId == null || !allocatedLevels.has(q.levelId))),
       random,
     )
     if (rest.length < remainder) {

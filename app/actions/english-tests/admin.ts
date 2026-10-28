@@ -103,10 +103,10 @@ export async function saveQuestion(id: number | null, raw: Record<string, unknow
     const parsed = validateQuestion(raw)
     if (!parsed.ok) return { ok: false, errors: parsed.errors }
     const q = parsed.data
-    const [refs] = await sql`
-      SELECT (SELECT archived_at IS NULL FROM et_levels WHERE id = ${q.levelId}) AS level_ok
-    `
-    if (!refs.level_ok) return { ok: false, errors: { levelId: "Нивото не съществува или е архивирано." } }
+    if (q.levelId !== null) {
+      const [level] = await sql`SELECT 1 FROM et_levels WHERE id = ${q.levelId}`
+      if (!level) q.levelId = null
+    }
 
     const options = JSON.stringify(q.options.map((o, i) => ({ ...o, order: i + 1 })))
     let questionId: number

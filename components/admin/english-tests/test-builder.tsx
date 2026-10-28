@@ -15,6 +15,7 @@ import {
   type TestSettings,
   type TestType,
 } from "@/lib/english-tests/types"
+import { percentsToCounts } from "@/lib/english-tests/allocation"
 import { Field, FormError, Toast, inputClass, primaryButton } from "@/components/admin/ui"
 
 const toggleIn = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value])
@@ -147,16 +148,22 @@ export function TestBuilder({
 
   const effectiveLevelIds = testType === "level" && levelId ? [levelId] : config.levelIds
   const useAllocations = method === "random" && testType === "placement" && config.allocations.length > 0
-  const allocationTotal = config.allocations.reduce((sum, a) => sum + a.count, 0)
+  const percentTotal = config.allocations.reduce((sum, a) => sum + a.percent, 0)
+  const allocationCounts = useMemo(
+    () => new Map(percentsToCounts(config.allocations, questionCount).map((a) => [a.levelId, a.count])),
+    [config.allocations, questionCount],
+  )
 
   const pool = useMemo(
     () =>
-      questions.filter((q) => effectiveLevelIds.length === 0 || effectiveLevelIds.includes(q.levelId)),
+      questions.filter(
+        (q) => effectiveLevelIds.length === 0 || (q.levelId != null && effectiveLevelIds.includes(q.levelId)),
+      ),
     [questions, effectiveLevelIds],
   )
   const poolByLevel = useMemo(() => {
     const map = new Map<number, number>()
-    for (const q of pool) map.set(q.levelId, (map.get(q.levelId) ?? 0) + 1)
+    for (const q of pool) if (q.levelId != null) map.set(q.levelId, (map.get(q.levelId) ?? 0) + 1)
     return map
   }, [pool])
 
@@ -171,13 +178,14 @@ export function TestBuilder({
   }, [questions, pickerFilter, testType, levelId])
 
   const selectedQuestions = questionIds.map((id) => questions.find((q) => q.id === id)).filter(Boolean) as PickerQuestion[]
-  const finalCount = method === "manual" ? questionIds.length : useAllocations ? allocationTotal : questionCount
-  const poolShortfall = method === "random" && !useAllocations && pool.length < questionCount
+  const finalCount = method === "manual" ? questionIds.length : questionCount
+  const poolShortfall = method === "random" && pool.length < questionCount
+  const percentOver = useAllocations && percentTotal > 100
 
-  function setAllocation(id: number, count: number) {
+  function setAllocation(id: number, percent: number) {
     setConfig((c) => {
       const others = c.allocations.filter((a) => a.levelId !== id)
-      return { ...c, allocations: count > 0 ? [...others, { levelId: id, count }] : others }
+      return { ...c, allocations: percent > 0 ? [...others, { levelId: id, percent }] : others }
     })
   }
 
@@ -191,7 +199,7 @@ export function TestBuilder({
         testType,
         levelId: testType === "level" ? levelId : null,
         durationMinutes: form.get("durationMinutes"),
-        questionCount: useAllocations ? allocationTotal : questionCount,
+        questionCount,
         selectionMethod: method,
         selectionConfig:
           testType === "level"
@@ -319,55 +327,77 @@ export function TestBuilder({
               </fieldset>
             )}
 
+            <Field label="Общ брой въпроси" htmlFor="t-count" error={errors.questionCount}>
+              <input
+                id="t-count"
+                type="number"
+                min={1}
+                max={200}
+                value={questionCount}
+                onChange={(e) => setQuestionCount(Number(e.target.value) || 0)}
+                className={`${inputClass} max-w-40`}
+              />
+            </Field>
+
             {testType === "placement" ? (
               <div className="flex flex-col gap-2">
-                <p className="text-sm font-extrabold text-[#17324D]">Брой въпроси по ниво</p>
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="text-sm font-extrabold text-[#17324D]">Процент въпроси по ниво</p>
+                  <p
+                    className={`text-sm font-extrabold ${percentOver ? "text-[#C7503F]" : "text-[#17324D]/70"}`}
+                    role="status"
+                  >
+                    Общо: {percentTotal}%
+                  </p>
+                </div>
                 <p className="text-xs font-bold text-[#17324D]/55">
-                  Задайте точен брой от всяко ниво (препоръчително за надеждно определяне на ниво), или оставете всички на 0 и посочете общ брой.
+                  Задайте какъв процент от въпросите да бъде от всяко ниво. Ако оставите всички на 0%, въпросите се подбират случайно от всички нива.
                 </p>
                 <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {activeLevels
                     .filter((l) => config.levelIds.length === 0 || config.levelIds.includes(l.id))
                     .map((l) => {
-                      const current = config.allocations.find((a) => a.levelId === l.id)?.count ?? 0
+                      const percent = config.allocations.find((a) => a.levelId === l.id)?.percent ?? 0
+                      const count = allocationCounts.get(l.id) ?? 0
                       const available = poolByLevel.get(l.id) ?? 0
                       return (
                         <li key={l.id} className="flex items-center gap-3 rounded-2xl bg-[#F7FAFC] px-4 py-2">
                           <label htmlFor={`alloc-${l.id}`} className="flex-1 font-extrabold text-[#17324D]">
                             {l.name}
-                            <span className={`block text-xs ${current > available ? "text-[#C7503F]" : "text-[#17324D]/50"}`}>
-                              налични: {available}
+                            <span className={`block text-xs ${count > available ? "text-[#C7503F]" : "text-[#17324D]/50"}`}>
+                              {count} {count === 1 ? "въпрос" : "въпроса"} · налични: {available}
                             </span>
                           </label>
-                          <input
-                            id={`alloc-${l.id}`}
-                            type="number"
-                            min={0}
-                            max={200}
-                            value={current}
-                            onChange={(e) => setAllocation(l.id, Math.max(0, Number(e.target.value) || 0))}
-                            className={`${inputClass} w-20`}
-                          />
+                          <div className="flex items-center gap-1">
+                            <input
+                              id={`alloc-${l.id}`}
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={percent}
+                              onChange={(e) => setAllocation(l.id, Math.min(100, Math.max(0, Math.round(Number(e.target.value) || 0))))}
+                              className={`${inputClass} w-20`}
+                            />
+                            <span aria-hidden="true" className="font-extrabold text-[#17324D]/60">
+                              %
+                            </span>
+                          </div>
                         </li>
                       )
                     })}
                 </ul>
+                {(percentOver || errors.allocations) && (
+                  <p className="text-sm font-bold text-[#C7503F]">
+                    {errors.allocations ?? "Сборът от процентите не може да надвишава 100%."}
+                  </p>
+                )}
+                {useAllocations && !percentOver && percentTotal < 100 && (
+                  <p className="text-xs font-bold text-[#17324D]/55">
+                    Останалите {100 - percentTotal}% се подбират случайно от нивата без зададен процент.
+                  </p>
+                )}
               </div>
             ) : null}
-
-            {!useAllocations && (
-              <Field label="Общ брой въпроси" htmlFor="t-count" error={errors.questionCount}>
-                <input
-                  id="t-count"
-                  type="number"
-                  min={1}
-                  max={200}
-                  value={questionCount}
-                  onChange={(e) => setQuestionCount(Number(e.target.value) || 0)}
-                  className={`${inputClass} max-w-40`}
-                />
-              </Field>
-            )}
             <p
               className={`rounded-2xl px-4 py-3 text-sm font-bold ${
                 poolShortfall ? "bg-[#F27B6B]/15 text-[#C7503F]" : "bg-[#17324D]/5 text-[#17324D]"

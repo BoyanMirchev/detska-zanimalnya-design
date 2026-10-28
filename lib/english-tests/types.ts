@@ -46,7 +46,7 @@ export const DEFAULT_TEST_SETTINGS: TestSettings = {
   multipleAnswerPolicy: "all_or_nothing",
 }
 
-export type LevelAllocation = { levelId: number; count: number }
+export type LevelAllocation = { levelId: number; percent: number }
 
 export type SelectionConfig = {
   levelIds: number[]
@@ -89,8 +89,8 @@ export type QuestionSnapshot = {
   text: string
   type: QuestionType
   points: number
-  levelId: number
-  levelName: string
+  levelId: number | null
+  levelName: string | null
   difficulty: Difficulty
 }
 
