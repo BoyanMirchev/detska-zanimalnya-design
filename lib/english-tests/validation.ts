@@ -298,6 +298,7 @@ export function validatePlacementRules(
   const rawLevels = Array.isArray(r.levels) ? r.levels : []
   const seen = new Set<number>()
   const levels: PlacementRuleConfig["levels"] = []
+  const mode = r.mode === "score_bands" ? "score_bands" : "per_level"
 
   for (const item of rawLevels) {
     const o = (item ?? {}) as Record<string, unknown>
@@ -307,6 +308,20 @@ export function validatePlacementRules(
     const levelName = knownLevels.get(levelId)
     if (!levelName || seen.has(levelId)) {
       errors.levels = "Всяко ниво може да присъства само веднъж и трябва да съществува."
+      continue
+    }
+    if (mode === "score_bands") {
+      if (!Number.isFinite(minPercent) || minPercent < 0 || minPercent > 100) {
+        errors.levels = "Началният процент за всяко ниво трябва да е между 0 и 100%."
+        continue
+      }
+      const previous = levels[levels.length - 1]
+      if (previous && minPercent <= previous.minPercent) {
+        errors.levels = "Всяко следващо ниво трябва да започва от по-висок процент от предишното."
+        continue
+      }
+      seen.add(levelId)
+      levels.push({ levelId, levelName, minQuestions: 1, minPercent })
       continue
     }
     if (Number.isNaN(minQuestions) || minQuestions < 1 || minQuestions > 100) {
@@ -325,5 +340,5 @@ export function validatePlacementRules(
     errors.minTotalAnswered = "Невалиден минимален брой отговорени въпроси."
 
   if (Object.keys(errors).length) return { ok: false, errors }
-  return { ok: true, data: { levels, minTotalAnswered } }
+  return { ok: true, data: { mode, levels, minTotalAnswered } }
 }

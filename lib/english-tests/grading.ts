@@ -84,6 +84,7 @@ export function gradeAttempt(questions: GradableQuestion[], answers: Map<number,
 }
 
 export type PlacementOutcome = {
+  mode?: "score_bands" | "per_level"
   levelName: string | null
   conclusive: boolean
   reason: "placed" | "insufficient_total" | "insufficient_level_evidence" | "below_lowest_level" | "no_rules"
@@ -108,10 +109,13 @@ export function estimatePlacement(
   rules: PlacementRuleConfig | null,
   perLevel: Record<number, LevelStats>,
   answeredTotal: number,
+  overallPercent = 0,
 ): PlacementOutcome {
   if (!rules || rules.levels.length === 0) {
     return { levelName: null, conclusive: false, reason: "no_rules", levels: [] }
   }
+
+  if (rules.mode === "score_bands") return estimateByScoreBands(rules, perLevel, answeredTotal, overallPercent)
 
   const levels: PlacementOutcome["levels"] = rules.levels.map((rule) => {
     const stats = perLevel[rule.levelId] ?? { questions: 0, earned: 0, max: 0 }
@@ -133,6 +137,43 @@ export function estimatePlacement(
   }
 
   return { ...resolvePlacementLevel(levels), levels }
+}
+
+/**
+ * Teacher-defined overall score ranges: the student receives the highest level
+ * whose starting percentage is reached by the overall test score.
+ */
+function estimateByScoreBands(
+  rules: PlacementRuleConfig,
+  perLevel: Record<number, LevelStats>,
+  answeredTotal: number,
+  overallPercent: number,
+): PlacementOutcome {
+  const levels: PlacementOutcome["levels"] = rules.levels.map((rule) => ({
+    levelId: rule.levelId,
+    levelName: rule.levelName,
+    questions: perLevel[rule.levelId]?.questions ?? 0,
+    percent: overallPercent,
+    minPercent: rule.minPercent,
+    enoughQuestions: true,
+    passed: overallPercent >= rule.minPercent,
+  }))
+
+  const mode = "score_bands" as const
+  if (answeredTotal < rules.minTotalAnswered) {
+    return { mode, levelName: null, conclusive: false, reason: "insufficient_total", levels }
+  }
+
+  let achieved: string | null = null
+  let best = -1
+  for (const level of levels) {
+    if (level.passed && level.minPercent >= best) {
+      best = level.minPercent
+      achieved = level.levelName
+    }
+  }
+  if (!achieved) return { mode, levelName: null, conclusive: true, reason: "below_lowest_level", levels }
+  return { mode, levelName: achieved, conclusive: true, reason: "placed", levels }
 }
 
 /**

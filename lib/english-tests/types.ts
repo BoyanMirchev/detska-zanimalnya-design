@@ -71,7 +71,14 @@ export type PlacementLevelRule = {
   minPercent: number
 }
 
+export type PlacementMode = "score_bands" | "per_level"
+
 export type PlacementRuleConfig = {
+  /**
+   * score_bands: minPercent is the overall test score from which the level starts.
+   * per_level (legacy default): each level is judged on its own questions.
+   */
+  mode?: PlacementMode
   /** Ordered from the lowest to the highest level. */
   levels: PlacementLevelRule[]
   /** Minimum number of answered questions overall before any placement is attempted. */
