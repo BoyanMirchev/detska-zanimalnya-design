@@ -16,7 +16,7 @@ export default async function HistoryPage() {
           <table className="w-full min-w-[760px] text-left text-sm">
             <thead className="border-b border-et-navy/10 text-et-navy/60">
               <tr>
-                {["Тест", "Дата", "Верни", "Общо", "%", "Точки", "Ниво", "Статус", ""].map((h) => (
+                {["Тест", "Дата", "Верни", "Общо", "%", "Ниво", "Статус", ""].map((h) => (
                   <th key={h} scope="col" className="px-4 py-3 font-extrabold">
                     {h || <span className="sr-only">Действие</span>}
                   </th>
@@ -34,7 +34,6 @@ export default async function HistoryPage() {
                     <td className="px-4 py-3">{show ? a.correct : "—"}</td>
                     <td className="px-4 py-3">{a.total}</td>
                     <td className="px-4 py-3">{show && a.percentage !== null ? `${Math.round(a.percentage)}%` : "—"}</td>
-                    <td className="px-4 py-3">{show ? `${a.score}/${a.maxScore}` : "—"}</td>
                     <td className="px-4 py-3">{finished && a.showLevel ? (a.estimatedLevel ?? "—") : "—"}</td>
                     <td className="px-4 py-3">{STATUS_LABELS[a.status]}</td>
                     <td className="px-4 py-3">

@@ -19,7 +19,7 @@ export default async function QuestionsPage({ searchParams }: { searchParams: Pr
     level: num(sp.level),
     difficulty: undefined,
     status: sp.status === "all" || QUESTION_STATUSES.includes(sp.status as never) ? sp.status : undefined,
-    sort: ["updated", "level", "points", "text"].includes(sp.sort ?? "") ? sp.sort : "updated",
+    sort: ["updated", "level", "text"].includes(sp.sort ?? "") ? sp.sort : "updated",
     page: num(sp.page) ?? 1,
   }
   const [result, levels] = await Promise.all([listQuestions(filters), listLevels()])
@@ -72,7 +72,6 @@ export default async function QuestionsPage({ searchParams }: { searchParams: Pr
           <select name="sort" defaultValue={filters.sort} className={inputClass}>
             <option value="updated">Последно променени</option>
             <option value="level">По ниво</option>
-            <option value="points">По точки</option>
             <option value="text">По текст</option>
           </select>
         </label>

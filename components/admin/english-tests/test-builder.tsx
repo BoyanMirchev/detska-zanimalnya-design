@@ -171,7 +171,6 @@ export function TestBuilder({
   }, [questions, pickerFilter, testType, levelId])
 
   const selectedQuestions = questionIds.map((id) => questions.find((q) => q.id === id)).filter(Boolean) as PickerQuestion[]
-  const selectedPoints = selectedQuestions.reduce((sum, q) => sum + q.points, 0)
   const finalCount = method === "manual" ? questionIds.length : useAllocations ? allocationTotal : questionCount
   const poolShortfall = method === "random" && !useAllocations && pool.length < questionCount
 
@@ -442,7 +441,7 @@ export function TestBuilder({
                             {q.text}
                           </span>
                           <span className="text-xs font-bold text-[#17324D]/50">
-                            {q.levelName} · {q.points} т.
+                            {q.levelName}
                             {shared > 0 && ` · в още ${shared} ${shared === 1 ? "тест" : "теста"}`}
                           </span>
                         </span>
@@ -454,7 +453,7 @@ export function TestBuilder({
             </div>
             <div className="flex flex-col gap-2">
               <p className="text-sm font-extrabold text-[#17324D]">
-                Избрани: {questionIds.length} въпроса · {selectedPoints} точки
+                Избрани: {questionIds.length} въпроса
               </p>
               {errors.questionIds && (
                 <p role="alert" className="text-sm font-bold text-[#C7503F]">
@@ -486,7 +485,7 @@ export function TestBuilder({
                             {q.text}
                           </span>
                           <span className="text-xs font-bold text-[#17324D]/50">
-                            {q.levelName} · {q.points} т.
+                            {q.levelName}
                           </span>
                           {shared.length > 0 && (
                             <span

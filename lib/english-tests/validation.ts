@@ -118,7 +118,7 @@ export function validateQuestion(raw: Record<string, unknown>): Validated<Questi
   const text = str(raw.text)
   const levelId = int(raw.levelId)
   const difficulty = str(raw.difficulty) as Difficulty
-  const points = int(raw.points)
+  const points = 1
   const explanation = str(raw.explanation) || null
   const status = (str(raw.status) || "active") as QuestionStatus
   const rawOptions = Array.isArray(raw.options) ? raw.options : []
@@ -132,7 +132,6 @@ export function validateQuestion(raw: Record<string, unknown>): Validated<Questi
   else if (text.length > 2000) errors.text = "Текстът е твърде дълъг (до 2000 символа)."
   if (!(levelId > 0)) errors.levelId = "Изберете ниво."
   if (!DIFFICULTIES.includes(difficulty)) errors.difficulty = "Изберете трудност."
-  if (Number.isNaN(points) || points < 1 || points > 100) errors.points = "Точките трябва да са цяло число от 1 до 100."
   if (explanation && explanation.length > 2000) errors.explanation = "Обяснението е твърде дълго."
   if (!QUESTION_STATUSES.includes(status)) errors.status = "Невалиден статус."
 

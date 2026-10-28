@@ -176,7 +176,7 @@ export async function startAttempt(studentId: number, testId: number): Promise<S
       const question: QuestionSnapshot = {
         text: q.text,
         type: q.type,
-        points: q.points,
+        points: 1,
         levelId: q.level_id,
         levelName: q.level_name,
         difficulty: q.difficulty,

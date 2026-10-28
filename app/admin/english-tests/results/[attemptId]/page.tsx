@@ -18,7 +18,6 @@ export default async function AdminResultPage({ params }: { params: Promise<{ at
   const durationMin = r.submittedAt ? Math.max(1, Math.round((Date.parse(r.submittedAt) - Date.parse(r.startedAt)) / 60000)) : null
   const stats = [
     { label: "Резултат", value: formatPercent(r.percentage) },
-    { label: "Точки", value: r.score === null ? "—" : `${r.score}/${r.maxScore}` },
     { label: "Верни", value: r.correct ?? "—" },
     { label: "Грешни", value: r.incorrect ?? "—" },
     { label: "Без отговор", value: r.unanswered ?? "—" },
@@ -98,7 +97,7 @@ export default async function AdminResultPage({ params }: { params: Promise<{ at
                         {i + 1}. {q.text}
                       </p>
                       <p className="text-xs font-bold text-[#17324D]/50">
-                        {q.levelName} · {LABELS.questionType[q.type]} · {q.earned ?? 0}/{q.points} т.
+                        {q.levelName} · {LABELS.questionType[q.type]}
                       </p>
                       <ul className="mt-2 flex flex-col gap-1">
                         {q.options.map((o) => (

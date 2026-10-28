@@ -39,7 +39,7 @@ export default async function ResultPage({ params }: { params: Promise<{ attempt
             <div className="flex flex-col gap-3">
               <div className="flex flex-wrap items-end justify-between gap-2">
                 <p className="font-display text-2xl font-extrabold">
-                  Резултат: {r.score} от {r.maxScore} точки
+                  Резултат: {r.correct ?? 0} от {r.total} верни
                 </p>
                 <p className="font-display text-xl font-extrabold">Успеваемост: {pct}%</p>
               </div>
