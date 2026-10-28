@@ -305,11 +305,6 @@ export function validatePlacementRules(
       errors.levels = `За ${levelName} „От“ не може да е по-голямо от „До“.`
       continue
     }
-    const previous = levels[levels.length - 1]
-    if (previous && minPercent <= (previous.maxPercent ?? previous.minPercent)) {
-      errors.levels = `${levelName} трябва да започва след края на ${previous.levelName} (над ${previous.maxPercent}%).`
-      continue
-    }
     seen.add(levelId)
     levels.push({ levelId, levelName, minQuestions: 1, minPercent, maxPercent })
   }
