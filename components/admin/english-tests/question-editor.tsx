@@ -5,7 +5,7 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Plus, Trash2 } from "lucide-react"
 import { saveQuestion } from "@/app/actions/english-tests/admin"
-import type { AdminCategory, AdminLevel, AdminQuestionDetail } from "@/lib/english-tests/admin-data"
+import type { AdminLevel, AdminQuestionDetail } from "@/lib/english-tests/admin-data"
 import { LABELS, QUESTION_STATUSES, QUESTION_TYPES, type QuestionType } from "@/lib/english-tests/types"
 import { Field, FormError, Toast, inputClass, primaryButton, secondaryButton } from "@/components/admin/ui"
 
@@ -22,11 +22,9 @@ const nextKey = () => ++keySeed
 export function QuestionEditor({
   question,
   levels,
-  categories,
 }: {
   question: AdminQuestionDetail | null
   levels: AdminLevel[]
-  categories: AdminCategory[]
 }) {
   const router = useRouter()
   const [type, setType] = useState<QuestionType>(question?.type ?? "single")
@@ -43,7 +41,6 @@ export function QuestionEditor({
   const [pending, startTransition] = useTransition()
 
   const usableLevels = levels.filter((l) => !l.archived || l.id === question?.levelId)
-  const usableCategories = categories.filter((c) => c.isActive || c.id === question?.categoryId)
 
   function changeType(next: QuestionType) {
     setType(next)
@@ -76,7 +73,6 @@ export function QuestionEditor({
         type,
         text: form.get("text"),
         levelId: form.get("levelId"),
-        categoryId: form.get("categoryId"),
         difficulty: form.get("difficulty"),
         points: form.get("points"),
         explanation: form.get("explanation"),
@@ -223,18 +219,6 @@ export function QuestionEditor({
             {usableLevels.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Категория" htmlFor="q-cat" error={errors.categoryId} required>
-          <select id="q-cat" name="categoryId" defaultValue={question?.categoryId ?? ""} className={inputClass} required>
-            <option value="" disabled>
-              Изберете
-            </option>
-            {usableCategories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
               </option>
             ))}
           </select>

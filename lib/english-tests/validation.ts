@@ -85,7 +85,7 @@ export function validateRegistration(form: FormData): Validated<RegistrationInpu
   return { ok: true, data: { firstName, lastName, username, password, schoolGrade, ageGroup } }
 }
 
-/* ---------- Levels & categories ---------- */
+/* ---------- Levels ---------- */
 
 export function validateLevel(input: { name: unknown; description: unknown; displayOrder: unknown }) {
   const errors: Errors = {}
@@ -99,23 +99,12 @@ export function validateLevel(input: { name: unknown; description: unknown; disp
   return { ok: true as const, data: { name, description, displayOrder } }
 }
 
-export function validateCategory(input: { name: unknown; description: unknown }) {
-  const errors: Errors = {}
-  const name = str(input.name)
-  const description = str(input.description)
-  if (!name || name.length > 50) errors.name = "Името е задължително (до 50 символа)."
-  if (description.length > 300) errors.description = "Описанието е твърде дълго."
-  if (Object.keys(errors).length) return { ok: false as const, errors }
-  return { ok: true as const, data: { name, description } }
-}
-
 /* ---------- Questions ---------- */
 
 export type QuestionInput = {
   type: QuestionType
   text: string
   levelId: number
-  categoryId: number
   difficulty: Difficulty
   points: number
   explanation: string | null
@@ -128,7 +117,6 @@ export function validateQuestion(raw: Record<string, unknown>): Validated<Questi
   const type = str(raw.type) as QuestionType
   const text = str(raw.text)
   const levelId = int(raw.levelId)
-  const categoryId = int(raw.categoryId)
   const difficulty = str(raw.difficulty) as Difficulty
   const points = int(raw.points)
   const explanation = str(raw.explanation) || null
@@ -143,7 +131,6 @@ export function validateQuestion(raw: Record<string, unknown>): Validated<Questi
   if (!text) errors.text = "Текстът на въпроса е задължителен."
   else if (text.length > 2000) errors.text = "Текстът е твърде дълъг (до 2000 символа)."
   if (!(levelId > 0)) errors.levelId = "Изберете ниво."
-  if (!(categoryId > 0)) errors.categoryId = "Изберете категория."
   if (!DIFFICULTIES.includes(difficulty)) errors.difficulty = "Изберете трудност."
   if (Number.isNaN(points) || points < 1 || points > 100) errors.points = "Точките трябва да са цяло число от 1 до 100."
   if (explanation && explanation.length > 2000) errors.explanation = "Обяснението е твърде дълго."
@@ -169,7 +156,7 @@ export function validateQuestion(raw: Record<string, unknown>): Validated<Questi
   if (Object.keys(errors).length) return { ok: false, errors }
   return {
     ok: true,
-    data: { type, text, levelId, categoryId, difficulty, points, explanation, status, options },
+    data: { type, text, levelId, difficulty, points, explanation, status, options },
   }
 }
 
@@ -226,7 +213,6 @@ export function parseSelectionConfig(raw: unknown): SelectionConfig {
     : []
   return {
     levelIds: idList(r.levelIds),
-    categoryIds: idList(r.categoryIds),
     difficulties: Array.isArray(r.difficulties)
       ? (r.difficulties.filter((d) => DIFFICULTIES.includes(d as Difficulty)) as Difficulty[])
       : [],
@@ -329,7 +315,7 @@ export function validatePlacementRules(
       continue
     }
     if (!Number.isFinite(minPercent) || minPercent < 1 || minPercent > 100) {
-      errors.levels = "Прагът трябва да е между 1 и 100%."
+      errors.levels = "��рагът трябва да е между 1 и 100%."
       continue
     }
     seen.add(levelId)

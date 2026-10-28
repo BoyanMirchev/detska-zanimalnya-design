@@ -84,7 +84,6 @@ export function QuestionBank({ rows }: { rows: AdminQuestionRow[] }) {
               </th>
               <th className="px-2 py-3 font-extrabold">Въпрос</th>
               <th className="px-2 py-3 font-extrabold">Ниво</th>
-              <th className="px-2 py-3 font-extrabold">Категория</th>
               <th className="px-2 py-3 font-extrabold">Точки</th>
               <th className="px-2 py-3 font-extrabold">Тестове</th>
               <th className="px-2 py-3 font-extrabold">Статус</th>
@@ -112,7 +111,6 @@ export function QuestionBank({ rows }: { rows: AdminQuestionRow[] }) {
                   </span>
                 </td>
                 <td className="px-2 py-3">{q.levelName}</td>
-                <td className="px-2 py-3">{q.categoryName}</td>
                 <td className="px-2 py-3">{q.points}</td>
                 <td className="px-2 py-3">{q.testCount}</td>
                 <td className="px-2 py-3">

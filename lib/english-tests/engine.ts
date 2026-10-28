@@ -106,8 +106,6 @@ type BankQuestion = {
   text: string
   level_id: number
   level_name: string
-  category_id: number
-  category_name: string
   difficulty: QuestionSnapshot["difficulty"]
   points: number
   explanation: string | null
@@ -127,7 +125,7 @@ export async function resolveQuestionIds(test: TestRow): Promise<{ ok: true; ids
     return { ok: true, ids }
   }
   const pool = (await sql`
-    SELECT q.id, q.level_id AS "levelId", q.category_id AS "categoryId", q.difficulty
+    SELECT q.id, q.level_id AS "levelId", q.difficulty
     FROM et_questions q
     WHERE q.status = 'active'
       AND EXISTS (SELECT 1 FROM et_question_options o WHERE o.question_id = q.id AND o.is_correct)
@@ -154,11 +152,10 @@ export async function startAttempt(studentId: number, testId: number): Promise<S
 
   const ids = settings.shuffleQuestions ? shuffle(selection.ids) : selection.ids
   const questions = (await sql`
-    SELECT q.id, q.type, q.text, q.level_id, l.name AS level_name, q.category_id, c.name AS category_name,
+    SELECT q.id, q.type, q.text, q.level_id, l.name AS level_name,
            q.difficulty, q.points, q.explanation
     FROM et_questions q
     JOIN et_levels l ON l.id = q.level_id
-    JOIN et_categories c ON c.id = q.category_id
     WHERE q.id = ANY(${ids}::int[])
   `) as BankQuestion[]
   const options = await sql`
@@ -182,7 +179,6 @@ export async function startAttempt(studentId: number, testId: number): Promise<S
         points: q.points,
         levelId: q.level_id,
         levelName: q.level_name,
-        categoryName: q.category_name,
         difficulty: q.difficulty,
       }
       const grading: GradingSnapshot = {

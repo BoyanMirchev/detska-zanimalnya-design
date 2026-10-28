@@ -3,14 +3,14 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowDown, ArrowUp, Pencil, Plus } from "lucide-react"
-import { moveLevel, saveCategory, saveLevel, setLevelState } from "@/app/actions/english-tests/admin"
-import type { AdminCategory, AdminLevel } from "@/lib/english-tests/admin-data"
+import { moveLevel, saveLevel, setLevelState } from "@/app/actions/english-tests/admin"
+import type { AdminLevel } from "@/lib/english-tests/admin-data"
 import { Field, FormError, Modal, Toast, inputClass, primaryButton, secondaryButton } from "@/components/admin/ui"
 import { Pill } from "./et-shell"
 
-type Editing = { kind: "level"; item: AdminLevel | null } | { kind: "category"; item: AdminCategory | null } | null
+type Editing = { kind: "level"; item: AdminLevel | null } | null
 
-export function LevelManagement({ levels, categories }: { levels: AdminLevel[]; categories: AdminCategory[] }) {
+export function LevelManagement({ levels }: { levels: AdminLevel[] }) {
   const router = useRouter()
   const [editing, setEditing] = useState<Editing>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -141,7 +141,6 @@ function EditDialog({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
-  const isLevel = editing?.kind === "level"
   const item = editing?.item
 
   function submit(form: FormData) {
@@ -150,9 +149,7 @@ function EditDialog({
       setError(null)
       const name = String(form.get("name") ?? "")
       const description = String(form.get("description") ?? "")
-      const res = isLevel
-        ? await saveLevel(item?.id ?? null, { name, description, displayOrder: Number(form.get("displayOrder")) })
-        : await saveCategory(item?.id ?? null, { name, description })
+      const res = await saveLevel(item?.id ?? null, { name, description, displayOrder: Number(form.get("displayOrder")) })
       if (res.ok) onSaved(res.message ?? "Запазено.")
       else {
         setErrors(res.errors ?? {})
@@ -162,8 +159,8 @@ function EditDialog({
   }
 
   return (
-    <Modal open={editing !== null} onClose={onClose} title={`${item ? "Редакция" : "Ново"} ${isLevel ? "ниво" : "категория"}`}>
-      <form key={`${editing?.kind}-${item?.id ?? "new"}`} action={submit} className="flex flex-col gap-4">
+    <Modal open={editing !== null} onClose={onClose} title={`${item ? "Редакция на" : "Ново"} ниво`}>
+      <form key={`level-${item?.id ?? "new"}`} action={submit} className="flex flex-col gap-4">
         <FormError message={error} />
         <Field label="Име" htmlFor="et-name" error={errors.name} required>
           <input id="et-name" name="name" defaultValue={item?.name ?? ""} maxLength={60} className={inputClass} aria-invalid={!!errors.name} required />
@@ -171,19 +168,17 @@ function EditDialog({
         <Field label="Описание" htmlFor="et-description" error={errors.description}>
           <textarea id="et-description" name="description" rows={3} maxLength={500} defaultValue={item?.description ?? ""} className={inputClass} />
         </Field>
-        {isLevel && (
-          <Field label="Позиция" htmlFor="et-order" error={errors.displayOrder}>
-            <input
-              id="et-order"
-              name="displayOrder"
-              type="number"
-              min={0}
-              max={1000}
-              defaultValue={(item as AdminLevel | null | undefined)?.displayOrder ?? nextOrder}
-              className={inputClass}
-            />
-          </Field>
-        )}
+        <Field label="Позиция" htmlFor="et-order" error={errors.displayOrder}>
+          <input
+            id="et-order"
+            name="displayOrder"
+            type="number"
+            min={0}
+            max={1000}
+            defaultValue={item?.displayOrder ?? nextOrder}
+            className={inputClass}
+          />
+        </Field>
         <div className="flex justify-end gap-2">
           <button type="button" className={secondaryButton} onClick={onClose}>
             Отказ

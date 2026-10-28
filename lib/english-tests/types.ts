@@ -50,14 +50,12 @@ export type LevelAllocation = { levelId: number; count: number }
 
 export type SelectionConfig = {
   levelIds: number[]
-  categoryIds: number[]
   difficulties: Difficulty[]
   allocations: LevelAllocation[]
 }
 
 export const EMPTY_SELECTION_CONFIG: SelectionConfig = {
   levelIds: [],
-  categoryIds: [],
   difficulties: [],
   allocations: [],
 }
@@ -91,7 +89,6 @@ export type QuestionSnapshot = {
   points: number
   levelId: number
   levelName: string
-  categoryName: string
   difficulty: Difficulty
 }
 
