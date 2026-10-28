@@ -15,6 +15,7 @@ import {
   type TestSettings,
   type TestType,
 } from "@/lib/english-tests/types"
+import { bandMax } from "@/lib/english-tests/grading"
 import { Field, FormError, Toast, inputClass, primaryButton } from "@/components/admin/ui"
 
 const toggleIn = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value])
@@ -74,8 +75,13 @@ export function TestBuilder({
   const [method, setMethod] = useState<SelectionMethod>(test?.selectionMethod ?? "random")
   const [config, setConfig] = useState<SelectionConfig>(test?.selectionConfig ?? EMPTY_SELECTION_CONFIG)
   const [questionIds, setQuestionIds] = useState<number[]>(test?.questionIds ?? [])
-  const [thresholds, setThresholds] = useState<Record<number, string>>(() =>
-    Object.fromEntries((test?.placementRules?.levels ?? []).map((r) => [r.levelId, String(r.minPercent)])),
+  const [thresholds, setThresholds] = useState<Record<number, { min: string; max: string }>>(() =>
+    Object.fromEntries(
+      (test?.placementRules?.levels ?? []).map((r, i, all) => [
+        r.levelId,
+        { min: String(r.minPercent), max: String(bandMax(all, i)) },
+      ]),
+    ),
   )
   const [settings, setSettings] = useState<TestSettings>(test?.settings ?? DEFAULT_TEST_SETTINGS)
   const [pickerFilter, setPickerFilter] = useState({ q: "", level: 0 })
@@ -158,14 +164,14 @@ export function TestBuilder({
   )
 
   const thresholdRows = activeLevels
-    .map((l) => ({ levelId: l.id, name: l.name, value: thresholds[l.id] ?? "" }))
-    .filter((r) => r.value.trim() !== "")
+    .map((l) => ({ levelId: l.id, name: l.name, min: thresholds[l.id]?.min ?? "", max: thresholds[l.id]?.max ?? "" }))
+    .filter((r) => r.min.trim() !== "" || r.max.trim() !== "")
   const thresholdError = useMemo(() => {
-    for (let i = 0; i < thresholdRows.length; i++) {
-      const n = Number(thresholdRows[i].value)
-      if (!Number.isFinite(n) || n < 0 || n > 100) return `Процентът за ${thresholdRows[i].name} трябва да е между 0 и 100.`
-      if (i > 0 && n <= Number(thresholdRows[i - 1].value))
-        return `${thresholdRows[i].name} трябва да има по-висок процент от ${thresholdRows[i - 1].name}.`
+    const isPercent = (v: string) => v.trim() !== "" && Number.isInteger(Number(v)) && Number(v) >= 0 && Number(v) <= 100
+    for (const r of thresholdRows) {
+      if (!isPercent(r.min) || !isPercent(r.max))
+        return `Попълнете „от“ и „до“ за ${r.name} с цели числа от 0 до 100.`
+      if (Number(r.min) > Number(r.max)) return `За ${r.name} „от“ не може да е по-голямо от „до“.`
     }
     return null
   }, [thresholdRows])
@@ -174,13 +180,17 @@ export function TestBuilder({
     return {
       mode: "score_bands",
       minTotalAnswered: 0,
-      levels: thresholdRows.map((r, i) => ({
+      levels: thresholdRows.map((r) => ({
         levelId: r.levelId,
         minQuestions: 1,
-        minPercent: Number(r.value),
-        maxPercent: i < thresholdRows.length - 1 ? Number(thresholdRows[i + 1].value) - 1 : 100,
+        minPercent: Number(r.min),
+        maxPercent: Number(r.max),
       })),
     }
+  }
+
+  function updateThreshold(levelId: number, key: "min" | "max", value: string) {
+    setThresholds((t) => ({ ...t, [levelId]: { min: "", max: "", ...t[levelId], [key]: value } }))
   }
 
   const pickerRows = useMemo(() => {
@@ -337,26 +347,40 @@ export function TestBuilder({
               <div className="flex flex-col gap-2">
                 <p className="text-sm font-extrabold text-[#17324D]">Процент за преминаване по ниво</p>
                 <p className="text-xs font-bold leading-relaxed text-[#17324D]/55">
-                  Задайте от колко процента общ резултат ученикът получава всяко ниво. Например A1 — 20%, A2 — 30%, B1 — 50%. Оставете празно за нива, които не искате да се присъждат.
+                  Задайте свободно диапазона от общия резултат за всяко ниво (от – до). Оставете празно за нива, които не искате да се присъждат. Ако диапазоните се застъпват, ученикът получава по-високото ниво.
                 </p>
-                <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {activeLevels.map((l) => (
                     <li key={l.id} className="flex items-center gap-3 rounded-2xl bg-[#F7FAFC] px-4 py-2">
-                      <label htmlFor={`pass-${l.id}`} className="flex-1 font-extrabold text-[#17324D]">
-                        {l.name}
-                        <span className="block text-xs text-[#17324D]/50">от</span>
-                      </label>
+                      <span className="flex-1 font-extrabold text-[#17324D]">{l.name}</span>
                       <div className="flex items-center gap-1">
+                        <label htmlFor={`pass-min-${l.id}`} className="text-xs font-bold text-[#17324D]/50">
+                          от
+                        </label>
                         <input
-                          id={`pass-${l.id}`}
+                          id={`pass-min-${l.id}`}
                           type="number"
                           inputMode="numeric"
                           min={0}
                           max={100}
                           placeholder="—"
-                          value={thresholds[l.id] ?? ""}
-                          onChange={(e) => setThresholds((t) => ({ ...t, [l.id]: e.target.value }))}
-                          className={`${inputClass} w-20`}
+                          value={thresholds[l.id]?.min ?? ""}
+                          onChange={(e) => updateThreshold(l.id, "min", e.target.value)}
+                          className={`${inputClass} w-16`}
+                        />
+                        <label htmlFor={`pass-max-${l.id}`} className="text-xs font-bold text-[#17324D]/50">
+                          до
+                        </label>
+                        <input
+                          id={`pass-max-${l.id}`}
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          max={100}
+                          placeholder="—"
+                          value={thresholds[l.id]?.max ?? ""}
+                          onChange={(e) => updateThreshold(l.id, "max", e.target.value)}
+                          className={`${inputClass} w-16`}
                         />
                         <span aria-hidden="true" className="font-extrabold text-[#17324D]/60">
                           %
@@ -369,10 +393,7 @@ export function TestBuilder({
                   <p className="text-sm font-bold text-[#C7503F]">{thresholdError}</p>
                 ) : thresholdRows.length > 0 ? (
                   <p className="text-xs font-bold text-[#17324D]/55">
-                    {thresholdRows
-                      .map((r, i) => `${r.name}: ${r.value}–${i < thresholdRows.length - 1 ? Number(thresholdRows[i + 1].value) - 1 : 100}%`)
-                      .join(" · ")}
-                    {Number(thresholdRows[0].value) > 0 ? ` · под ${thresholdRows[0].value}% — без ниво` : ""}
+                    {thresholdRows.map((r) => `${r.name}: ${r.min}–${r.max}%`).join(" · ")}
                   </p>
                 ) : null}
               </div>

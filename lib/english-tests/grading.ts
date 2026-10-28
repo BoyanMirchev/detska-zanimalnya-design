@@ -170,7 +170,8 @@ function estimateByScoreBands(
     return { mode, levelName: null, conclusive: false, reason: "insufficient_total", levels }
   }
 
-  const achieved = levels.find((l) => l.passed)?.levelName ?? null
+  // Teachers may define overlapping ranges; the highest matching level wins.
+  const achieved = [...levels].reverse().find((l) => l.passed)?.levelName ?? null
   if (!achieved) return { mode, levelName: null, conclusive: true, reason: "below_lowest_level", levels }
   return { mode, levelName: achieved, conclusive: true, reason: "placed", levels }
 }
