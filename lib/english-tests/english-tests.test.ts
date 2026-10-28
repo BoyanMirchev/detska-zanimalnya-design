@@ -91,6 +91,22 @@ describe("score band placement", () => {
     expect(estimatePlacement(rules, {}, 30, 100)).toMatchObject({ levelName: "C2", conclusive: true, mode: "score_bands" })
   })
 
+  it("uses explicit from–to ranges and leaves gaps unplaced", () => {
+    const ranged = {
+      mode: "score_bands",
+      minTotalAnswered: 0,
+      levels: [
+        { levelId: 1, levelName: "A1", minPercent: 0, maxPercent: 40, minQuestions: 1 },
+        { levelId: 2, levelName: "A2", minPercent: 41, maxPercent: 70, minQuestions: 1 },
+        { levelId: 3, levelName: "B1", minPercent: 80, maxPercent: 100, minQuestions: 1 },
+      ],
+    } as PlacementRuleConfig
+    expect(estimatePlacement(ranged, {}, 10, 40.9).levelName).toBe("A1")
+    expect(estimatePlacement(ranged, {}, 10, 41).levelName).toBe("A2")
+    expect(estimatePlacement(ranged, {}, 10, 75).levelName).toBeNull()
+    expect(estimatePlacement(ranged, {}, 10, 100).levelName).toBe("B1")
+  })
+
   it("respects a raised lowest band and the answered minimum", () => {
     const raised = { ...rules, levels: rules.levels.map((l, i) => (i === 0 ? { ...l, minPercent: 20 } : l)) }
     expect(estimatePlacement(raised, {}, 30, 10).reason).toBe("below_lowest_level")

@@ -67,6 +67,8 @@ export type PlacementLevelRule = {
   minQuestions: number
   /** Minimum percentage of this level's points required to pass it. */
   minPercent: number
+  /** score_bands: inclusive upper bound of the overall score range. */
+  maxPercent?: number
 }
 
 export type PlacementMode = "score_bands" | "per_level"
