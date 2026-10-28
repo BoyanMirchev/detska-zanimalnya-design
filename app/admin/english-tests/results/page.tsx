@@ -103,7 +103,6 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
                 <th className="px-2 py-3 font-extrabold">Тест</th>
                 <th className="px-2 py-3 font-extrabold">Предаден</th>
                 <th className="px-2 py-3 font-extrabold">Верни</th>
-                <th className="px-2 py-3 font-extrabold">Точки</th>
                 <th className="px-2 py-3 font-extrabold">%</th>
                 <th className="px-4 py-3 font-extrabold">Ниво</th>
               </tr>
@@ -127,9 +126,6 @@ export default async function ResultsPage({ searchParams }: { searchParams: Prom
                   <td className="px-2 py-3">{formatDateTime(r.submittedAt)}</td>
                   <td className="px-2 py-3">
                     {r.correct}/{r.total}
-                  </td>
-                  <td className="px-2 py-3">
-                    {r.score}/{r.maxScore}
                   </td>
                   <td className="px-2 py-3">{formatPercent(r.percentage)}</td>
                   <td className="px-4 py-3">

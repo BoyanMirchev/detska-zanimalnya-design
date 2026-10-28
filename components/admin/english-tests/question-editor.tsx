@@ -74,7 +74,6 @@ export function QuestionEditor({
         text: form.get("text"),
         levelId: form.get("levelId"),
         difficulty: form.get("difficulty"),
-        points: form.get("points"),
         explanation: form.get("explanation"),
         status: form.get("status"),
         options: options.map(({ text, isCorrect }) => ({ text, isCorrect })),
@@ -200,7 +199,7 @@ export function QuestionEditor({
           )}
           {type === "multiple" && (
             <p className="text-xs font-bold text-[#17324D]/55">
-              Оценяване „всичко или нищо“: точките се дават само при избрани всички верни и нито един грешен отговор.
+              Отговорът се зачита за верен само при избрани всички верни и нито един грешен отговор.
             </p>
           )}
         </fieldset>
@@ -224,9 +223,6 @@ export function QuestionEditor({
           </select>
         </Field>
         <input type="hidden" name="difficulty" value={question?.difficulty ?? "medium"} />
-        <Field label="Точки" htmlFor="q-points" error={errors.points}>
-          <input id="q-points" name="points" type="number" min={1} max={100} defaultValue={question?.points ?? 1} className={inputClass} />
-        </Field>
         <Field label="Статус" htmlFor="q-status" error={errors.status}>
           <select id="q-status" name="status" defaultValue={question?.status ?? "active"} className={inputClass}>
             {QUESTION_STATUSES.map((s) => (

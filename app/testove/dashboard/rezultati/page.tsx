@@ -33,7 +33,7 @@ export default async function MyResultsPage() {
                 <div className="flex flex-wrap gap-x-6 gap-y-1 font-extrabold">
                   {a.showScore && a.percentage !== null ? (
                     <span>
-                      {a.score} / {a.maxScore} т. · {Math.round(a.percentage)}%
+                      {a.correct ?? 0} / {a.total} верни · {Math.round(a.percentage)}%
                     </span>
                   ) : (
                     <span className="text-et-navy/60">Резултатът се преглежда от преподавател</span>

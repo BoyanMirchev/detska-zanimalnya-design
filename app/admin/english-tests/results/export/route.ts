@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       },
       { all: true },
     )
-    const header = ["Ученик", "Потребител", "Тест", "Опит", "Статус", "Започнат", "Предаден", "Верни", "Общо въпроси", "Точки", "Макс. точки", "Процент", "Ниво"]
+    const header = ["Ученик", "Потребител", "Тест", "Опит", "Статус", "Започнат", "Предаден", "Верни", "Общо въпроси", "Процент", "Ниво"]
     const lines = rows.map((r) =>
       [
         r.studentName,
@@ -40,8 +40,6 @@ export async function GET(req: NextRequest) {
         r.submittedAt,
         r.correct,
         r.total,
-        r.score,
-        r.maxScore,
         r.percentage,
         r.level ?? (r.testType === "placement" ? "Неустановено" : ""),
       ]
