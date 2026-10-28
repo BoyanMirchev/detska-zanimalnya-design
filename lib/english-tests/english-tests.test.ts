@@ -75,6 +75,29 @@ describe("estimatePlacement", () => {
   })
 })
 
+describe("score band placement", () => {
+  const names = ["A1", "A2", "B1", "B2", "C1", "C2"]
+  const starts = [0, 30, 50, 65, 80, 92]
+  const rules = {
+    mode: "score_bands",
+    minTotalAnswered: 5,
+    levels: names.map((levelName, i) => ({ levelId: i + 1, levelName, minPercent: starts[i], minQuestions: 1 })),
+  } as PlacementRuleConfig
+
+  it("places by the teacher's overall score ranges", () => {
+    expect(estimatePlacement(rules, {}, 30, 10).levelName).toBe("A1")
+    expect(estimatePlacement(rules, {}, 30, 30).levelName).toBe("A2")
+    expect(estimatePlacement(rules, {}, 30, 67).levelName).toBe("B2")
+    expect(estimatePlacement(rules, {}, 30, 100)).toMatchObject({ levelName: "C2", conclusive: true, mode: "score_bands" })
+  })
+
+  it("respects a raised lowest band and the answered minimum", () => {
+    const raised = { ...rules, levels: rules.levels.map((l, i) => (i === 0 ? { ...l, minPercent: 20 } : l)) }
+    expect(estimatePlacement(raised, {}, 30, 10).reason).toBe("below_lowest_level")
+    expect(estimatePlacement(rules, {}, 2, 90).reason).toBe("insufficient_total")
+  })
+})
+
 describe("seven-level placement (Pre-A1 to C2)", () => {
   const names = ["Pre-A1", "A1", "A2", "B1", "B2", "C1", "C2"]
   const rules = {

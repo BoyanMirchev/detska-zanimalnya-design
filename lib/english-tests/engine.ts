@@ -414,7 +414,12 @@ export async function finalizeAttempt(attemptId: string, studentId?: number): Pr
   let placement = null
   if (attempt.test_type === "placement" && attempt.placement_rule_id) {
     const [rule] = await sql`SELECT rule_configuration FROM et_placement_rules WHERE id = ${attempt.placement_rule_id}`
-    placement = estimatePlacement((rule?.rule_configuration as PlacementRuleConfig) ?? null, grade.perLevel, grade.answered)
+    placement = estimatePlacement(
+      (rule?.rule_configuration as PlacementRuleConfig) ?? null,
+      grade.perLevel,
+      grade.answered,
+      grade.percentage,
+    )
   } else if (attempt.test_type === "placement") {
     placement = estimatePlacement(null, grade.perLevel, grade.answered)
   }

@@ -64,7 +64,10 @@ export default async function AdminResultPage({ params }: { params: Promise<{ at
                       <span className={`block h-full rounded-full ${l.passed ? "bg-[#1F6B5C]" : "bg-[#DD5B26]"}`} style={{ width: `${l.percent ?? 0}%` }} />
                     </span>
                     <span className="text-sm font-extrabold text-[#17324D]">
-                      {formatPercent(l.percent)} <span className="text-[#17324D]/50">/ праг {l.minPercent}%</span>
+                      {formatPercent(l.percent)}{" "}
+                      <span className="text-[#17324D]/50">
+                        {r.placement?.mode === "score_bands" ? `/ нивото започва от ${l.minPercent}%` : `/ праг ${l.minPercent}%`}
+                      </span>
                     </span>
                     <span className="text-xs font-bold text-[#17324D]/55">
                       {l.questions} въпроса{!l.enoughQuestions && " (недостатъчно)"}

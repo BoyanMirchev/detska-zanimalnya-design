@@ -79,7 +79,27 @@ export default async function ResultPage({ params }: { params: Promise<{ attempt
                 Необходимо е допълнително оценяване.
               </p>
             )}
-            {placement.levels.length ? (
+            {placement.mode === "score_bands" ? (
+              <ul className="flex flex-col gap-2">
+                {placement.levels.map((l, i) => {
+                  const next = placement.levels[i + 1]
+                  const current = l.levelName === placement.levelName
+                  return (
+                    <li
+                      key={l.levelId}
+                      className={`flex flex-wrap items-center justify-between gap-2 rounded-2xl px-4 py-3 text-sm font-bold ${
+                        current ? "bg-et-mint/25" : "bg-et-mist"
+                      }`}
+                    >
+                      <span className="font-extrabold">{l.levelName}</span>
+                      <span>
+                        {l.minPercent}–{next ? Math.max(next.minPercent - 1, 0) : 100}%{current ? " · твоето ниво" : ""}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : placement.levels.length ? (
               <ul className="flex flex-col gap-2">
                 {placement.levels.map((l) => (
                   <li key={l.levelId} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-et-mist px-4 py-3 text-sm font-bold">
