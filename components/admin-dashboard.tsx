@@ -25,6 +25,7 @@ function formatDate(value: string) {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Europe/Sofia",
     }).format(new Date(value))
   } catch {
     return value
