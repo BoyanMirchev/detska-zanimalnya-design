@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowDown, ArrowUp, Check, Eye, EyeOff, PenSquare, Replace, Users, X } from "lucide-react"
-import { saveTest } from "@/app/actions/english-tests/admin"
+import { savePlacementRules, saveTest } from "@/app/actions/english-tests/admin"
 import type { AdminLevel, AdminTestDetail, PickerQuestion } from "@/lib/english-tests/admin-data"
 import {
   DEFAULT_TEST_SETTINGS,
@@ -15,7 +15,6 @@ import {
   type TestSettings,
   type TestType,
 } from "@/lib/english-tests/types"
-import { percentsToCounts } from "@/lib/english-tests/allocation"
 import { Field, FormError, Toast, inputClass, primaryButton } from "@/components/admin/ui"
 
 const toggleIn = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value])
@@ -75,7 +74,9 @@ export function TestBuilder({
   const [method, setMethod] = useState<SelectionMethod>(test?.selectionMethod ?? "random")
   const [config, setConfig] = useState<SelectionConfig>(test?.selectionConfig ?? EMPTY_SELECTION_CONFIG)
   const [questionIds, setQuestionIds] = useState<number[]>(test?.questionIds ?? [])
-  const [questionCount, setQuestionCount] = useState(test?.questionCount ?? 20)
+  const [thresholds, setThresholds] = useState<Record<number, string>>(() =>
+    Object.fromEntries((test?.placementRules?.levels ?? []).map((r) => [r.levelId, String(r.minPercent)])),
+  )
   const [settings, setSettings] = useState<TestSettings>(test?.settings ?? DEFAULT_TEST_SETTINGS)
   const [pickerFilter, setPickerFilter] = useState({ q: "", level: 0 })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -86,7 +87,7 @@ export function TestBuilder({
   const [previewIds, setPreviewIds] = useState<number[]>([])
   const [formTouched, setFormTouched] = useState(false)
 
-  const stateSnapshot = JSON.stringify({ testType, levelId, method, config, questionIds, questionCount, settings })
+  const stateSnapshot = JSON.stringify({ testType, levelId, method, config, questionIds, thresholds, settings })
   const initialSnapshot = useRef(stateSnapshot)
   const dirty = formTouched || stateSnapshot !== initialSnapshot.current
   const allowLeave = useRef(false)
@@ -146,13 +147,7 @@ export function TestBuilder({
 
   const set = <K extends keyof TestSettings>(key: K, value: TestSettings[K]) => setSettings((s) => ({ ...s, [key]: value }))
 
-  const effectiveLevelIds = testType === "level" && levelId ? [levelId] : config.levelIds
-  const useAllocations = method === "random" && testType === "placement" && config.allocations.length > 0
-  const percentTotal = config.allocations.reduce((sum, a) => sum + a.percent, 0)
-  const allocationCounts = useMemo(
-    () => new Map(percentsToCounts(config.allocations, questionCount).map((a) => [a.levelId, a.count])),
-    [config.allocations, questionCount],
-  )
+  const effectiveLevelIds = useMemo(() => (testType === "level" && levelId ? [levelId] : []), [testType, levelId])
 
   const pool = useMemo(
     () =>
@@ -161,11 +156,32 @@ export function TestBuilder({
       ),
     [questions, effectiveLevelIds],
   )
-  const poolByLevel = useMemo(() => {
-    const map = new Map<number, number>()
-    for (const q of pool) if (q.levelId != null) map.set(q.levelId, (map.get(q.levelId) ?? 0) + 1)
-    return map
-  }, [pool])
+
+  const thresholdRows = activeLevels
+    .map((l) => ({ levelId: l.id, name: l.name, value: thresholds[l.id] ?? "" }))
+    .filter((r) => r.value.trim() !== "")
+  const thresholdError = useMemo(() => {
+    for (let i = 0; i < thresholdRows.length; i++) {
+      const n = Number(thresholdRows[i].value)
+      if (!Number.isFinite(n) || n < 0 || n > 100) return `Процентът за ${thresholdRows[i].name} трябва да е между 0 и 100.`
+      if (i > 0 && n <= Number(thresholdRows[i - 1].value))
+        return `${thresholdRows[i].name} трябва да има по-висок процент от ${thresholdRows[i - 1].name}.`
+    }
+    return null
+  }, [thresholdRows])
+
+  function placementRulesPayload() {
+    return {
+      mode: "score_bands",
+      minTotalAnswered: 0,
+      levels: thresholdRows.map((r, i) => ({
+        levelId: r.levelId,
+        minQuestions: 1,
+        minPercent: Number(r.value),
+        maxPercent: i < thresholdRows.length - 1 ? Number(thresholdRows[i + 1].value) - 1 : 100,
+      })),
+    }
+  }
 
   const pickerRows = useMemo(() => {
     const term = pickerFilter.q.trim().toLowerCase()
@@ -178,21 +194,19 @@ export function TestBuilder({
   }, [questions, pickerFilter, testType, levelId])
 
   const selectedQuestions = questionIds.map((id) => questions.find((q) => q.id === id)).filter(Boolean) as PickerQuestion[]
+  const questionCount = Math.min(pool.length, 200)
   const finalCount = method === "manual" ? questionIds.length : questionCount
-  const poolShortfall = method === "random" && pool.length < questionCount
-  const percentOver = useAllocations && percentTotal > 100
-
-  function setAllocation(id: number, percent: number) {
-    setConfig((c) => {
-      const others = c.allocations.filter((a) => a.levelId !== id)
-      return { ...c, allocations: percent > 0 ? [...others, { levelId: id, percent }] : others }
-    })
-  }
+  const poolShortfall = method === "random" && pool.length === 0
 
   function submit(form: FormData) {
     startTransition(async () => {
       setErrors({})
       setError(null)
+      if (testType === "placement" && thresholdError) {
+        setError(thresholdError)
+        window.scrollTo({ top: 0, behavior: "smooth" })
+        return
+      }
       const res = await saveTest(test?.id ?? null, {
         title: form.get("title"),
         description: form.get("description"),
@@ -201,12 +215,7 @@ export function TestBuilder({
         durationMinutes: form.get("durationMinutes"),
         questionCount,
         selectionMethod: method,
-        selectionConfig:
-          testType === "level"
-            ? { ...config, difficulties: [], levelIds: [], allocations: [] }
-            : useAllocations
-              ? { ...config, difficulties: [] }
-              : { ...config, difficulties: [], allocations: [] },
+        selectionConfig: { ...config, difficulties: [], levelIds: [], allocations: [] },
         questionIds,
         settings,
         availableFrom: "",
@@ -218,6 +227,16 @@ export function TestBuilder({
         setError(res.error ?? "Моля, коригирайте маркираните полета.")
         window.scrollTo({ top: 0, behavior: "smooth" })
         return
+      }
+      const savedId = test?.id ?? res.data?.id
+      if (testType === "placement" && savedId) {
+        const rulesRes = await savePlacementRules(savedId, placementRulesPayload())
+        if (!rulesRes.ok) {
+          setError(rulesRes.errors?.levels ?? rulesRes.error ?? "Неуспешно запазване на процентите за нивата.")
+          window.scrollTo({ top: 0, behavior: "smooth" })
+          if (!test) router.replace(`/admin/english-tests/${savedId}/edit`)
+          return
+        }
       }
       allowLeave.current = true
       if (!test && res.data) {
@@ -315,100 +334,60 @@ export function TestBuilder({
         {method === "random" ? (
           <div className="flex flex-col gap-4">
             {testType === "placement" && (
-              <fieldset className="flex flex-col gap-2">
-                <legend className="mb-1 text-sm font-extrabold text-[#17324D]">Нива (празно = всички)</legend>
-                <div className="flex flex-wrap gap-2">
-                  {activeLevels.map((l) => (
-                    <Chip key={l.id} active={config.levelIds.includes(l.id)} onClick={() => setConfig((c) => ({ ...c, levelIds: toggleIn(c.levelIds, l.id) }))}>
-                      {l.name}
-                    </Chip>
-                  ))}
-                </div>
-              </fieldset>
-            )}
-
-            <Field label="Общ брой въпроси" htmlFor="t-count" error={errors.questionCount}>
-              <input
-                id="t-count"
-                type="number"
-                min={1}
-                max={200}
-                value={questionCount}
-                onChange={(e) => setQuestionCount(Number(e.target.value) || 0)}
-                className={`${inputClass} max-w-40`}
-              />
-            </Field>
-
-            {testType === "placement" ? (
               <div className="flex flex-col gap-2">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="text-sm font-extrabold text-[#17324D]">Процент въпроси по ниво</p>
-                  <p
-                    className={`text-sm font-extrabold ${percentOver ? "text-[#C7503F]" : "text-[#17324D]/70"}`}
-                    role="status"
-                  >
-                    Общо: {percentTotal}%
-                  </p>
-                </div>
-                <p className="text-xs font-bold text-[#17324D]/55">
-                  Задайте какъв процент от въпросите да бъде от всяко ниво. Ако оставите всички на 0%, въпросите се подбират случайно от всички нива.
+                <p className="text-sm font-extrabold text-[#17324D]">Процент за преминаване по ниво</p>
+                <p className="text-xs font-bold leading-relaxed text-[#17324D]/55">
+                  Задайте от колко процента общ резултат ученикът получава всяко ниво. Например A1 — 20%, A2 — 30%, B1 — 50%. Оставете празно за нива, които не искате да се присъждат.
                 </p>
-                <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {activeLevels
-                    .filter((l) => config.levelIds.length === 0 || config.levelIds.includes(l.id))
-                    .map((l) => {
-                      const percent = config.allocations.find((a) => a.levelId === l.id)?.percent ?? 0
-                      const count = allocationCounts.get(l.id) ?? 0
-                      const available = poolByLevel.get(l.id) ?? 0
-                      return (
-                        <li key={l.id} className="flex items-center gap-3 rounded-2xl bg-[#F7FAFC] px-4 py-2">
-                          <label htmlFor={`alloc-${l.id}`} className="flex-1 font-extrabold text-[#17324D]">
-                            {l.name}
-                            <span className={`block text-xs ${count > available ? "text-[#C7503F]" : "text-[#17324D]/50"}`}>
-                              {count} {count === 1 ? "въпрос" : "въпроса"} · налични: {available}
-                            </span>
-                          </label>
-                          <div className="flex items-center gap-1">
-                            <input
-                              id={`alloc-${l.id}`}
-                              type="number"
-                              min={0}
-                              max={100}
-                              value={percent}
-                              onChange={(e) => setAllocation(l.id, Math.min(100, Math.max(0, Math.round(Number(e.target.value) || 0))))}
-                              className={`${inputClass} w-20`}
-                            />
-                            <span aria-hidden="true" className="font-extrabold text-[#17324D]/60">
-                              %
-                            </span>
-                          </div>
-                        </li>
-                      )
-                    })}
+                <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                  {activeLevels.map((l) => (
+                    <li key={l.id} className="flex items-center gap-3 rounded-2xl bg-[#F7FAFC] px-4 py-2">
+                      <label htmlFor={`pass-${l.id}`} className="flex-1 font-extrabold text-[#17324D]">
+                        {l.name}
+                        <span className="block text-xs text-[#17324D]/50">от</span>
+                      </label>
+                      <div className="flex items-center gap-1">
+                        <input
+                          id={`pass-${l.id}`}
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          max={100}
+                          placeholder="—"
+                          value={thresholds[l.id] ?? ""}
+                          onChange={(e) => setThresholds((t) => ({ ...t, [l.id]: e.target.value }))}
+                          className={`${inputClass} w-20`}
+                        />
+                        <span aria-hidden="true" className="font-extrabold text-[#17324D]/60">
+                          %
+                        </span>
+                      </div>
+                    </li>
+                  ))}
                 </ul>
-                {(percentOver || errors.allocations) && (
-                  <p className="text-sm font-bold text-[#C7503F]">
-                    {errors.allocations ?? "Сборът от процентите не може да надвишава 100%."}
-                  </p>
-                )}
-                {useAllocations && !percentOver && percentTotal < 100 && (
+                {thresholdError ? (
+                  <p className="text-sm font-bold text-[#C7503F]">{thresholdError}</p>
+                ) : thresholdRows.length > 0 ? (
                   <p className="text-xs font-bold text-[#17324D]/55">
-                    Останалите {100 - percentTotal}% се подбират случайно от нивата без зададен процент.
+                    {thresholdRows
+                      .map((r, i) => `${r.name}: ${r.value}–${i < thresholdRows.length - 1 ? Number(thresholdRows[i + 1].value) - 1 : 100}%`)
+                      .join(" · ")}
+                    {Number(thresholdRows[0].value) > 0 ? ` · под ${thresholdRows[0].value}% — без ниво` : ""}
                   </p>
-                )}
+                ) : null}
               </div>
-            ) : null}
+            )}
             <p
               className={`rounded-2xl px-4 py-3 text-sm font-bold ${
                 poolShortfall ? "bg-[#F27B6B]/15 text-[#C7503F]" : "bg-[#17324D]/5 text-[#17324D]"
               }`}
               role="status"
             >
-              Подходящи активни въпроси в банката: {pool.length}.{" "}
               {poolShortfall
-                ? `Недостатъчно за ${questionCount} въпроса — добавете въпроси или разширете критериите.`
-                : "Всеки ученик ще получи различен случаен набор."}
+                ? "Няма активни въпроси в банката — добавете въпроси, за да може тестът да се решава."
+                : `Тестът включва всички активни въпроси от банката (${questionCount}) в случаен ред за всеки ученик.`}
             </p>
+            {errors.questionCount && <p className="text-sm font-bold text-[#C7503F]">{errors.questionCount}</p>}
           </div>
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
