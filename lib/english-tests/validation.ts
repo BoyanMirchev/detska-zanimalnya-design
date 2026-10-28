@@ -207,8 +207,8 @@ export function parseSelectionConfig(raw: unknown): SelectionConfig {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>
   const allocations = Array.isArray(r.allocations)
     ? r.allocations
-        .map((a) => ({ levelId: int((a as Record<string, unknown>)?.levelId), count: int((a as Record<string, unknown>)?.count) }))
-        .filter((a) => a.levelId > 0 && a.count > 0 && a.count <= 200)
+        .map((a) => ({ levelId: int((a as Record<string, unknown>)?.levelId), percent: int((a as Record<string, unknown>)?.percent) }))
+        .filter((a) => a.levelId > 0 && a.percent > 0 && a.percent <= 100)
     : []
   return {
     levelIds: idList(r.levelIds),
@@ -247,6 +247,8 @@ export function validateTest(raw: Record<string, unknown>): Validated<TestInput>
     if (questionIds.length > 200) errors.questionIds = "Максимум 200 въпроса."
   } else if (Number.isNaN(questionCount) || questionCount < 1 || questionCount > 200) {
     errors.questionCount = "Броят въпроси трябва да е между 1 и 200."
+  } else if (selectionConfig.allocations.reduce((sum, a) => sum + a.percent, 0) > 100) {
+    errors.allocations = "Сборът от процентите по нива не може да надвишава 100%."
   }
   if (availableFrom === "invalid") errors.availableFrom = "Невалидна дата."
   if (availableUntil === "invalid") errors.availableUntil = "Невалидна дата."

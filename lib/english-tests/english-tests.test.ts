@@ -162,20 +162,20 @@ describe("seven-level placement (Pre-A1 to C2)", () => {
 
   it("allocates six questions per level across all seven levels", () => {
     const pool: PoolQuestion[] = Array.from({ length: 70 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, difficulty: "medium" }))
-    const allocations = names.map((_, i) => ({ levelId: i + 1, count: 6 }))
+    const allocations = names.map((_, i) => ({ levelId: i + 1, percent: i < 6 ? 14 : 16 }))
     const res = selectRandomQuestions(pool, { levelIds: [], difficulties: [], allocations } as SelectionConfig, 42)
     expect(res.ok).toBe(true)
     if (res.ok) {
       expect(new Set(res.ids).size).toBe(42)
       for (let level = 1; level <= 7; level++) {
-        expect(res.ids.filter((id) => pool[id - 1].levelId === level)).toHaveLength(6)
+        expect(res.ids.filter((id) => pool[id - 1].levelId === level)).toHaveLength(level < 7 ? 6 : 6)
       }
     }
   })
 
   it("rejects allocations when C2 has too few questions", () => {
     const pool: PoolQuestion[] = Array.from({ length: 40 }, (_, i) => ({ id: i + 1, levelId: (i % 7) + 1, difficulty: "medium" }))
-    const allocations = names.map((_, i) => ({ levelId: i + 1, count: 6 }))
+    const allocations = names.map((_, i) => ({ levelId: i + 1, percent: i < 6 ? 14 : 16 }))
     expect(selectRandomQuestions(pool, { levelIds: [], difficulties: [], allocations } as SelectionConfig, 42).ok).toBe(false)
   })
 })
@@ -194,8 +194,12 @@ describe("selectRandomQuestions", () => {
     if (res.ok) expect(new Set(res.ids).size).toBe(8)
   })
 
-  it("respects per-level allocations", () => {
-    const res = selectRandomQuestions(pool, { ...base, allocations: [{ levelId: 1, count: 2 }, { levelId: 2, count: 3 }] }, 5)
+  it("rejects percentages above 100%", () => {
+    expect(selectRandomQuestions(pool, { ...base, allocations: [{ levelId: 1, percent: 60 }, { levelId: 2, percent: 50 }] }, 5).ok).toBe(false)
+  })
+
+  it("respects per-level percentages", () => {
+    const res = selectRandomQuestions(pool, { ...base, allocations: [{ levelId: 1, percent: 40 }, { levelId: 2, percent: 60 }] }, 5)
     expect(res.ok).toBe(true)
     if (res.ok) {
       const levels = res.ids.map((id) => pool.find((p) => p.id === id)!.levelId)
@@ -206,7 +210,7 @@ describe("selectRandomQuestions", () => {
 
   it("fails clearly when the bank is too small", () => {
     expect(selectRandomQuestions(pool, { ...base, levelIds: [1] }, 10).ok).toBe(false)
-    expect(selectRandomQuestions(pool, { ...base, allocations: [{ levelId: 1, count: 9 }] }, 5).ok).toBe(false)
+    expect(selectRandomQuestions(pool, { ...base, allocations: [{ levelId: 1, percent: 100 }] }, 9).ok).toBe(false)
   })
 })
 

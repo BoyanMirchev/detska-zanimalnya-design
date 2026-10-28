@@ -1,4 +1,5 @@
 import { randomInt } from "node:crypto"
+import { percentsToCounts } from "./allocation"
 import type { SelectionConfig } from "./types"
 
 export type PoolQuestion = { id: number; levelId: number | null; difficulty: string }
@@ -35,12 +36,11 @@ export function selectRandomQuestions(
   random: RandomFn = cryptoRandom,
 ): SelectionResult {
   const eligible = pool.filter((q) => matchesFilters(q, config))
-  const allocations = config.allocations.filter((a) => a.count > 0)
-  const allocated = allocations.reduce((sum, a) => sum + a.count, 0)
-
-  if (allocated > count) {
-    return { ok: false, error: `Разпределението по нива (${allocated}) надвишава броя въпроси (${count}).` }
+  const percentTotal = config.allocations.reduce((sum, a) => sum + Math.max(0, a.percent), 0)
+  if (percentTotal > 100) {
+    return { ok: false, error: `Сборът от процентите по нива (${percentTotal}%) надвишава 100%.` }
   }
+  const allocations = percentsToCounts(config.allocations, count).filter((a) => a.count > 0)
 
   const chosen = new Set<number>()
   for (const allocation of allocations) {
