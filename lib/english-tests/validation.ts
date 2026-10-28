@@ -104,7 +104,7 @@ export function validateLevel(input: { name: unknown; description: unknown; disp
 export type QuestionInput = {
   type: QuestionType
   text: string
-  levelId: number
+  levelId: number | null
   difficulty: Difficulty
   points: number
   explanation: string | null
@@ -116,7 +116,8 @@ export function validateQuestion(raw: Record<string, unknown>): Validated<Questi
   const errors: Errors = {}
   const type = str(raw.type) as QuestionType
   const text = str(raw.text)
-  const levelId = int(raw.levelId)
+  const levelIdRaw = int(raw.levelId)
+  const levelId = levelIdRaw > 0 ? levelIdRaw : null
   const difficulty = str(raw.difficulty) as Difficulty
   const points = 1
   const explanation = str(raw.explanation) || null
@@ -130,7 +131,6 @@ export function validateQuestion(raw: Record<string, unknown>): Validated<Questi
   if (!QUESTION_TYPES.includes(type)) errors.type = "Невалиден тип въпрос."
   if (!text) errors.text = "Текстът на въпроса е задължителен."
   else if (text.length > 2000) errors.text = "Текстът е твърде дълъг (до 2000 символа)."
-  if (!(levelId > 0)) errors.levelId = "Изберете ниво."
   if (!DIFFICULTIES.includes(difficulty)) errors.difficulty = "Изберете трудност."
   if (explanation && explanation.length > 2000) errors.explanation = "Обяснението е твърде дълго."
   if (!QUESTION_STATUSES.includes(status)) errors.status = "Невалиден статус."

@@ -40,7 +40,6 @@ export function QuestionEditor({
   const [toast, setToast] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
 
-  const usableLevels = levels.filter((l) => !l.archived || l.id === question?.levelId)
 
   function changeType(next: QuestionType) {
     setType(next)
@@ -210,18 +209,7 @@ export function QuestionEditor({
       </div>
 
       <aside className="flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm sm:p-6 lg:self-start">
-        <Field label="Ниво" htmlFor="q-level" error={errors.levelId} required>
-          <select id="q-level" name="levelId" defaultValue={question?.levelId ?? ""} className={inputClass} required>
-            <option value="" disabled>
-              Изберете
-            </option>
-            {usableLevels.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.name}
-              </option>
-            ))}
-          </select>
-        </Field>
+        <input type="hidden" name="levelId" value={question?.levelId ?? ""} />
         <input type="hidden" name="difficulty" value={question?.difficulty ?? "medium"} />
         <Field label="Статус" htmlFor="q-status" error={errors.status}>
           <select id="q-status" name="status" defaultValue={question?.status ?? "active"} className={inputClass}>

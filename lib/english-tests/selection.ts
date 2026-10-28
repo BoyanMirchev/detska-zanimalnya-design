@@ -1,7 +1,7 @@
 import { randomInt } from "node:crypto"
 import type { SelectionConfig } from "./types"
 
-export type PoolQuestion = { id: number; levelId: number; difficulty: string }
+export type PoolQuestion = { id: number; levelId: number | null; difficulty: string }
 
 export type RandomFn = (maxExclusive: number) => number
 

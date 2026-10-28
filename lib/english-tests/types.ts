@@ -89,8 +89,8 @@ export type QuestionSnapshot = {
   text: string
   type: QuestionType
   points: number
-  levelId: number
-  levelName: string
+  levelId: number | null
+  levelName: string | null
   difficulty: Difficulty
 }
 

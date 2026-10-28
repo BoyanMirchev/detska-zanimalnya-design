@@ -109,7 +109,7 @@ export function QuestionBank({ rows }: { rows: AdminQuestionRow[] }) {
                     {LABELS.questionType[q.type]} · {q.optionCount} отговора
                   </span>
                 </td>
-                <td className="px-2 py-3">{q.levelName}</td>
+                <td className="px-2 py-3">{q.levelName ?? "—"}</td>
                 <td className="px-2 py-3">{q.testCount}</td>
                 <td className="px-2 py-3">
                   <Pill tone={statusTone[q.status]}>{LABELS.questionStatus[q.status]}</Pill>

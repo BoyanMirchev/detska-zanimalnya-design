@@ -118,7 +118,7 @@ export type AdminQuestionRow = {
   id: number
   type: QuestionType
   text: string
-  levelName: string
+  levelName: string | null
   difficulty: Difficulty
   points: number
   status: QuestionStatus
@@ -142,7 +142,7 @@ export async function listQuestions(filters: QuestionFilters) {
            (SELECT count(*)::int FROM et_test_questions tq WHERE tq.question_id = q.id) AS test_count,
            count(*) OVER ()::int AS total
     FROM et_questions q
-    JOIN et_levels l ON l.id = q.level_id
+    LEFT JOIN et_levels l ON l.id = q.level_id
     WHERE (${search}::text IS NULL OR q.text ILIKE ${search})
       AND (${filters.level ?? null}::int IS NULL OR q.level_id = ${filters.level ?? null}::int)
       AND (${filters.difficulty || null}::text IS NULL OR q.difficulty = ${filters.difficulty || null}::text)
@@ -179,7 +179,7 @@ export type AdminQuestionDetail = {
   id: number
   type: QuestionType
   text: string
-  levelId: number
+  levelId: number | null
   difficulty: Difficulty
   points: number
   explanation: string
@@ -227,9 +227,9 @@ export async function listPickerQuestions() {
                      FROM et_test_questions tq JOIN et_tests t ON t.id = tq.test_id
                      WHERE tq.question_id = q.id AND t.status <> 'archived'), '[]'::json) AS tests
     FROM et_questions q
-    JOIN et_levels l ON l.id = q.level_id
+    LEFT JOIN et_levels l ON l.id = q.level_id
     WHERE q.status = 'active'
-    ORDER BY l.display_order, q.id
+    ORDER BY l.display_order NULLS LAST, q.id
   `
   return rows.map((r) => ({
     id: r.id as number,
@@ -237,8 +237,8 @@ export async function listPickerQuestions() {
     type: r.type as QuestionType,
     difficulty: r.difficulty as Difficulty,
     points: r.points as number,
-    levelId: r.level_id as number,
-    levelName: r.level_name as string,
+    levelId: r.level_id as number | null,
+    levelName: r.level_name as string | null,
     options: r.options as { text: string; isCorrect: boolean }[],
     tests: r.tests as { id: number; title: string }[],
   }))
