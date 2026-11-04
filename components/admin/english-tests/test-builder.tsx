@@ -190,7 +190,7 @@ export function TestBuilder({
   }
 
   function updateThreshold(levelId: number, key: "min" | "max", value: string) {
-    setThresholds((t) => ({ ...t, [levelId]: { min: "", max: "", ...t[levelId], [key]: value } }))
+    setThresholds((t) => ({ ...t, [levelId]: { ...(t[levelId] ?? { min: "", max: "" }), [key]: value } }))
   }
 
   const pickerRows = useMemo(() => {
@@ -624,7 +624,7 @@ export function TestBuilder({
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Максимален брой опити (0 = без ограничение)" htmlFor="t-attempts">
+          <Field label="Ма��симален брой опити (0 = без ограничение)" htmlFor="t-attempts">
             <input
               id="t-attempts"
               type="number"
