@@ -83,11 +83,18 @@ export const kursoveChildren: NavChild[] = [
   },
 ]
 
+export const rabotilniciChildren: NavChild[] = [
+  { label: "Писмо до Дядо Коледа", short: "Писмо до Дядо Коледа", age: "Коледна работилница", href: "/rabotilnici/pismo-do-dyado-koleda" },
+  { label: "Коледни играчки от солено тесто", short: "Коледни играчки", age: "Коледна работилница", href: "/rabotilnici/koledni-igrachki" },
+  { label: "Украсяване на коледни меденки", short: "Коледни меденки", age: "Коледна работилница", href: "/rabotilnici/koledni-medenki" },
+]
+
 export const navItems: NavItem[] = [
   { label: "Начало", href: "/" },
   { label: "Занималня", href: "/zanimalnya/uchebna", children: zanimalnyaChildren },
   { label: "Курсове", href: "/kursove", children: kursoveChildren },
   { label: "Програмиране", href: "/programirane" },
+  { label: "Работилници", href: "/rabotilnici", children: rabotilniciChildren },
   { label: "Плащане", href: "/plashtane" },
   { label: "Полезно", href: "/polezno" },
   { label: "За нас", href: "/za-nas" },
