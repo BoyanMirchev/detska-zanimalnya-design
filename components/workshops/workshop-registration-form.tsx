@@ -177,7 +177,7 @@ export function WorkshopRegistrationForm({ options, defaultSlug }: { options: Wo
           <legend className="float-left mb-3 w-full font-extrabold text-ink">
             Има ли детето хранителни алергии или непоносимости?
           </legend>
-          <div className="flex flex-wrap gap-4">
+          <div className="clear-both flex flex-wrap gap-6">
             {[
               { value: "no", label: "Не" },
               { value: "yes", label: "Да" },
