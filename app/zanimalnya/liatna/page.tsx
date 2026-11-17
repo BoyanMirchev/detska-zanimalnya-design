@@ -2,6 +2,10 @@ import type { Metadata } from "next"
 import { Sun, Palette, Bus, Utensils } from "lucide-react"
 import { ProgramPage } from "@/components/program-page"
 
+// Prices come from the central pricing table; saves revalidate immediately, this hourly
+// refresh rolls date-based promotions over.
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: "Лятна занималня за деца в София",
 
@@ -52,16 +56,7 @@ export default function LiatnaPage() {
         { src: "/images/class-green-lego.png", alt: "Класна стая с цветно килимче" },
         { src: "/images/room-white.png", alt: "Светла стая с цветни завеси" },
       ]}
-      priceTitle="Такси за лятна занималня"
-      prices={[
-        { label: "Седмична такса", price: "120 €" },
-        { label: "Седмична такса при половин присъствен ден", price: "105 €" },
-        { label: "Еднодневна такса", price: "35 €" },
-        { label: "Еднодневна такса при половин присъствен ден", price: "30 €" },
-        { label: "Месечна такса", note: "без право на връщане", price: "410 €" },
-        { label: "Месечна такса при половин присъствен ден", note: "до 13 ч", price: "310 €" },
-        { label: "Почасова такса", note: "на час", price: "15 €" },
-      ]}
+      priceGroup="zanimalnya-liatna"
       approach={{
         eyebrow: "Какво включва лятната програма",
         title: "Забавление, движение и леки образователни занимания.",

@@ -92,8 +92,16 @@ export function WorkshopEditor({ workshop }: { workshop?: Workshop }) {
         <Field label="Продължителност (минути)">
           <input type="number" name="duration_minutes" min={1} defaultValue={w?.duration_minutes ?? ""} className={inputClass} />
         </Field>
-        <Field label="Цена (EUR)" hint="Пример: 25 или 25,50">
-          <input name="price" inputMode="decimal" defaultValue={w?.price ?? ""} className={inputClass} />
+        <Field label="Цена" hint="Цените се управляват централно">
+          <p className="rounded-2xl bg-[#F2F7FB] px-4 py-3 text-sm font-bold text-[#17324D]/70">
+            {w ? (
+              <a href={`/admin/ceni?q=${encodeURIComponent(w.title)}`} className="text-[#1F6B5C] underline underline-offset-2">
+                Редактирай цената в „Управление на цени“
+              </a>
+            ) : (
+              "След създаването цената се задава в „Управление на цени“."
+            )}
+          </p>
         </Field>
         <Field label="Възраст от">
           <input type="number" name="age_min" min={0} max={18} defaultValue={w?.age_min ?? ""} className={inputClass} />

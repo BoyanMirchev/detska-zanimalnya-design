@@ -3,6 +3,10 @@ import { CoursePage } from "@/components/course-page"
 import { contact } from "@/lib/nav"
 import { AngliyskiContent, AngliyskiEnrollCTA } from "@/components/angliyski-content"
 
+// Prices come from the central pricing table; saves revalidate immediately, this hourly
+// refresh rolls date-based promotions over.
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: "Английски език за деца в София",
 
@@ -77,18 +81,7 @@ export default function AngliyskiPage() {
         ],
         note: "Групи до 6 деца, сформирани спрямо нивото, установено на входящия тест. Курсът съвпада с учебната година (8 месеца) и се провежда 2 пъти седмично по 2 учебни часа, като нивото Pre A1 се провежда в рамките на 1 академичен час.",
       }}
-      prices={[
-        { label: "Еднократно посещение", price: "15 € / 29,33 лв" },
-        { label: "Еднократно заплащане за месец", price: "80 € / 156,47 лв" },
-        { label: "Заплащане за целия курс (на година)", note: "8 месеца", price: "555 € / 1 085,80 лв" },
-        {
-          label: "Разсрочено заплащане на целия курс",
-          note: "3 равни вноски – при започване, м. ноември и м. февруари",
-          price: "3 × 195 € / 380 лв",
-        },
-      ]}
-      priceTitle="Цени и отстъпки"
-      priceNote="При брат или сестра от същото семейство се ползва 10% отстъпка за второто дете при заплащане на месечна такса. Месечната такса е на база календарен месец и пропуснати часове не се прехвърлят."
+      priceGroup="kurs-angliyski"
     >
       <AngliyskiContent />
     </CoursePage>

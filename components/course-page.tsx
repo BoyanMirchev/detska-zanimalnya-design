@@ -4,11 +4,11 @@ import type { LucideIcon } from "lucide-react"
 import { ArrowRight, Check } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 import { kursoveChildren } from "@/lib/nav"
+import { PricingTable } from "@/components/pricing/pricing-table"
 
 export type CourseHighlight = { icon: LucideIcon; title: string; text: string }
 export type CourseModule = { title: string; topics: string[] }
 export type CourseScheduleGroup = { label: string; times: string[] }
-export type CoursePriceRow = { label: string; note?: string; price: string }
 
 export type CoursePageProps = {
   slug: string
@@ -24,9 +24,8 @@ export type CoursePageProps = {
   modules?: { eyebrow: string; title: string; items: CourseModule[] }
   schedule?: { eyebrow: string; title: string; note?: string; groups: CourseScheduleGroup[] }
   teacher?: { eyebrow: string; title: string; text: string }
-  prices?: CoursePriceRow[]
-  priceTitle?: string
-  priceNote?: string
+  /** Key of the centrally managed price group (see /admin/ceni). */
+  priceGroup?: string
   children?: ReactNode
   cta?: ReactNode
   phone?: string
@@ -202,31 +201,10 @@ export function CoursePage(props: CoursePageProps) {
       )}
 
       {/* Pricing */}
-      {props.prices && props.prices.length > 0 && (
+      {props.priceGroup && (
         <section className="px-5 py-20 sm:px-8 lg:py-24">
           <div className="mx-auto max-w-4xl">
-            <SectionHeading align="center" eyebrow="Цени" title={props.priceTitle ?? "Цени и записване"} />
-            <div className="mt-10 overflow-hidden rounded-[30px] border border-brand/15 bg-paper">
-              {props.prices.map((row, i) => (
-                <div
-                  key={row.label}
-                  className={`flex items-center justify-between gap-4 px-6 py-5 sm:px-8 ${
-                    i % 2 === 1 ? "bg-cream" : "bg-paper"
-                  }`}
-                >
-                  <div>
-                    <p className="font-extrabold text-ink">{row.label}</p>
-                    {row.note && <p className="mt-1 text-sm font-semibold text-ink/55">{row.note}</p>}
-                  </div>
-                  <span className="shrink-0 whitespace-nowrap rounded-full bg-brand/12 px-4 py-2 text-lg font-black text-brand-dark">
-                    {row.price}
-                  </span>
-                </div>
-              ))}
-            </div>
-            {props.priceNote && (
-              <p className="mt-4 text-center text-sm font-semibold text-ink/50">{props.priceNote}</p>
-            )}
+            <PricingTable groupKey={props.priceGroup} />
             <div className="mt-8 flex justify-center">
               <Link
                 href="/kursove"

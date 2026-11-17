@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BarChart3, GraduationCap, Inbox, Palette, Users } from "lucide-react"
+import { BarChart3, GraduationCap, Inbox, Palette, Tag, Users } from "lucide-react"
 
 const LINKS = [
   { href: "/admin", label: "Запитвания", icon: Inbox, match: (p: string) => p === "/admin" },
@@ -13,6 +13,12 @@ const LINKS = [
     label: "Работилници",
     icon: Palette,
     match: (p: string) => p.startsWith("/admin/rabotilnici"),
+  },
+  {
+    href: "/admin/ceni",
+    label: "Управление на цени",
+    icon: Tag,
+    match: (p: string) => p.startsWith("/admin/ceni"),
   },
   {
     href: "/admin/english-tests",

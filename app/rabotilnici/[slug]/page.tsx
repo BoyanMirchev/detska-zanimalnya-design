@@ -4,6 +4,8 @@ import { WorkshopDetail } from "@/components/workshops/workshop-detail"
 import { getPublishedWorkshop, getPublishedWorkshops } from "@/lib/workshops/db"
 import { eventDateTimes, getAvailability, type Workshop } from "@/lib/workshops/types"
 import { contact } from "@/lib/nav"
+import { getPrice, workshopPriceKey } from "@/lib/pricing/db"
+import { getPromotionState, type PriceRecord } from "@/lib/pricing/types"
 
 export const revalidate = 300
 
@@ -34,7 +36,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-function jsonLd(w: Workshop) {
+/** Offer amount for structured data: the currently effective EUR price, never a guessed value. */
+function offerPrice(price: PriceRecord | null): string | null {
+  if (!price || price.currency !== "EUR") return null
+  if (price.display_mode === "free") return "0"
+  if (price.display_mode !== "amount" || price.regular_price === null) return null
+  return getPromotionState(price) === "active" && price.promotional_price !== null
+    ? price.promotional_price
+    : price.regular_price
+}
+
+async function loadWorkshopPrice(id: number): Promise<PriceRecord | null> {
+  try {
+    return await getPrice(workshopPriceKey(id))
+  } catch (error) {
+    console.error("[pricing] failed to load workshop price", id, error)
+    return null
+  }
+}
+
+function jsonLd(w: Workshop, price: PriceRecord | null) {
+  const amount = offerPrice(price)
   const url = `${BASE_URL}/rabotilnici/${w.slug}`
   const breadcrumb = {
     "@context": "https://schema.org",
@@ -64,11 +86,11 @@ function jsonLd(w: Workshop) {
       url,
       location: { "@type": "Place", name: "Хралупата", address: contact.address },
       organizer: { "@type": "Organization", name: "Хралупата", url: BASE_URL },
-      ...(w.price !== null
+      ...(amount !== null
         ? {
             offers: {
               "@type": "Offer",
-              price: w.price,
+              price: amount,
               priceCurrency: "EUR",
               url,
               availability:
@@ -85,17 +107,18 @@ export default async function WorkshopPage({ params }: Props) {
   const { slug } = await params
   const [workshop, all] = await Promise.all([getPublishedWorkshop(slug), getPublishedWorkshops()])
   if (!workshop) notFound()
+  const price = await loadWorkshopPrice(workshop.id)
 
   return (
     <main>
-      {jsonLd(workshop).map((item, i) => (
+      {jsonLd(workshop, price).map((item, i) => (
         <script
           key={i}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(item).replace(/</g, "\\u003c") }}
         />
       ))}
-      <WorkshopDetail workshop={workshop} all={all} />
+      <WorkshopDetail workshop={workshop} all={all} price={price} />
     </main>
   )
 }

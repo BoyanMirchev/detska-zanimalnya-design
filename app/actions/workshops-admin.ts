@@ -1,6 +1,7 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, updateTag } from "next/cache"
+import { PRICES_TAG, ensurePricingSchema, syncWorkshopPrices } from "@/lib/pricing/db"
 import { redirect } from "next/navigation"
 import { isAuthenticated } from "@/app/actions/admin"
 import { sql } from "@/lib/db"
@@ -38,13 +39,6 @@ function optionalInt(value: string, min: number, max: number, label: string): nu
     throw new Error(`Полето „${label}“ трябва да е цяло число между ${min} и ${max}.`)
   }
   return Number(value)
-}
-
-function optionalPrice(value: string): string | null {
-  if (value === "") return null
-  const normalised = value.replace(/\s/g, "").replace(",", ".")
-  if (!/^\d{1,7}(\.\d{1,2})?$/.test(normalised)) throw new Error("Невалидна цена. Пример: 25 или 25,50")
-  return normalised
 }
 
 function parseImageUrl(value: string): string {
@@ -97,12 +91,19 @@ function readEditorForm(formData: FormData, previousActivities: WorkshopActivity
     duration_minutes: optionalInt(get("duration_minutes"), 1, 1440, "Продължителност"),
     age_min: ageMin,
     age_max: ageMax,
-    price: optionalPrice(get("price")),
     capacity: optionalInt(get("capacity"), 0, 1000, "Капацитет"),
     registration_enabled: formData.get("registration_enabled") === "on",
     published: formData.get("published") === "on",
     sort_order: optionalInt(get("sort_order"), 0, 1000, "Подредба") ?? 0,
   }
+}
+
+/** Keeps each workshop's central price record (created on first sync) aligned with its title and URL. */
+async function syncPrices() {
+  await ensurePricingSchema()
+  await syncWorkshopPrices()
+  updateTag(PRICES_TAG)
+  revalidatePath("/admin/ceni")
 }
 
 function revalidateWorkshopPages(slug?: string) {
@@ -123,13 +124,13 @@ export async function createWorkshop(_prev: WorkshopEditorState, formData: FormD
       INSERT INTO workshops (
         slug, season, title, short_description, hero_title, hero_subtitle, about, activities, materials_title,
         materials, take_home, notices, image_url, image_alt, seo_title, seo_description, requires_allergy_info,
-        event_date, start_time, duration_minutes, age_min, age_max, price, capacity,
+        event_date, start_time, duration_minutes, age_min, age_max, capacity,
         registration_enabled, published, sort_order
       ) VALUES (
         ${slug}, ${w.season}, ${w.title}, ${w.short_description}, ${w.hero_title}, ${w.hero_subtitle}, ${w.about},
         ${w.activities}::jsonb, ${w.materials_title}, ${w.materials}::jsonb, ${w.take_home}::jsonb, ${w.notices}::jsonb,
         ${w.image_url}, ${w.image_alt}, ${w.seo_title}, ${w.seo_description}, ${w.requires_allergy_info},
-        ${w.event_date}, ${w.start_time}, ${w.duration_minutes}, ${w.age_min}, ${w.age_max}, ${w.price}, ${w.capacity},
+        ${w.event_date}, ${w.start_time}, ${w.duration_minutes}, ${w.age_min}, ${w.age_max}, ${w.capacity},
         ${w.registration_enabled}, ${w.published}, ${w.sort_order}
       )
       ON CONFLICT (slug) DO NOTHING
@@ -137,6 +138,7 @@ export async function createWorkshop(_prev: WorkshopEditorState, formData: FormD
     `
     if (rows.length === 0) return { error: "Вече съществува работилница с този адрес." }
     newId = rows[0].id as number
+    await syncPrices()
     revalidateWorkshopPages(slug)
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Възникна грешка." }
@@ -163,11 +165,12 @@ export async function updateWorkshop(
         image_url = ${w.image_url}, image_alt = ${w.image_alt}, seo_title = ${w.seo_title},
         seo_description = ${w.seo_description}, requires_allergy_info = ${w.requires_allergy_info},
         event_date = ${w.event_date}, start_time = ${w.start_time}, duration_minutes = ${w.duration_minutes},
-        age_min = ${w.age_min}, age_max = ${w.age_max}, price = ${w.price}, capacity = ${w.capacity},
+        age_min = ${w.age_min}, age_max = ${w.age_max}, capacity = ${w.capacity},
         registration_enabled = ${w.registration_enabled}, published = ${w.published},
         sort_order = ${w.sort_order}, updated_at = now()
       WHERE id = ${id}
     `
+    await syncPrices()
     revalidateWorkshopPages(existing.slug)
     revalidatePath(`/admin/rabotilnici/${id}`)
     return { saved: true }
