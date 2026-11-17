@@ -2,12 +2,18 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BarChart3, GraduationCap, Inbox, Users } from "lucide-react"
+import { BarChart3, GraduationCap, Inbox, Palette, Users } from "lucide-react"
 
 const LINKS = [
   { href: "/admin", label: "Запитвания", icon: Inbox, match: (p: string) => p === "/admin" },
   { href: "/admin/students", label: "Ученици и плащания", icon: Users, match: (p: string) => p.startsWith("/admin/students") },
   { href: "/admin/payments", label: "Отчети", icon: BarChart3, match: (p: string) => p.startsWith("/admin/payments") },
+  {
+    href: "/admin/rabotilnici",
+    label: "Работилници",
+    icon: Palette,
+    match: (p: string) => p.startsWith("/admin/rabotilnici"),
+  },
   {
     href: "/admin/english-tests",
     label: "Тестове по английски",

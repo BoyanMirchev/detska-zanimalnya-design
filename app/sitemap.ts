@@ -75,6 +75,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/rabotilnici`,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    ...["pismo-do-dyado-koleda", "koledni-igrachki", "koledni-medenki"].map((slug) => ({
+      url: `${baseUrl}/rabotilnici/${slug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
+    {
       url: `${baseUrl}/programirane`,
       changeFrequency: "monthly",
       priority: 0.9,
