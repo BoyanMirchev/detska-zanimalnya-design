@@ -29,11 +29,14 @@ import {
   formatFreePlaces,
   formatStartTime,
   formatWorkshopDate,
-  formatWorkshopPrice,
   getAvailability,
   isProxiedImage,
+  PENDING_DETAILS,
   type Workshop,
 } from "@/lib/workshops/types"
+import type { ReactNode } from "react"
+import { InlinePrice } from "@/components/pricing/price-display"
+import type { PriceRecord } from "@/lib/pricing/types"
 
 const ICONS: Record<string, LucideIcon> = {
   candy: Candy,
@@ -122,13 +125,13 @@ export function AvailabilityBadge({ workshop }: { workshop: Workshop }) {
   )
 }
 
-export function WorkshopInfoGrid({ workshop }: { workshop: Workshop }) {
-  const items: { icon: LucideIcon; label: string; value: string }[] = [
+export function WorkshopInfoGrid({ workshop, price }: { workshop: Workshop; price: PriceRecord | null }) {
+  const items: { icon: LucideIcon; label: string; value: ReactNode }[] = [
     { icon: CalendarDays, label: "Дата", value: formatWorkshopDate(workshop.event_date) },
     { icon: Clock, label: "Начален час", value: formatStartTime(workshop.start_time) },
     { icon: Hourglass, label: "Продължителност", value: formatDuration(workshop.duration_minutes) },
     { icon: Smile, label: "Възраст", value: formatAgeRange(workshop.age_min, workshop.age_max) },
-    { icon: Ticket, label: "Цена", value: formatWorkshopPrice(workshop.price) },
+    { icon: Ticket, label: "Цена", value: price ? <InlinePrice price={price} /> : PENDING_DETAILS },
     { icon: Users, label: "Свободни места", value: formatFreePlaces(workshop) },
   ]
   return (

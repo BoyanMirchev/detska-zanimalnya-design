@@ -2,6 +2,10 @@ import type { Metadata } from "next"
 import { CoursePage } from "@/components/course-page"
 import { ShahContent, ShahEnrollCTA } from "@/components/shah-content"
 
+// Prices come from the central pricing table; saves revalidate immediately, this hourly
+// refresh rolls date-based promotions over.
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: "Шах за деца в София",
 
@@ -54,13 +58,7 @@ export default function ShahPage() {
         ],
         note: "Курсът се провежда на територията на академията.",
       }}
-      prices={[
-        { label: "Месечна такса – 2 пъти седмично", price: "52 € / 101,73 лв" },
-        { label: "Месечна такса – 1 път седмично", price: "42 € / 82,17 лв" },
-        { label: "Цена на един урок", price: "15 € / 29,35 лв" },
-      ]}
-      priceTitle="Цени за курса по шах"
-      priceNote="Месечната такса е на база календарен месец и пропуснати часове не се прехвърлят."
+      priceGroup="kurs-shah"
     >
       <ShahContent />
     </CoursePage>

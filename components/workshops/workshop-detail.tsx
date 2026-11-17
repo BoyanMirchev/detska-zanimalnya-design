@@ -3,6 +3,7 @@ import { Check, Gift, Info, PenLine, Sparkles } from "lucide-react"
 import { Reveal } from "@/components/reveal"
 import { BottomCTA, SectionHeading } from "@/components/sections"
 import { getAvailability, AVAILABILITY_MESSAGES, toParagraphs, type Workshop } from "@/lib/workshops/types"
+import type { PriceRecord } from "@/lib/pricing/types"
 import {
   activityIcon,
   AvailabilityBadge,
@@ -14,7 +15,15 @@ import {
 } from "@/components/workshops/workshop-parts"
 import { WorkshopRegistrationForm, type WorkshopOption } from "@/components/workshops/workshop-registration-form"
 
-export function WorkshopDetail({ workshop, all }: { workshop: Workshop; all: Workshop[] }) {
+export function WorkshopDetail({
+  workshop,
+  all,
+  price,
+}: {
+  workshop: Workshop
+  all: Workshop[]
+  price: PriceRecord | null
+}) {
   const availability = getAvailability(workshop)
   const related = all.filter((w) => w.id !== workshop.id).slice(0, 3)
   const options: WorkshopOption[] = all.map((w) => ({
@@ -162,7 +171,7 @@ export function WorkshopDetail({ workshop, all }: { workshop: Workshop; all: Wor
             <SectionHeading eyebrow="Информация" title="Кога и как?" />
           </Reveal>
           <div className="mt-10">
-            <WorkshopInfoGrid workshop={workshop} />
+            <WorkshopInfoGrid workshop={workshop} price={price} />
           </div>
         </div>
       </section>

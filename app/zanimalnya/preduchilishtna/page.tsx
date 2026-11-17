@@ -2,6 +2,10 @@ import type { Metadata } from "next"
 import { Pencil, BookOpen, Palette, Sparkles, Bus, Clock } from "lucide-react"
 import { ProgramPage } from "@/components/program-page"
 
+// Prices come from the central pricing table; saves revalidate immediately, this hourly
+// refresh rolls date-based promotions over.
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: "Предучилищна подготовка за деца в София",
 
@@ -53,15 +57,7 @@ export default function Page() {
         { src: "/images/foam-alphabet.png", alt: "Стена с меки пъзели с букви" },
         { src: "/images/banner-owl-closeup.png", alt: "Кът с детска маса и банер с бухалче" },
       ]}
-      priceTitle="Такси — предучилищна група 5–7 години"
-      prices={[
-        { label: "Месечна такса", price: "430 €" },
-        { label: "Месечна такса при половин присъствен ден", price: "300 €" },
-        { label: "Седмична такса", price: "135 €" },
-        { label: "Седмична такса при половин присъствен ден", price: "110 €" },
-        { label: "Дневна такса", price: "35 €" },
-        { label: "Полудневна такса", price: "30 €" },
-      ]}
+      priceGroup="zanimalnya-preduchilishtna"
       philosophy={{
         eyebrow: "Подготовка без излишен натиск",
         title: "Уверен старт в първи клас.",

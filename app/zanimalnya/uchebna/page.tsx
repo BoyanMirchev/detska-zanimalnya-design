@@ -2,6 +2,10 @@ import type { Metadata } from "next"
 import { BookOpen, Brain, Calculator, HeartHandshake, Bus, Clock } from "lucide-react"
 import { ProgramPage } from "@/components/program-page"
 
+// Prices come from the central pricing table; saves revalidate immediately, this hourly
+// refresh rolls date-based promotions over.
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: "Учебна занималня за деца 1–7 клас в София",
 
@@ -53,18 +57,7 @@ export default function Page() {
         { src: "/images/class-green-lego.png", alt: "Кът за игра с пуф и килим с пътища" },
         { src: "/images/room-mess.png", alt: "Стая с азбучни постери и учебни шкафове" },
       ]}
-      priceTitle="Такси — учебна занималня 1.–7. клас"
-      prices={[
-        { label: "Месечна такса за деца от 1 до 4 клас", price: "220 €" },
-        {
-          label: "Месечна такса за деца от 5 до 7 клас",
-          note: "включва полудневно, целодневно, онлайн обучение и всички ваканции без лятно училище",
-          price: "245 €",
-        },
-        { label: "Седмична такса", price: "140 €" },
-        { label: "Целодневна такса", price: "35 €" },
-        { label: "Полудневна такса", price: "30 €" },
-      ]}
+      priceGroup="zanimalnya-uchebna"
       philosophy={{
         eyebrow: "Не просто написани домашни",
         title: "Обръщаме внимание как детето стига до отговора.",

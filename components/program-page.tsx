@@ -4,9 +4,9 @@ import type { LucideIcon } from "lucide-react"
 import { ArrowRight, Check } from "lucide-react"
 import { PageHero, BottomCTA, SectionHeading } from "@/components/sections"
 import { zanimalnyaChildren } from "@/lib/nav"
+import { PricingTable } from "@/components/pricing/pricing-table"
 
 export type Feature = { icon: LucideIcon; title: string; text: string }
-export type PriceRow = { label: string; note?: string; price: string }
 export type ApproachItem = { title: string; text: string }
 
 export type ProgramPageProps = {
@@ -21,8 +21,8 @@ export type ProgramPageProps = {
   features: Feature[]
   includes: string[]
   gallery: { src: string; alt: string }[]
-  priceTitle: string
-  prices: PriceRow[]
+  /** Key of the centrally managed price group (see /admin/ceni). */
+  priceGroup: string
   philosophy?: { eyebrow: string; title: string; paragraphs: string[] }
   approach?: { eyebrow: string; title: string; items: ApproachItem[] }
   forWhom?: { eyebrow: string; title: string; intro?: string; items: string[] }
@@ -178,25 +178,7 @@ export function ProgramPage(props: ProgramPageProps) {
       {/* Pricing */}
       <section className="bg-paper px-5 py-20 sm:px-8 lg:py-24">
         <div className="mx-auto max-w-4xl">
-          <SectionHeading align="center" eyebrow="Цени" title={props.priceTitle} />
-          <div className="mt-10 overflow-hidden rounded-[30px] border border-brand/15 bg-paper">
-            {props.prices.map((row, i) => (
-              <div
-                key={row.label}
-                className={`flex items-center justify-between gap-4 px-6 py-5 sm:px-8 ${
-                  i % 2 === 1 ? "bg-cream" : "bg-paper"
-                }`}
-              >
-                <div>
-                  <p className="font-extrabold text-ink">{row.label}</p>
-                  {row.note && <p className="mt-1 text-sm font-semibold text-ink/55">{row.note}</p>}
-                </div>
-                <span className="shrink-0 whitespace-nowrap rounded-full bg-brand/12 px-4 py-2 text-lg font-black text-brand-dark">
-                  {row.price}
-                </span>
-              </div>
-            ))}
-          </div>
+          <PricingTable groupKey={props.priceGroup} />
           <p className="mt-4 text-center text-sm font-semibold text-ink/50">
             За записване и детайли се свържете с нас по телефона или чрез формата за контакт.
           </p>
